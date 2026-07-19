@@ -3,8 +3,11 @@
  * Shares image files directly to WhatsApp, Instagram, Messages, or system apps
  */
 class ShareEngine {
-    static async shareCanvasFile(canvas, title = 'Photo Strip', filename = 'razel-tech-strip.jpg') {
+    static async shareCanvasFile(canvas, title = 'Razel Tech Photo Strip', filename = 'razel-tech-strip.jpg') {
         if (!canvas) return false;
+
+        const siteUrl = 'https://razeltech.github.io/PhotoboothPro/';
+        const shareText = `Check out my vintage photo strip captured with Razel Tech Photo Booth Pro! 📸\n\nCreate yours free here:\n${siteUrl}`;
 
         return new Promise((resolve) => {
             canvas.toBlob(async (blob) => {
@@ -20,7 +23,8 @@ class ShareEngine {
                         await navigator.share({
                             files: [file],
                             title: title,
-                            text: 'Check out my vintage photo strip captured with Razel Tech Photo Booth Pro! 🇮🇳'
+                            text: shareText,
+                            url: siteUrl
                         });
                         resolve(true);
                         return;
@@ -31,8 +35,8 @@ class ShareEngine {
                     }
                 }
 
-                // Fallback for browsers without native file share API
-                const text = encodeURIComponent("Check out my vintage photo strip captured with Razel Tech Photo Booth Pro! 🇮🇳");
+                // Fallback for browsers without native file share API (Direct WhatsApp API)
+                const text = encodeURIComponent(shareText);
                 const waUrl = `https://api.whatsapp.com/send?text=${text}`;
                 window.open(waUrl, '_blank');
                 resolve(true);
