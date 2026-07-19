@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>Razel Tech Photo Booth Pro 🇮🇳 | Free Online Vintage Photo Strip Studio & PWA</title>
+    <meta name="title" content="Razel Tech Photo Booth Pro 🇮🇳 | Free Online Vintage Photo Strip Studio & PWA">
+    <meta name="description" content="Capture aesthetic vintage photo strips online for free! Powered by Razel Tech. Features Silver Gelatin B&W filters, custom backgrounds, draggable stickers, WhatsApp sharing & native PWA mobile app.">
+    <meta name="keywords" content="razel tech, photo booth online, free photo strip maker, vintage photobooth app, pwa photobooth, razeltech.github.io">
+    <meta name="author" content="Razel Tech">
+    <meta name="robots" content="index, follow">
+
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e11d48">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Razel Tech Photo Booth Pro 🇮🇳">
+    <meta property="og:description" content="Take vintage photo booth shots right in your browser! Add film grain, light leaks, custom background uploads & draggable stickers. Direct WhatsApp sharing & PWA installable.">
+    <meta property="og:image" content="assets/logo.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Structured Data Schema.org (JSON-LD) for Google SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Razel Tech Photo Booth Pro",
+      "alternateName": "Free Vintage Photo Strip App",
+      "url": "https://razeltech.github.io/PhotoboothPro/",
+      "description": "Free web-based photobooth app for capturing, customizing, and printing high-resolution photo strips with film filters, custom backgrounds, and draggable stickers.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Organization",
+        "name": "Razel Tech",
+        "url": "https://razeltech.github.io"
+      }
+    }
+    </script>
+</head>
+<body>
+
+    <!-- App Header Navbar -->
+    <header class="app-navbar">
+        <a href="index.html" class="brand-container" title="Razel Tech Photo Booth Pro">
+            <img src="assets/logo.png" alt="Razel Tech Film Monogram Logo">
+            <span class="brand-title">PHOTOBOOTH PRO</span>
+        </a>
+        
+        <!-- Desktop Navigation Links -->
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link active">🏠 Home</a>
+            <a href="#why-us" class="nav-link">✨ Features</a>
+            <a href="#privacy" class="nav-link">🔒 Privacy</a>
+            <a href="#themes" class="nav-link">🎨 Themes</a>
+            <button class="btn-pwa pwa-install-btn" style="display:none;" title="Install Photobooth Pro App on Phone/Desktop">
+                📲 INSTALL APP
+            </button>
+            <a href="booth.html" class="btn-launch" title="Launch Photobooth Studio App">
+                📸 Launch Studio
+            </a>
+        </nav>
+
+        <!-- Mobile Hamburger Button -->
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Mobile Slide-Down Menu Drawer -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="index.html" class="nav-link active">🏠 Home Page</a>
+            <a href="#why-us" class="nav-link">✨ Features</a>
+            <a href="#privacy" class="nav-link">🔒 Data Privacy & Security</a>
+            <a href="#themes" class="nav-link">🎨 Upcoming Themes</a>
+            <button class="btn-pwa pwa-install-btn" style="display:none; text-align:center;">
+                📲 Install App on Phone
+            </button>
+            <a href="booth.html" class="btn-launch" style="text-align:center;">
+                📸 Launch Studio App
+            </a>
+        </div>
+    </header>
+
+    <!-- Dynamic Hero Section -->
+    <section class="hero-section">
+        <div class="hero-badge">⚡ POWERED BY RAZEL TECH 🇮🇳</div>
+        <h1 class="hero-title">Capture & Create Vintage 35mm Photo Strips Online</h1>
+        <p class="hero-subtitle">
+            Welcome to <strong>Razel Tech Photo Booth Pro</strong>! Your free browser-based online photobooth studio & installable PWA app. Shoot HD camera photos, apply Silver Gelatin filters, upload custom backgrounds, place draggable stickers, share to WhatsApp, and download high-res souvenirs!
+        </p>
+        <div class="hero-actions">
+            <a href="booth.html" class="btn-hero-primary">🚀 Launch Photobooth Studio</a>
+            <a href="#themes" class="btn-hero-secondary">✨ Explore Preset Themes</a>
+        </div>
+    </section>
+
+    <!-- Section 1: Why Our Photobooth Is Best -->
+    <section class="section-container" id="why-us">
+        <div class="section-header">
+            <h2 class="section-title">Why Our Photobooth is Best</h2>
+            <p class="section-subtitle">Loaded with premium features designed for birthdays, weddings, events, and everyday fun</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📸</span>
+                <h3>Instant HD Studio Feed</h3>
+                <p>Seamless webcam stream with front/rear camera flip, mirror toggle, 1-5 photo strip counts, 2x2 quad box grids, and single Polaroid cards.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎬</span>
+                <h3>35mm Film Shaders & Grain</h3>
+                <p>Authentic Silver Gelatin B&W, Warm 1970s Kodachrome, Sepia, Cyberpunk Neon, ISO grain textures, and retro radial light leak flares.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📱</span>
+                <h3>Direct WhatsApp & App Sharing</h3>
+                <p>One-tap native Web Share API file integration to send your finished photo strip directly to WhatsApp, Instagram Stories, Telegram, or Photos.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📲</span>
+                <h3>Installable PWA App</h3>
+                <p>Works natively on iPhone, Android, and Desktop! Tap 'Add to Home Screen' to launch full-screen like a native app with zero app store installs.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎞️</span>
+                <h3>Animated GIF Motion Export</h3>
+                <p>Stitch your captured photos into a looping animated GIF motion clip to share on social media alongside your printable JPEG photo strip.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">👑</span>
+                <h3>Draggable & Rotatable Props</h3>
+                <p>Place cute party crowns, sunglasses, hearts, sparkles, and stars directly onto your photos. Drag, position, resize, and rotate stickers freely.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: 100% Data Privacy & Security -->
+    <section class="section-container" id="privacy">
+        <div class="privacy-banner">
+            <span class="privacy-icon">🛡️</span>
+            <div class="privacy-content">
+                <h3>100% Data Privacy & Security Guarantee</h3>
+                <p>
+                    Your photos are strictly private! All camera feeds, image transformations, custom background uploads, and canvas stitching occur <strong>100% locally inside your web browser</strong>. No photos or camera video streams are ever uploaded, recorded, or saved to any cloud server.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Happy to Make Memories -->
+    <section class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Happy to Make Memories</h2>
+            <p class="section-subtitle">Perfect for birthday parties, weddings, reunions, and social media aesthetic collages</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" style="text-align:center;">
+                <span style="font-size:3rem;">🎉</span>
+                <h3 style="margin-top:10px;">Birthday Parties</h3>
+                <p>Capture fun group shots with party hats, crowns, and custom date stamps to cherish special celebration moments.</p>
+            </div>
+            <div class="feature-card" style="text-align:center;">
+                <span style="font-size:3rem;">💍</span>
+                <h3 style="margin-top:10px;">Weddings & Engagements</h3>
+                <p>Elegant Polaroid-style frames and warm vintage film shaders to create timeless souvenir strips for your guests.</p>
+            </div>
+            <div class="feature-card" style="text-align:center;">
+                <span style="font-size:3rem;">✨</span>
+                <h3 style="margin-top:10px;">Social Media Collages</h3>
+                <p>Generate aesthetic Y2K and Cyberpunk neon photo strips ready to share on Instagram, WhatsApp, and TikTok.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Upcoming Themes Preview -->
+    <section class="section-container" id="themes">
+        <div class="section-header">
+            <h2 class="section-title">Upcoming Themes Preview</h2>
+            <p class="section-subtitle">We are constantly crafting new visual styles and paper stock themes for you</p>
+        </div>
+
+        <div class="themes-grid">
+            <div class="theme-card">
+                <span class="theme-tag">Coming Soon</span>
+                <div class="theme-preview-box theme-kodachrome">🎞️</div>
+                <h3>1970s Kodachrome</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Warm vintage analog warm tone</p>
+            </div>
+
+            <div class="theme-card">
+                <span class="theme-tag">Coming Soon</span>
+                <div class="theme-preview-box theme-cyber">⚡</div>
+                <h3>Cyberpunk Neon Glow</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Electric cyan & neon purple flares</p>
+            </div>
+
+            <div class="theme-card">
+                <span class="theme-tag">Coming Soon</span>
+                <div class="theme-preview-box theme-wedding">✨</div>
+                <h3>Wedding Gold Elegance</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Luxurious golden foil border frame</p>
+            </div>
+
+            <div class="theme-card">
+                <span class="theme-tag">Coming Soon</span>
+                <div class="theme-preview-box theme-vintage">📽️</div>
+                <h3>Classic Silver Mono</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Deep silver contrast black & white</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>
+            © 2026 <strong>Razel Tech</strong> 🇮🇳 | Powered by <a href="https://razeltech.github.io" target="_blank" class="footer-link">Razel Tech</a>
+        </p>
+        <p style="font-size:0.85rem; margin-top:4px;">
+            Official Company Profile: <a href="https://razeltech.github.io" target="_blank" class="footer-link">https://razeltech.github.io</a>
+        </p>
+    </footer>
+
+    <!-- Modular JavaScript Suite -->
+    <script src="js/audio.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/strip.js"></script>
+    <script src="js/pwa.js"></script>
+    <script src="js/share.js"></script>
+    <script src="js/gif.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

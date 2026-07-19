@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Photo Booth</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --panel-color: #2a2a2a;
+            --accent-color: #ff4757;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            max-width: 900px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Camera Box */
+        .booth-box {
+            background-color: var(--panel-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            background-color: #000;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 450px) {
+            .video-wrapper {
+                width: 300px;
+                height: 225px;
+            }
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Mirror view for natural interaction */
+        }
+
+        /* Flash & Countdown Overlays */
+        .flash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s ease-out;
+            z-index: 3;
+        }
+
+        .flash-overlay.active {
+            opacity: 1;
+            transition: none;
+        }
+
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+            z-index: 2;
+            display: none;
+        }
+
+        .booth-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            margin-top: 20px;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+        }
+
+        .booth-btn:hover {
+            background-color: #ff6b81;
+        }
+
+        .booth-btn:active {
+            transform: scale(0.98);
+        }
+
+        .booth-btn:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* The Result Strip */
+        .strip-output {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Styled exactly like a physical film photo strip */
+        .photo-strip {
+            background-color: #f5f5f5; /* Off-white card stock */
+            padding: 20px 18px 35px 18px;
+            box-shadow: 5px 10px 30px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 160px;
+            min-height: 500px;
+        }
+
+        .strip-frame {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background-color: #ddd;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+        }
+
+        .strip-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) contrast(1.1); /* Vintage B&W filter */
+            transform: scaleX(-1); /* Keep the mirrored look */
+            display: none;
+        }
+
+        .strip-frame.has-image img {
+            display: block;
+        }
+
+        .strip-footer {
+            text-align: center;
+            color: #999;
+            font-size: 0.65rem;
+            margin-top: auto;
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .download-btn {
+            margin-top: 20px;
+            background-color: #2ed573;
+            box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4);
+            display: none;
+        }
+        
+        .download-btn:hover {
+            background-color: #26af5f;
+        }
+
+        /* Hidden canvas helper for compiling final download image */
+        #hidden-canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SOUVENIR PHOTO BOOTH</h1>
+    <div class="subtitle">Smile! 4 quick shots. 1 classic strip.</div>
+
+    <div class="container">
+        <!-- Left Side: Live Cam Vending Box -->
+        <div class="booth-box">
+            <div class="video-wrapper">
+                <div class="flash-overlay" id="flash"></div>
+                <div class="countdown" id="countdown-text">3</div>
+                <video id="webcam" autoplay playsinline></video>
+            </div>
+            <button class="booth-btn" id="start-btn">START STRIP</button>
+        </div>
+
+        <!-- Right Side: The Developing Strip -->
+        <div class="strip-output">
+            <div class="photo-strip" id="strip">
+                <div class="strip-frame" id="frame-0"><img></div>
+                <div class="strip-frame" id="frame-1"><img></div>
+                <div class="strip-frame" id="frame-2"><img></div>
+                <div class="strip-frame" id="frame-3"><img></div>
+                <div class="strip-footer">
+                    ⚡ PHOTO BOOTH ⚡<br>
+                    <span id="strip-date">MEMORY STRIP</span>
+                </div>
+            </div>
+            <button class="booth-btn download-btn" id="download-btn">DOWNLOAD STRIP</button>
+        </div>
+    </div>
+
+    <canvas id="hidden-canvas"></canvas>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const startBtn = document.getElementById('start-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const countdownText = document.getElementById('countdown-text');
+        const flash = document.getElementById('flash');
+        const hiddenCanvas = document.getElementById('hidden-canvas');
+        const stripDate = document.getElementById('strip-date');
+
+        let capturedImages = [];
+        let stream = null;
+
+        // Set current year/date on the bottom of the strip automatically
+        const year = new Date().getFullYear();
+        stripDate.textContent = `EST. ${year} // CLASSIC`;
+
+        // Request Access to Webcam immediately
+        async function initCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480, facingMode: "user" }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Camera access is required for the photo booth! Please enable permissions.");
+                console.error("Camera error: ", err);
+            }
+        }
+
+        // Trigger flash overlay animation
+        function triggerFlash() {
+            flash.classList.add('active');
+            setTimeout(() => {
+                flash.classList.remove('active');
+            }, 100);
+        }
+
+        // Capture static frame from stream
+        function captureFrame(index) {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw current video frame to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            
+            // Cache the raw captured image
+            capturedImages[index] = canvas;
+
+            // Push into the DOM preview frame
+            const frame = document.getElementById(`frame-${index}`);
+            const img = frame.querySelector('img');
+            img.src = dataUrl;
+            frame.classList.add('has-image');
+        }
+
+        // Run sequential booth cycle
+        async function runPhotoBoothSequence() {
+            startBtn.disabled = true;
+            downloadBtn.style.display = 'none';
+            capturedImages = [];
+
+            // Clear previous frames
+            for(let i=0; i<4; i++) {
+                document.getElementById(`frame-${i}`).classList.remove('has-image');
+            }
+
+            // Loop 4 times to take 4 photos
+            for (let i = 0; i < 4; i++) {
+                let count = 3;
+                countdownText.style.display = 'block';
+                countdownText.textContent = count;
+
+                // 3 Second countdown per image
+                while (count > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    count--;
+                    if (count > 0) countdownText.textContent = count;
+                }
+
+                countdownText.style.display = 'none';
+                triggerFlash();
+                captureFrame(i);
+                
+                // Small breathing window between shots
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+
+            startBtn.disabled = false;
+            downloadBtn.style.display = 'block';
+        }
+
+        // Stitch individual photos together onto one long high-res canvas strip for clean exporting
+        function buildFinalDownloadStrip() {
+            if (capturedImages.length < 4) return;
+
+            const imgWidth = 400;
+            const imgHeight = 300;
+            const padding = 20;
+            const gap = 15;
+            const footerHeight = 80;
+
+            // Total height calculation matching visual CSS structure
+            const totalWidth = imgWidth + (padding * 2);
+            const totalHeight = (padding * 2) + (imgHeight * 4) + (gap * 3) + footerHeight;
+
+            hiddenCanvas.width = totalWidth;
+            hiddenCanvas.height = totalHeight;
+            const ctx = hiddenCanvas.getContext('2d');
+
+            // 1. Draw Off-White Background Strip
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+            // 2. Composite photos with vintage grayscale styling applied 
+            capturedImages.forEach((sourceCanvas, index) => {
+                const x = padding;
+                const y = padding + (index * (imgHeight + gap));
+
+                // Temporary workspace for applying visual processing parameters
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = imgWidth;
+                tempCanvas.height = imgHeight;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                // Mirror image placement for natural pose orientation match
+                tempCtx.translate(imgWidth, 0);
+                tempCtx.scale(-1, 1);
+                tempCtx.drawImage(sourceCanvas, 0, 0, imgWidth, imgHeight);
+
+                // Apply vintage high contrast black & white image filter
+                const imgData = tempCtx.getImageData(0, 0, imgWidth, imgHeight);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+                    // Enhance contrast scale curves slightly
+                    brightness = ((brightness - 128) * 1.1) + 128; 
+                    data[i] = brightness;     // R
+                    data[i + 1] = brightness; // G
+                    data[i + 2] = brightness; // B
+                }
+                tempCtx.putImageData(imgData, 0, 0);
+
+                // Render processed frame matrix layer into compilation structure
+                ctx.drawImage(tempCanvas, x, y);
+                
+                // Thin dark internal print line around each shot
+                ctx.strokeStyle = '#ccc';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, imgWidth, imgHeight);
+            });
+
+            // 3. Draw Vintage Text Footer Stamp
+            ctx.fillStyle = '#999999';
+            ctx.font = "bold 16px 'Courier New', monospace";
+            ctx.textAlign = 'center';
+            ctx.fillText("⚡ PHOTO BOOTH ⚡", totalWidth / 2, totalHeight - 45);
+            
+            ctx.font = "14px 'Courier New', monospace";
+            ctx.fillText(`EST. ${year} // CLASSIC`, totalWidth / 2, totalHeight - 25);
+
+            // Trigger actual browser image file download download 
+            const link = document.createElement('a');
+            link.download = `photobooth-${Date.now()}.jpg`;
+            link.href = hiddenCanvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }
+
+        // Event Assignments
+        startBtn.addEventListener('click', runPhotoBoothSequence);
+        downloadBtn.addEventListener('click', buildFinalDownloadStrip);
+
+        // Run Camera Initialization on load
+        window.addEventListener('load', initCamera);
+    </script>
+</body>
+</html>

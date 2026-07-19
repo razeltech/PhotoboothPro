@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Photo Booth Pro</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --panel-color: #1e1e24;
+            --panel-border: #2d2d38;
+            --accent-color: #ff4757;
+            --text-color: #f1f2f6;
+            --control-bg: #2a2a35;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin: 0 0 5px 0;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #ff4757, #ff6b81);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #a4b0be;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .app-layout {
+            display: flex;
+            gap: 30px;
+            max-width: 1100px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 900px) {
+            .app-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Left Side Controls & Camera */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .booth-card {
+            background-color: var(--panel-color);
+            border: 1px solid var(--panel-border);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        video.mirrored {
+            transform: scaleX(-1);
+        }
+
+        /* Dynamic Visual Overlays */
+        .flash-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .flash-overlay.active {
+            opacity: 1;
+        }
+
+        .countdown-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            z-index: 4;
+            display: none;
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        /* Customization Controls Control Box */
+        .control-group {
+            margin-bottom: 15px;
+        }
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #a4b0be;
+            margin-bottom: 6px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--control-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-weight: 700;
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .primary-btn {
+            background-color: var(--accent-color);
+            color: white;
+            flex: 2;
+        }
+        .primary-btn:hover:not(:disabled) { background-color: #ff6b81; }
+        
+        .secondary-btn {
+            background-color: #57606f;
+            color: white;
+            flex: 1;
+        }
+        .secondary-btn:hover:not(:disabled) { background-color: #747d8c; }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Right Side Live Strip Render Blueprint Frame */
+        .preview-pane {
+            background-color: var(--panel-color);
+            border: 1px solid var(--panel-border);
+            padding: 25px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 260px;
+        }
+
+        /* Dynamic CSS Theme Borders for Physical Mockup Frame */
+        .strip-wrapper {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            padding: 16px 16px 28px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 180px;
+            transition: all 0.3s ease;
+        }
+
+        /* Border theme variants */
+        .border-classic { background-color: #f5f5f5; color: #222; }
+        .border-dark { background-color: #1e1e1e; color: #fff; border: 1px solid #333; }
+        .border-retro { background-color: #f39c12; color: #111; }
+        .border-pink { background-color: #ff7890; color: #fff; }
+
+        .frame-slot {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background-color: rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .border-dark .frame-slot {
+            border-color: #444;
+        }
+
+        .frame-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        /* Live Browser Preview Live CSS Filter Processing Matrices */
+        .filter-bw { filter: grayscale(1) contrast(1.2); }
+        .filter-sepia { filter: sepia(0.85) contrast(1.05) warm-tone; }
+        .filter-neon { filter: hue-rotate(90deg) saturate(2.5) contrast(1.1); }
+        .filter-color { filter: contrast(1.05) saturate(1.1); }
+
+        .frame-slot.filled img {
+            display: block;
+        }
+
+        .strip-caption {
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: auto;
+            padding-top: 10px;
+            line-height: 1.3;
+            border-top: 1px dashed rgba(0,0,0,0.2);
+        }
+        .border-dark .strip-caption {
+            border-top-color: rgba(255,255,255,0.2);
+        }
+
+        .action-btn {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #2ed573;
+            color: white;
+            display: none;
+        }
+        .action-btn:hover { background-color: #26af5f; }
+
+        #canvas-compiler { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>RETRO PHOTO BOOTH PRO</h1>
+    <div class="subtitle">Customize, capture, and instant download your customized photostrip layouts</div>
+
+    <div class="app-layout">
+        
+        <!-- Interactive Panel Workspace -->
+        <div class="workspace">
+            <div class="booth-card">
+                <div class="video-container">
+                    <div class="flash-overlay" id="flash"></div>
+                    <div class="countdown-overlay" id="countdown">3</div>
+                    <video id="preview-stream" autoplay playsinline class="mirrored"></video>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="primary-btn" id="capture-trigger">START CAPTURE RUN</button>
+                    <button class="secondary-btn" id="cam-toggle" title="Switch Input Hardware Source">🔄 FLIP</button>
+                </div>
+            </div>
+
+            <!-- Parameters Customization Suite Control Engine -->
+            <div class="booth-card">
+                <div class="control-group">
+                    <label>Image Filter Matte Style</label>
+                    <select id="setting-filter">
+                        <option value="bw">Classic Vintage Monochrome (B&W)</option>
+                        <option value="color">Rich Vibrant Film Color</option>
+                        <option value="sepia">1970s Warm Sepia Nostalgia</option>
+                        <option value="neon">Cyberpunk Neon Pop</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Border Paper Stock Background</label>
+                    <select id="setting-border">
+                        <option value="classic">Classic Matte Off-White</option>
+                        <option value="dark">Sleek Minimalist Charcoal Dark</option>
+                        <option value="retro">Vintage Mustard Yellow</option>
+                        <option value="pink">Soft Pastel Bubblegum Pink</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Vertical Photo Grid Count</label>
+                    <select id="setting-count">
+                        <option value="2">2 Pictures Mini-Strip</option>
+                        <option value="3">3 Pictures Midi-Strip</option>
+                        <option value="4" selected>4 Pictures Classic Standard Strip</option>
+                        <option value="5">5 Pictures Mega-Strip</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Custom Base Margin Footer Caption</label>
+                    <input type="text" id="setting-text" value="SOUVENIR MEMORY" maxlength="32" placeholder="Write your own custom stamp...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Live Strip Output Blueprint Target Display -->
+        <div class="preview-pane">
+            <label style="margin-bottom: 15px;">Live Finished Strip Layout</label>
+            <div class="strip-wrapper border-classic" id="render-strip">
+                <!-- Javascript maps slot architectures dynamically in this container node -->
+            </div>
+            <button class="action-btn" id="export-trigger">DOWNLOAD DIRECT IMAGE</button>
+        </div>
+
+    </div>
+
+    <!-- Hidden High Resolution Grid Processing Engine Layer Matrix -->
+    <canvas id="canvas-compiler"></canvas>
+
+    <script>
+        const videoElement = document.getElementById('preview-stream');
+        const triggerBtn = document.getElementById('capture-trigger');
+        const camToggleBtn = document.getElementById('cam-toggle');
+        const exportBtn = document.getElementById('export-trigger');
+        const countdownOverlay = document.getElementById('countdown');
+        const flashOverlay = document.getElementById('flash');
+        const stripContainer = document.getElementById('render-strip');
+        const canvasCompiler = document.getElementById('canvas-compiler');
+
+        // Parameter Configurations Bind Elements
+        const filterSelect = document.getElementById('setting-filter');
+        const borderSelect = document.getElementById('setting-border');
+        const countSelect = document.getElementById('setting-count');
+        const textInput = document.getElementById('setting-text');
+
+        let activeStream = null;
+        let memoryCacheFrames = [];
+        let currentFacingMode = "user"; 
+        let systemAvailableDevicesCount = 0;
+
+        // Configuration State Properties
+        let configPhotosTargetCount = 4;
+        let activeFilterCSSClass = "filter-bw";
+
+        // Query available video sources to determine if toggle element should show
+        async function inspectAvailableVideoHardware() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                systemAvailableDevicesCount = videoDevices.length;
+                if(systemAvailableDevicesCount <= 1) {
+                    camToggleBtn.style.display = 'none'; // Only one webcam present
+                }
+            } catch(e) { console.warn("Device lookahead enumeration blocked", e); }
+        }
+
+        // Initialize Native Device Feed Interface Pipeline
+        async function startCameraHardwareFeed() {
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+            }
+
+            const configurations = {
+                audio: false,
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 960 },
+                    facingMode: currentFacingMode
+                }
+            };
+
+            try {
+                activeStream = await navigator.mediaDevices.getUserMedia(configurations);
+                videoElement.srcObject = activeStream;
+                
+                // Mirror logic check: toggle off mirror view for rear environment logging cameras
+                if(currentFacingMode === "environment") {
+                    videoElement.classList.remove('mirrored');
+                } else {
+                    videoElement.classList.add('mirrored');
+                }
+            } catch (err) {
+                alert("Fatal Error accessing localized video pipeline array standard channels.");
+                console.error(err);
+            }
+        }
+
+        // Re-calculate structural preview framework grid targets safely via UI nodes
+        function structuralLayoutBlueprintRefresh() {
+            configPhotosTargetCount = parseInt(countSelect.value);
+            
+            // Re-render empty placeholder layouts inside targeted document tree
+            stripContainer.innerHTML = '';
+            
+            for(let index = 0; index < configPhotosTargetCount; index++) {
+                const slot = document.createElement('div');
+                slot.className = 'frame-slot';
+                slot.id = `slot-index-${index}`;
+                
+                const frameImageNode = document.createElement('img');
+                frameImageNode.className = activeFilterCSSClass;
+                
+                slot.appendChild(frameImageNode);
+                stripContainer.appendChild(slot);
+            }
+
+            // Append Standard Decorative Footer Block
+            const textStampNode = document.createElement('div');
+            textStampNode.className = 'strip-caption';
+            textStampNode.id = 'footer-text-node';
+            
+            const timestampString = new Date().toLocaleDateString(undefined, {month:'short', day:'numeric'});
+            textStampNode.innerHTML = `✨ ${textInput.value.toUpperCase()} ✨<br><span style="opacity:0.6; font-size:0.55rem;">${timestampString} // PHOTOBOOTH</span>`;
+            
+            stripContainer.appendChild(textStampNode);
+            exportBtn.style.display = 'none'; 
+            memoryCacheFrames = []; 
+        }
+
+        // Event Control Listeners mapping parameters manipulation rules instantly
+        filterSelect.addEventListener('change', () => {
+            activeFilterCSSClass = `filter-${filterSelect.value}`;
+            document.querySelectorAll('.frame-slot img').forEach(img => {
+                img.className = '';
+                img.classList.add(activeFilterCSSClass);
+            });
+        });
+
+        borderSelect.addEventListener('change', () => {
+            stripContainer.className = `strip-wrapper border-${borderSelect.value}`;
+        });
+
+        countSelect.addEventListener('change', structuralLayoutBlueprintRefresh);
+        
+        textInput.addEventListener('input', () => {
+            const footerTextNode = document.getElementById('footer-text-node');
+            if(footerTextNode) {
+                const timestampString = new Date().toLocaleDateString(undefined, {month:'short', day:'numeric'});
+                footerTextNode.innerHTML = `✨ ${textInput.value.toUpperCase()} ✨<br><span style="opacity:0.6; font-size:0.55rem;">${timestampString} // PHOTOBOOTH</span>`;
+            }
+        });
+
+        camToggleBtn.addEventListener('click', () => {
+            currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
+            startCameraHardwareFeed();
+        });
+
+        // Sequences Control Runner execution engine loop block
+        async function runAutomationCaptureSequence() {
+            triggerBtn.disabled = true;
+            countSelect.disabled = true;
+            exportBtn.style.display = 'none';
+            memoryCacheFrames = [];
+
+            // Reset dynamic content parameters on live view
+            structuralLayoutBlueprintRefresh();
+
+            for(let stepIndex = 0; stepIndex < configPhotosTargetCount; stepIndex++) {
+                let countdownIntervalValue = 3;
+                countdownOverlay.style.display = 'flex';
+                countdownOverlay.textContent = countdownIntervalValue;
+
+                while(countdownIntervalValue > 0) {
+                    await new Promise(res => setTimeout(res, 1000));
+                    countdownIntervalValue--;
+                    if(countdownIntervalValue > 0) {
+                        countdownOverlay.textContent = countdownIntervalValue;
+                    }
+                }
+
+                countdownOverlay.style.display = 'none';
+                
+                // Execute hardware flash rendering animation
+                flashOverlay.classList.add('active');
+                setTimeout(() => flashOverlay.classList.remove('active'), 120);
+
+                // Instantly log memory reference matrices buffer
+                captureFrameMemorySlot(stepIndex);
+
+                await new Promise(res => setTimeout(res, 600)); // Small cool-down sequence break
+            }
+
+            triggerBtn.disabled = false;
+            countSelect.disabled = false;
+            exportBtn.style.display = 'block';
+        }
+
+        function captureFrameMemorySlot(targetPositionIndex) {
+            const videoWidth = videoElement.videoWidth || 640;
+            const videoHeight = videoElement.videoHeight || 480;
+
+            const localizedMemoryCanvas = document.createElement('canvas');
+            localizedMemoryCanvas.width = videoWidth;
+            localizedMemoryCanvas.height = videoHeight;
+            const memoryContext = localizedMemoryCanvas.getContext('2d');
+
+            // Handle horizontal mirroring for self view capture modes safely
+            if(currentFacingMode === "user") {
+                memoryContext.translate(videoWidth, 0);
+                memoryContext.scale(-1, 1);
+            }
+            
+            memoryContext.drawImage(videoElement, 0, 0, videoWidth, videoHeight);
+            
+            memoryCacheFrames[targetPositionIndex] = localizedMemoryCanvas;
+
+            // Push asset buffer explicitly into DOM visibility tree arrays matching style filters
+            const targetedDomSlot = document.getElementById(`slot-index-${targetPositionIndex}`);
+            const imageContainer = targetedDomSlot.querySelector('img');
+            imageContainer.src = localizedMemoryCanvas.toDataURL('image/jpeg');
+            targetedDomSlot.classList.add('filled');
+        }
+
+        // Core Matrix Compiler Engine rendering a high-res asset block matching chosen themes
+        function compileHighResBitmapDownload() {
+            if (memoryCacheFrames.length < configPhotosTargetCount) return;
+
+            // Definition sizing layouts for crisp offline printing configurations
+            const imgWidth = 600;
+            const imgHeight = 450;
+            const paddingSide = 30;
+            const gapSpacing = 20;
+            const layoutFooterZoneHeight = 110;
+
+            const totalWidth = imgWidth + (paddingSide * 2);
+            const totalHeight = (paddingSide * 2) + (imgHeight * configPhotosTargetCount) + (gapSpacing * (configPhotosTargetCount - 1)) + layoutFooterZoneHeight;
+
+            canvasCompiler.width = totalWidth;
+            canvasCompiler.height = totalHeight;
+            const ctx = canvasCompiler.getContext('2d');
+
+            // 1. Process Master Border Color Swatches Base Plates
+            const selectedBorderVariant = borderSelect.value;
+            if(selectedBorderVariant === 'classic') ctx.fillStyle = '#f5f5f5';
+            else if(selectedBorderVariant === 'dark') ctx.fillStyle = '#1e1e1e';
+            else if(selectedBorderVariant === 'retro') ctx.fillStyle = '#f39c12';
+            else if(selectedBorderVariant === 'pink') ctx.fillStyle = '#ff7890';
+            ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+            // 2. Loop through memory frame buffers passing image filters dynamically down target channel
+            memoryCacheFrames.forEach((cachedCanvas, index) => {
+                const targetX = paddingSide;
+                const targetY = paddingSide + (index * (imgHeight + gapSpacing));
+
+                const filteredProcessingCanvas = document.createElement('canvas');
+                filteredProcessingCanvas.width = imgWidth;
+                filteredProcessingCanvas.height = imgHeight;
+                const filteredCtx = filteredProcessingCanvas.getContext('2d');
+                filteredCtx.drawImage(cachedCanvas, 0, 0, imgWidth, imgHeight);
+
+                const dataPayload = filteredCtx.getImageData(0, 0, imgWidth, imgHeight);
+                const pixelArray = dataPayload.data;
+                const currentFilterMode = filterSelect.value;
+
+                // Process internal custom pixel transformations directly into export pipeline matrix array
+                for (let i = 0; i < pixelArray.length; i += 4) {
+                    let r = pixelArray[i];
+                    let g = pixelArray[i+1];
+                    let b = pixelArray[i+2];
+
+                    if (currentFilterMode === 'bw') {
+                        let brightness = 0.3 * r + 0.59 * g + 0.11 * b;
+                        brightness = ((brightness - 128) * 1.2) + 128; // boost contrast
+                        r = g = b = Math.min(255, Math.max(0, brightness));
+                    } else if (currentFilterMode === 'sepia') {
+                        r = (r * 0.393) + (g * 0.769) + (b * 0.189);
+                        g = (r * 0.349) + (g * 0.686) + (b * 0.168);
+                        b = (r * 0.272) + (g * 0.534) + (b * 0.131);
+                    } else if (currentFilterMode === 'neon') {
+                        // Hue Shift algorithm calculations inside primary arrays
+                        let tempR = r, tempG = g, tempB = b;
+                        r = Math.min(255, tempG * 1.5);
+                        g = Math.min(255, tempB * 1.2);
+                        b = Math.min(255, tempR * 2.2);
+                    } else if (currentFilterMode === 'color') {
+                        // Film contrast curving enhancements
+                        r = Math.min(255, Math.max(0, ((r - 128) * 1.05) + 128));
+                        g = Math.min(255, Math.max(0, ((g - 128) * 1.05) + 128));
+                        b = Math.min(255, Math.max(0, ((b - 128) * 1.05) + 128));
+                    }
+
+                    pixelArray[i] = r;
+                    pixelArray[i+1] = g;
+                    pixelArray[i+2] = b;
+                }
+                
+                filteredCtx.putImageData(dataPayload, 0, 0);
+                ctx.drawImage(filteredProcessingCanvas, targetX, targetY);
+
+                // Image Inner Border Outline Accent Accent Box
+                ctx.strokeStyle = selectedBorderVariant === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(targetX, targetY, imgWidth, imgHeight);
+            });
+
+            // 3. Render High Quality Caption Stamp Labels Base Zone Graphics Block
+            ctx.fillStyle = selectedBorderVariant === 'dark' ? '#ffffff' : '#222222';
+            ctx.font = "bold 24px monospace";
+            ctx.textAlign = 'center';
+            ctx.fillText(`✨ ${textInput.value.toUpperCase()} ✨`, totalWidth / 2, totalHeight - 60);
+
+            const timestampString = new Date().toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+            ctx.fillStyle = selectedBorderVariant === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)';
+            ctx.font = "16px monospace";
+            ctx.fillText(`${timestampString} // PHOTOBOOTH`, totalWidth / 2, totalHeight - 30);
+
+            // Execute instantaneous file downloader trigger actions safely
+            const imageDownloaderAnchor = document.createElement('a');
+            imageDownloaderAnchor.download = `photobooth-${Date.now()}.jpg`;
+            imageDownloaderAnchor.href = canvasCompiler.toDataURL('image/jpeg', 0.95);
+            imageDownloaderAnchor.click();
+        }
+
+        // System Bind Controls Initialization Sequence Triggers
+        triggerBtn.addEventListener('click', runAutomationCaptureSequence);
+        exportBtn.addEventListener('click', compileHighResBitmapDownload);
+
+        window.addEventListener('load', async () => {
+            await inspectAvailableVideoHardware();
+            await startCameraHardwareFeed();
+            structuralLayoutBlueprintRefresh();
+        });
+    </script>
+</body>
+</html>
