@@ -3,7 +3,9 @@
 > **The Ultimate Free, Responsive, Customisable Online Photo Booth Studio & PWA Application.**  
 > Powered by **Razel Tech** | Official Company Website: [https://razeltech.github.io](https://razeltech.github.io)
 
-![Razel Tech Photo Booth Logo](assets/logo.png)
+<p align="center">
+  <img src="assets/logo.png" alt="Razel Tech Photo Booth Logo" width="140" />
+</p>
 
 ---
 
