@@ -44,8 +44,8 @@ class CameraController {
         const constraints = {
             audio: false,
             video: {
-                width: { ideal: 1280 },
-                height: { ideal: 960 },
+                width: { ideal: 1920, min: 1280 },
+                height: { ideal: 1080, min: 720 },
                 facingMode: this.facingMode
             }
         };

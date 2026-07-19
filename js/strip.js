@@ -61,12 +61,15 @@ class StripEngine {
         const colors = this.getBorderColor(borderTheme);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
         const isFilmstrip = borderTheme === 'filmstrip';
         const sideMargin = isFilmstrip ? 70 : (borderTheme === 'vintage-card' ? 28 : 36);
 
-        const imgW = layout === 'grid' ? 450 : (layout === 'polaroid' ? 540 : 600);
-        const imgH = layout === 'polaroid' ? 540 : 450;
+        // High resolution target image dimensions for crisp output
+        const imgW = layout === 'grid' ? 600 : (layout === 'polaroid' ? 720 : 800);
+        const imgH = layout === 'polaroid' ? 720 : 600;
         const paddingTop = borderTheme === 'vintage-card' ? 32 : 40;
         const gap = borderTheme === 'vintage-card' ? 18 : 24;
         const footerH = (captionText || taglineText || timestampMode !== 'none') ? 130 : 40;
@@ -151,7 +154,7 @@ class StripEngine {
             }
         }
 
-        // 4. Render Photo Frames
+        // 4. Render Photo Frames with aspect ratio preserving cover crop (prevents stretching)
         framesArray.forEach((sourceCanvas, idx) => {
             if (idx >= positions.length) return;
             const pos = positions[idx];
@@ -160,8 +163,25 @@ class StripEngine {
             tempCanvas.width = imgW;
             tempCanvas.height = imgH;
             const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.imageSmoothingEnabled = true;
+            tempCtx.imageSmoothingQuality = 'high';
 
-            tempCtx.drawImage(sourceCanvas, 0, 0, imgW, imgH);
+            // Calculate smart center-crop to prevent image stretching (object-fit: cover)
+            const srcW = sourceCanvas.width;
+            const srcH = sourceCanvas.height;
+            const srcAspect = srcW / srcH;
+            const targetAspect = imgW / imgH;
+
+            let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
+            if (srcAspect > targetAspect) {
+                cropW = srcH * targetAspect;
+                cropX = (srcW - cropW) / 2;
+            } else {
+                cropH = srcW / targetAspect;
+                cropY = (srcH - cropH) / 2;
+            }
+
+            tempCtx.drawImage(sourceCanvas, cropX, cropY, cropW, cropH, 0, 0, imgW, imgH);
 
             let imgData = tempCtx.getImageData(0, 0, imgW, imgH);
             imgData = FilterEngine.applyFilterToImageData(imgData, filterMode, grainLevel, customFilterParams);

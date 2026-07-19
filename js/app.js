@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
         exportBtn.addEventListener('click', () => {
             const finalCanvas = compileHighResCanvas();
             const fname = generateFormattedFilename('jpg');
-            if (finalCanvas) downloadImage(finalCanvas.toDataURL('image/jpeg', 0.95), fname);
+            if (finalCanvas) downloadImage(finalCanvas.toDataURL('image/jpeg', 0.98), fname);
         });
     }
 
