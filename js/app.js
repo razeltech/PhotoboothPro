@@ -267,6 +267,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    const mobileJumpBtn = document.getElementById('mobile-jump-btn');
+
+    if (mobileJumpBtn) {
+        mobileJumpBtn.addEventListener('click', () => {
+            if (stripContainer) {
+                stripContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
     // Blueprint Layout Refresh Engine
     function refreshPreviewBlueprint() {
         if (!stripContainer || !layoutSelect) return;
@@ -286,6 +296,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const leakOverlayElem = document.getElementById('leak-overlay');
         if (leakOverlayElem) {
             leakOverlayElem.className = 'light-leak-overlay ' + (leakVal !== 'none' ? 'leak-' + leakVal : '');
+        }
+
+        if (mobileJumpBtn) {
+            mobileJumpBtn.classList.toggle('visible', capturedFrames.length === targetCount && targetCount > 0);
         }
 
         // If photos are captured, render exact pixel-perfect compiled canvas in Live Preview!
