@@ -791,7 +791,7 @@ input[type="text"], input[type="file"], input[type="range"] {
 
 .strip-wrapper.layout-polaroid {
     width: 220px;
-    padding: 16px 16px 44px 16px;
+    padding: 14px 14px 50px 14px;
 }
 .strip-wrapper.layout-polaroid .frame-slot {
     aspect-ratio: 1 / 1;

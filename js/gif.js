@@ -6,43 +6,70 @@ class GifEngine {
     static async createAnimatedGif(framesArray, delayMs = 500) {
         if (!framesArray || framesArray.length === 0) return null;
 
-        const width = framesArray[0].width || 600;
-        const height = framesArray[0].height || 450;
+        // Upgrade motion resolution to High Definition 1280x960 (4:3 HD ratio)
+        const width = 1280;
+        const height = 960;
 
-        // Build composite canvas sequence with watermark stamp
+        // Build composite canvas sequence with HD quality rendering
         const processedCanvases = framesArray.map(frame => {
             const c = document.createElement('canvas');
             c.width = width;
             c.height = height;
             const ctx = c.getContext('2d');
-            ctx.drawImage(frame, 0, 0, width, height);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
 
-            // Watermark overlay badge
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-            ctx.fillRect(10, height - 35, 230, 25);
+            // Smart cover-crop to fit 1280x960 HD frame without stretching
+            const srcW = frame.width;
+            const srcH = frame.height;
+            const srcAspect = srcW / srcH;
+            const targetAspect = width / height;
+
+            let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
+            if (srcAspect > targetAspect) {
+                cropW = srcH * targetAspect;
+                cropX = (srcW - cropW) / 2;
+            } else {
+                cropH = srcW / targetAspect;
+                cropY = (srcH - cropH) / 2;
+            }
+
+            ctx.drawImage(frame, cropX, cropY, cropW, cropH, 0, 0, width, height);
+
+            // Clean badge overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(20, height - 50, 320, 36);
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText('✨ MOTION BOOTH // RAZEL TECH 🇮🇳', 15, height - 18);
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillText('✨ MOTION BOOTH // 35MM REEL', 30, height - 26);
 
             return c;
         });
 
-        // Generate Data URL array representing frames animation loop
+        // Generate Data URL / Blob array representing HD motion loop
         return new Promise((resolve) => {
             let currentIdx = 0;
             const animCanvas = document.createElement('canvas');
             animCanvas.width = width;
             animCanvas.height = height;
             const animCtx = animCanvas.getContext('2d');
+            animCtx.imageSmoothingEnabled = true;
+            animCtx.imageSmoothingQuality = 'high';
 
-            // Simple WebM / Animation Stream Exporter or Canvas Exporter
+            // High Quality WebM / MP4 MediaRecorder Exporter
             if (window.MediaRecorder && animCanvas.captureStream) {
                 const stream = animCanvas.captureStream(30);
                 let mediaRecorder;
+                const recorderOptions = { videoBitsPerSecond: 5000000 }; // 5 Mbps HD Bitrate
+
                 try {
-                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
+                    mediaRecorder = new MediaRecorder(stream, { ...recorderOptions, mimeType: 'video/webm;codecs=vp8' });
                 } catch (e) {
-                    try { mediaRecorder = new MediaRecorder(stream); } catch (e2) {}
+                    try {
+                        mediaRecorder = new MediaRecorder(stream, { ...recorderOptions, mimeType: 'video/mp4' });
+                    } catch (e2) {
+                        try { mediaRecorder = new MediaRecorder(stream); } catch (e3) {}
+                    }
                 }
 
                 if (mediaRecorder) {

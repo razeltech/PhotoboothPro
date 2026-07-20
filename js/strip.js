@@ -68,11 +68,12 @@ class StripEngine {
         const sideMargin = isFilmstrip ? 70 : (borderTheme === 'vintage-card' ? 28 : 36);
 
         // Standard high-res target photo slot dimensions (4:3 for strips/grid, 1:1 square for Polaroid)
-        const imgW = layout === 'polaroid' ? 600 : 600;
-        const imgH = layout === 'polaroid' ? 600 : 450;
-        const paddingTop = borderTheme === 'vintage-card' ? 32 : 40;
+        const imgW = layout === 'polaroid' ? 620 : 600;
+        const imgH = layout === 'polaroid' ? 620 : 450;
+        const paddingTop = layout === 'polaroid' ? 40 : (borderTheme === 'vintage-card' ? 32 : 40);
+        const sideMargin = layout === 'polaroid' ? 40 : (isFilmstrip ? 70 : (borderTheme === 'vintage-card' ? 28 : 36));
         const gap = borderTheme === 'vintage-card' ? 18 : 24;
-        const footerH = (captionText || taglineText || timestampMode !== 'none') ? (layout === 'polaroid' ? 160 : 130) : 40;
+        const footerH = (captionText || taglineText || timestampMode !== 'none') ? (layout === 'polaroid' ? 180 : 130) : 40;
 
         let totalW = 0;
         let totalH = 0;
@@ -89,7 +90,7 @@ class StripEngine {
             ];
         } else if (layout === 'polaroid') {
             totalW = (sideMargin * 2) + imgW;
-            totalH = (paddingTop * 2) + imgH + footerH + 40;
+            totalH = paddingTop + imgH + footerH;
             positions = [{ x: sideMargin, y: paddingTop }];
         } else {
             totalW = (sideMargin * 2) + imgW;
