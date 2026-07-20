@@ -199,10 +199,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Quick Filter Chips Bar Handlers
+    const quickFilterChips = document.querySelectorAll('.filter-chip');
+    quickFilterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const filterVal = chip.dataset.filter;
+            if (filterSelect) filterSelect.value = filterVal;
+            quickFilterChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            updateLiveVideoFilter();
+            document.querySelectorAll('.frame-slot img').forEach(img => img.className = `filter-${filterVal}`);
+            refreshPreviewBlueprint();
+        });
+    });
+
     if (filterSelect) {
         filterSelect.addEventListener('change', () => {
+            const val = filterSelect.value;
+            quickFilterChips.forEach(c => c.classList.toggle('active', c.dataset.filter === val));
             updateLiveVideoFilter();
-            document.querySelectorAll('.frame-slot img').forEach(img => img.className = `filter-${filterSelect.value}`);
+            document.querySelectorAll('.frame-slot img').forEach(img => img.className = `filter-${val}`);
             refreshPreviewBlueprint();
         });
     }

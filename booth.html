@@ -91,15 +91,24 @@
                     <video id="preview-stream" autoplay playsinline class="mirrored"></video>
                 </div>
 
+                <!-- Quick 1-Tap Filter Chips Bar -->
+                <div class="quick-filter-bar" id="quick-filter-bar">
+                    <button class="filter-chip active" data-filter="silver">🎞️ Silver B&W</button>
+                    <button class="filter-chip" data-filter="color">🎨 Color</button>
+                    <button class="filter-chip" data-filter="warm">☀️ Warm</button>
+                    <button class="filter-chip" data-filter="sepia">🌾 Sepia</button>
+                    <button class="filter-chip" data-filter="neon">⚡ Neon</button>
+                </div>
+
                 <div class="btn-row">
                     <button class="btn btn-primary" id="capture-trigger">
-                        <span>📸 START CAPTURE RUN</span>
+                        <span>📸 TAKE PHOTOS</span>
                     </button>
                     <button class="btn btn-secondary" id="retake-all-btn" style="display:none;" title="Retake All Shots">
                         🔄 RETAKE ALL
                     </button>
                     <button class="btn btn-secondary" id="cam-toggle" title="Switch Front/Rear Camera">
-                        🔄 FLIP
+                        📷 FLIP CAM
                     </button>
                     <button class="btn btn-secondary active" id="mirror-toggle" title="Toggle Mirroring">
                         🪞 MIRROR
@@ -337,13 +346,13 @@
 
                 <!-- Export, Share & Print Actions -->
                 <button class="btn btn-share" id="share-trigger" style="display:none; margin-top:16px; width:100%;">
-                    📱 SHARE PHOTO STRIP (WHATSAPP & APPS)
+                    📱 SHARE PHOTO STRIP
                 </button>
                 <button class="btn btn-gif" id="gif-trigger" style="display:none; margin-top:8px; width:100%;">
                     🎞️ EXPORT ANIMATED GIF
                 </button>
                 <button class="btn btn-success" id="export-trigger" style="display:none; margin-top:8px; width:100%;">
-                    ⬇️ DOWNLOAD HIGH-RES IMAGE
+                    ⬇️ DOWNLOAD PHOTO STRIP
                 </button>
                 <button class="btn btn-secondary" id="print-trigger" style="display:none; margin-top:8px; width:100%;">
                     🖨️ PRINT PHOTO STRIP
