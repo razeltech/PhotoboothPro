@@ -789,6 +789,14 @@ input[type="text"], input[type="file"], input[type="range"] {
 }
 .strip-wrapper.layout-grid .strip-caption { grid-column: span 2; }
 
+.strip-wrapper.layout-polaroid {
+    width: 220px;
+    padding: 16px 16px 44px 16px;
+}
+.strip-wrapper.layout-polaroid .frame-slot {
+    aspect-ratio: 1 / 1;
+}
+
 .frame-slot {
     position: relative;
     width: 100%;

@@ -3,31 +3,31 @@
  * Stitches captured canvas frames into an animated GIF motion strip
  */
 class GifEngine {
-    static async createAnimatedGif(framesArray, delayMs = 500) {
+    static async createAnimatedGif(framesArray, settings = {}, delayMs = 600) {
         if (!framesArray || framesArray.length === 0) return null;
 
-        const width = framesArray[0].width || 600;
-        const height = framesArray[0].height || 450;
+        // Build sequence of canvases representing full styled photo strip frames
+        const processedCanvases = [];
 
-        // Build composite canvas sequence with watermark stamp
-        const processedCanvases = framesArray.map(frame => {
-            const c = document.createElement('canvas');
-            c.width = width;
-            c.height = height;
-            const ctx = c.getContext('2d');
-            ctx.drawImage(frame, 0, 0, width, height);
+        // 1. Progressive Build-Up Frames (Frame 1 -> Frame 1+2 -> Frame 1+2+3 -> Full Strip)
+        for (let i = 1; i <= framesArray.length; i++) {
+            const partialFrames = framesArray.slice(0, i);
+            const framedCanvas = window.StripEngine ? window.StripEngine.buildHighResCanvas(partialFrames, settings) : null;
+            if (framedCanvas) processedCanvases.push(framedCanvas);
+        }
 
-            // Watermark overlay badge
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-            ctx.fillRect(10, height - 35, 230, 25);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText('✨ MOTION BOOTH // RAZEL TECH 🇮🇳', 15, height - 18);
+        // 2. Add complete full strip canvas at the end for hold
+        const fullCanvas = window.StripEngine ? window.StripEngine.buildHighResCanvas(framesArray, settings) : null;
+        if (fullCanvas) {
+            processedCanvases.push(fullCanvas);
+            processedCanvases.push(fullCanvas); // Hold on full frame
+        }
 
-            return c;
-        });
+        if (processedCanvases.length === 0) return null;
 
-        // Generate Data URL array representing frames animation loop
+        const width = processedCanvases[0].width;
+        const height = processedCanvases[0].height;
+
         return new Promise((resolve) => {
             let currentIdx = 0;
             const animCanvas = document.createElement('canvas');
@@ -35,7 +35,6 @@ class GifEngine {
             animCanvas.height = height;
             const animCtx = animCanvas.getContext('2d');
 
-            // Simple WebM / Animation Stream Exporter or Canvas Exporter
             if (window.MediaRecorder && animCanvas.captureStream) {
                 const stream = animCanvas.captureStream(30);
                 let mediaRecorder;
@@ -56,8 +55,9 @@ class GifEngine {
                     mediaRecorder.start();
 
                     let frameCount = 0;
-                    const maxFrames = processedCanvases.length * 4; // Loop 4 times
+                    const maxFrames = processedCanvases.length * 3; // Loop 3 cycles
                     const interval = setInterval(() => {
+                        animCtx.clearRect(0, 0, width, height);
                         animCtx.drawImage(processedCanvases[currentIdx], 0, 0);
                         currentIdx = (currentIdx + 1) % processedCanvases.length;
                         frameCount++;
@@ -71,8 +71,8 @@ class GifEngine {
                 }
             }
 
-            // Fallback: Return first frame DataURL
-            resolve(processedCanvases[0].toDataURL('image/jpeg', 0.95));
+            // Fallback: Return complete full strip canvas DataURL
+            resolve(fullCanvas ? fullCanvas.toDataURL('image/jpeg', 0.95) : null);
         });
     }
 }

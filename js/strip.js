@@ -46,8 +46,8 @@ class StripEngine {
             customBgOpacity = 1.0,
             customBgBlendMode = 'normal',
             customFilterParams = {},
-            captionText = 'IN MEMORY OF',
-            taglineText = 'POWERED BY RAZEL TECH 🇮🇳',
+            captionText = 'PHOTO STUDIO',
+            taglineText = '',
             timestampMode = 'date',
             customTimestamp = '',
             stickers = [],
@@ -67,12 +67,12 @@ class StripEngine {
         const isFilmstrip = borderTheme === 'filmstrip';
         const sideMargin = isFilmstrip ? 70 : (borderTheme === 'vintage-card' ? 28 : 36);
 
-        // High resolution target image dimensions for crisp output
-        const imgW = layout === 'grid' ? 600 : (layout === 'polaroid' ? 720 : 800);
-        const imgH = layout === 'polaroid' ? 720 : 600;
+        // Standard high-res target photo slot dimensions (4:3 for strips/grid, 1:1 square for Polaroid)
+        const imgW = layout === 'polaroid' ? 600 : 600;
+        const imgH = layout === 'polaroid' ? 600 : 450;
         const paddingTop = borderTheme === 'vintage-card' ? 32 : 40;
         const gap = borderTheme === 'vintage-card' ? 18 : 24;
-        const footerH = (captionText || taglineText || timestampMode !== 'none') ? 130 : 40;
+        const footerH = (captionText || taglineText || timestampMode !== 'none') ? (layout === 'polaroid' ? 160 : 130) : 40;
 
         let totalW = 0;
         let totalH = 0;
