@@ -638,26 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gifBtn.disabled = true;
             gifBtn.textContent = '⏳ GENERATING GIF...';
             const fname = generateFormattedFilename('webm');
-            const settings = {
-                layout: layoutSelect ? layoutSelect.value : '4',
-                filterMode: filterSelect ? filterSelect.value : 'silver',
-                grainLevel: grainSelect ? grainSelect.value : 'medium',
-                leakMode: leakSelect ? leakSelect.value : 'none',
-                borderTheme: borderSelect ? borderSelect.value : 'vintage-card',
-                customBgImage: customBgImageObj,
-                customBgScale: parseFloat(bgScaleInput ? bgScaleInput.value : 1.0) || 1.0,
-                customBgOpacity: parseFloat(bgOpacityInput ? bgOpacityInput.value : 1.0) || 1.0,
-                customBgBlendMode: bgBlendInput ? bgBlendInput.value : 'normal',
-                customFilterParams: getCustomFilterParams(),
-                captionText: captionInput ? captionInput.value : '',
-                taglineText: taglineInput ? taglineInput.value : '',
-                timestampMode: timestampSelect ? timestampSelect.value : 'date',
-                customTimestamp: customTimestampInput ? customTimestampInput.value : '',
-                stickers: activeStickers,
-                footerFont: fontSelect ? fontSelect.value : 'mono',
-                subtextFont: subfontSelect ? subfontSelect.value : 'mono'
-            };
-            const gifUrl = await GifEngine.createAnimatedGif(capturedFrames, settings, 600);
+            const gifUrl = await GifEngine.createAnimatedGif(capturedFrames, 500);
             if (gifUrl) {
                 downloadImage(gifUrl, fname);
             }
