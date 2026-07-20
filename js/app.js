@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const bgOpacityInput = document.getElementById('bg-opacity-input');
     const bgBlendInput = document.getElementById('bg-blend-input');
 
+    const customColorGroup = document.getElementById('custom-color-picker-group');
+    const customPaperColorInput = document.getElementById('custom-paper-color');
+    const customBorderColorInput = document.getElementById('custom-border-color');
+
     const stickersTray = document.getElementById('stickers-tray');
     const clearStickersBtn = document.getElementById('clear-stickers-btn');
     const stickerScaleSlider = document.getElementById('sticker-scale-slider');
@@ -157,17 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Custom Background Upload Handler
+    // Custom Background Upload & Custom Color Picker Handlers
     if (borderSelect) {
         borderSelect.addEventListener('change', () => {
-            if (borderSelect.value === 'custom') {
-                if (bgUploadGroup) bgUploadGroup.style.display = 'block';
-            } else {
-                if (bgUploadGroup) bgUploadGroup.style.display = 'none';
-            }
+            if (bgUploadGroup) bgUploadGroup.style.display = (borderSelect.value === 'custom') ? 'block' : 'none';
+            if (customColorGroup) customColorGroup.style.display = (borderSelect.value === 'custom-color') ? 'block' : 'none';
             refreshPreviewBlueprint();
         });
     }
+
+    if (customPaperColorInput) customPaperColorInput.addEventListener('input', refreshPreviewBlueprint);
+    if (customBorderColorInput) customBorderColorInput.addEventListener('input', refreshPreviewBlueprint);
+
+    if (leakSelect) leakSelect.addEventListener('change', refreshPreviewBlueprint);
+    if (grainSelect) grainSelect.addEventListener('change', refreshPreviewBlueprint);
+    if (fontSelect) fontSelect.addEventListener('change', refreshPreviewBlueprint);
+    if (subfontSelect) subfontSelect.addEventListener('change', refreshPreviewBlueprint);
 
     if (bgFileInput) {
         bgFileInput.addEventListener('change', (e) => {
@@ -246,10 +255,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const borderTheme = borderSelect ? borderSelect.value : 'vintage-card';
         const filterVal = filterSelect ? filterSelect.value : 'silver';
         const fontVal = fontSelect ? fontSelect.value : 'mono';
+        const subfontVal = subfontSelect ? subfontSelect.value : 'mono';
+        const leakVal = leakSelect ? leakSelect.value : 'none';
+
+        // Sync Light Leak overlay on live camera video viewport
+        const leakOverlayElem = document.getElementById('leak-overlay');
+        if (leakOverlayElem) {
+            leakOverlayElem.className = 'light-leak-overlay ' + (leakVal !== 'none' ? 'leak-' + leakVal : '');
+        }
 
         stripContainer.className = `strip-wrapper border-${borderTheme} layout-${layoutMode}`;
 
-        if (borderTheme === 'custom' && customBgImageObj) {
+        if (borderTheme === 'custom-color' && customPaperColorInput && customBorderColorInput) {
+            stripContainer.style.backgroundColor = customPaperColorInput.value;
+            stripContainer.style.borderColor = customBorderColorInput.value;
+            stripContainer.style.color = '#ffffff';
+            stripContainer.style.backgroundImage = 'none';
+        } else if (borderTheme === 'custom' && customBgImageObj) {
             const scale = parseFloat(bgScaleInput ? bgScaleInput.value : 1) || 1;
             const opacity = parseFloat(bgOpacityInput ? bgOpacityInput.value : 1) || 1;
             const blend = bgBlendInput ? bgBlendInput.value : 'normal';
@@ -259,10 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
             stripContainer.style.backgroundRepeat = 'repeat';
             stripContainer.style.opacity = opacity;
             stripContainer.style.backgroundBlendMode = blend;
+            stripContainer.style.backgroundColor = '';
+            stripContainer.style.borderColor = '';
         } else {
-            stripContainer.style.backgroundImage = 'none';
+            stripContainer.style.backgroundImage = '';
             stripContainer.style.opacity = '1';
             stripContainer.style.backgroundBlendMode = 'normal';
+            stripContainer.style.backgroundColor = '';
+            stripContainer.style.borderColor = '';
         }
 
         stripContainer.innerHTML = '';
@@ -327,7 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (dateStr) subLine = dateStr;
         else if (taglineVal) subLine = taglineVal;
 
-        footerNode.innerHTML = `${captionVal ? captionVal : ''}<br><span class="brand-subtext">${subLine}</span>`;
+        const subFontStack = window.StripEngine ? window.StripEngine.getFontStack(subfontVal) : 'monospace';
+        footerNode.innerHTML = `${captionVal ? captionVal : ''}<br><span class="brand-subtext" style="font-family:${subFontStack}">${subLine}</span>`;
         stripContainer.appendChild(footerNode);
 
         if (statusBadge) {
@@ -608,7 +635,9 @@ document.addEventListener('DOMContentLoaded', () => {
             customTimestamp: customTimestampInput ? customTimestampInput.value : '',
             stickers: activeStickers,
             footerFont: fontSelect ? fontSelect.value : 'mono',
-            subtextFont: subfontSelect ? subfontSelect.value : 'mono'
+            subtextFont: subfontSelect ? subfontSelect.value : 'mono',
+            customPaperColor: customPaperColorInput ? customPaperColorInput.value : '#e2d9cc',
+            customBorderColor: customBorderColorInput ? customBorderColorInput.value : '#b8ac9c'
         });
     }
 

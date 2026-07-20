@@ -87,6 +87,7 @@
 
                 <div class="video-viewport">
                     <div class="flash-overlay" id="flash"></div>
+                    <div class="light-leak-overlay" id="leak-overlay"></div>
                     <div class="countdown-overlay" id="countdown">3</div>
                     <video id="preview-stream" autoplay playsinline class="mirrored"></video>
                 </div>
@@ -239,8 +240,24 @@
                             <option value="retro">Vintage Mustard Yellow</option>
                             <option value="pink">Soft Bubblegum Pink</option>
                             <option value="neon">Cyber Electric Blue</option>
+                            <option value="custom-color">🎨 Custom Color Palette...</option>
                             <option value="custom">📁 Custom Image Upload...</option>
                         </select>
+                    </div>
+
+                    <!-- Custom Paper & Frame Edge Color Picker Group -->
+                    <div class="control-group" id="custom-color-picker-group" style="display:none; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; margin-bottom:14px;">
+                        <label style="color:var(--accent-gold); font-size:0.7rem;">🎨 CUSTOM PAPER & FRAME EDGE COLOR</label>
+                        <div style="display:flex; gap:12px; align-items:center; margin-top:6px;">
+                            <div style="flex:1;">
+                                <label style="font-size:0.65rem;">Paper Base Color</label>
+                                <input type="color" id="custom-paper-color" value="#e2d9cc" style="height:36px; padding:2px; cursor:pointer; width:100%;">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:0.65rem;">Frame Border Color</label>
+                                <input type="color" id="custom-border-color" value="#b8ac9c" style="height:36px; padding:2px; cursor:pointer; width:100%;">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Custom Background Upload, Opacity & Blend Mode -->

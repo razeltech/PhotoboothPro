@@ -3,7 +3,15 @@
  * Supports 100% custom non-hardcoded captions, taglines, timestamp formatting, and typography fonts
  */
 class StripEngine {
-    static getBorderColor(borderKey) {
+    static getBorderColor(borderKey, customPaperHex, customBorderHex) {
+        if (borderKey === 'custom-color') {
+            return {
+                bg: customPaperHex || '#e2d9cc',
+                text: '#ffffff',
+                border: customBorderHex || '#b8ac9c',
+                subtext: 'rgba(255,255,255,0.8)'
+            };
+        }
         switch (borderKey) {
             case 'vintage-card': return { bg: '#e2d9cc', text: '#2a2421', border: '#b8ac9c', subtext: 'rgba(42,36,33,0.7)' };
             case 'dark': return { bg: '#18181b', text: '#ffffff', border: '#3f3f46', subtext: 'rgba(255,255,255,0.6)' };
@@ -52,13 +60,15 @@ class StripEngine {
             customTimestamp = '',
             stickers = [],
             footerFont = 'mono',
-            subtextFont = 'mono'
+            subtextFont = 'mono',
+            customPaperColor = '#e2d9cc',
+            customBorderColor = '#b8ac9c'
         } = settings;
 
         const count = framesArray.length;
         if (count === 0) return null;
 
-        const colors = this.getBorderColor(borderTheme);
+        const colors = this.getBorderColor(borderTheme, customPaperColor, customBorderColor);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = true;
