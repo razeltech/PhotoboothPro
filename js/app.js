@@ -243,6 +243,30 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    function getStripSettings() {
+        return {
+            layout: layoutSelect ? layoutSelect.value : '4',
+            filterMode: filterSelect ? filterSelect.value : 'silver',
+            grainLevel: grainSelect ? grainSelect.value : 'medium',
+            leakMode: leakSelect ? leakSelect.value : 'none',
+            borderTheme: borderSelect ? borderSelect.value : 'vintage-card',
+            customBgImage: customBgImageObj,
+            customBgScale: parseFloat(bgScaleInput ? bgScaleInput.value : 1.0) || 1.0,
+            customBgOpacity: parseFloat(bgOpacityInput ? bgOpacityInput.value : 1.0) || 1.0,
+            customBgBlendMode: bgBlendInput ? bgBlendInput.value : 'normal',
+            customFilterParams: getCustomFilterParams(),
+            captionText: captionInput ? captionInput.value : '',
+            taglineText: taglineInput ? taglineInput.value : '',
+            timestampMode: timestampSelect ? timestampSelect.value : 'date',
+            customTimestamp: customTimestampInput ? customTimestampInput.value : '',
+            stickers: activeStickers,
+            footerFont: fontSelect ? fontSelect.value : 'mono',
+            subtextFont: subfontSelect ? subfontSelect.value : 'mono',
+            customPaperColor: customPaperColorInput ? customPaperColorInput.value : '#e2d9cc',
+            customBorderColor: customBorderColorInput ? customBorderColorInput.value : '#b8ac9c'
+        };
+    }
+
     // Blueprint Layout Refresh Engine
     function refreshPreviewBlueprint() {
         if (!stripContainer || !layoutSelect) return;
@@ -262,6 +286,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const leakOverlayElem = document.getElementById('leak-overlay');
         if (leakOverlayElem) {
             leakOverlayElem.className = 'light-leak-overlay ' + (leakVal !== 'none' ? 'leak-' + leakVal : '');
+        }
+
+        // If photos are captured, render exact pixel-perfect compiled canvas in Live Preview!
+        if (capturedFrames.length > 0 && window.StripEngine) {
+            const liveCanvas = StripEngine.buildHighResCanvas(capturedFrames, getStripSettings());
+            if (liveCanvas) {
+                stripContainer.innerHTML = '';
+                stripContainer.className = `strip-wrapper border-${borderTheme} layout-${layoutMode}`;
+                stripContainer.style.backgroundImage = 'none';
+                stripContainer.style.opacity = '1';
+
+                const liveImg = document.createElement('img');
+                liveImg.src = liveCanvas.toDataURL('image/png');
+                liveImg.style.width = '100%';
+                liveImg.style.borderRadius = '6px';
+                liveImg.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+                stripContainer.appendChild(liveImg);
+
+                if (statusBadge) {
+                    if (capturedFrames.length < targetCount) {
+                        statusBadge.textContent = `⚡ Shot ${capturedFrames.length}/${targetCount} Taken`;
+                        statusBadge.className = 'status-badge shooting';
+                    } else {
+                        statusBadge.textContent = '🎉 Strip Complete!';
+                        statusBadge.className = 'status-badge complete';
+                    }
+                }
+                return;
+            }
         }
 
         stripContainer.className = `strip-wrapper border-${borderTheme} layout-${layoutMode}`;
@@ -685,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gifBtn.disabled = true;
             gifBtn.textContent = '⏳ GENERATING GIF...';
             const fname = generateFormattedFilename('webm');
-            const gifUrl = await GifEngine.createAnimatedGif(capturedFrames, 500);
+            const gifUrl = await GifEngine.createAnimatedGif(capturedFrames, getStripSettings(), 600);
             if (gifUrl) {
                 downloadImage(gifUrl, fname);
             }

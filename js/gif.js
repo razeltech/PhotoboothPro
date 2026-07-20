@@ -3,48 +3,67 @@
  * Stitches captured canvas frames into an animated GIF motion strip
  */
 class GifEngine {
-    static async createAnimatedGif(framesArray, delayMs = 500) {
+    static async createAnimatedGif(framesArray, settings = {}, delayMs = 500) {
         if (!framesArray || framesArray.length === 0) return null;
 
-        // Upgrade motion resolution to High Definition 1280x960 (4:3 HD ratio)
-        const width = 1280;
-        const height = 960;
+        // Build sequence of canvases representing full styled photo strip frames
+        const processedCanvases = [];
 
-        // Build composite canvas sequence with HD quality rendering
-        const processedCanvases = framesArray.map(frame => {
-            const c = document.createElement('canvas');
-            c.width = width;
-            c.height = height;
-            const ctx = c.getContext('2d');
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-
-            // Smart cover-crop to fit 1280x960 HD frame without stretching
-            const srcW = frame.width;
-            const srcH = frame.height;
-            const srcAspect = srcW / srcH;
-            const targetAspect = width / height;
-
-            let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
-            if (srcAspect > targetAspect) {
-                cropW = srcH * targetAspect;
-                cropX = (srcW - cropW) / 2;
-            } else {
-                cropH = srcW / targetAspect;
-                cropY = (srcH - cropH) / 2;
+        if (window.StripEngine) {
+            // 1. Progressive Build-Up Frames (Frame 1 -> Frame 1+2 -> Frame 1+2+3 -> Full Strip)
+            for (let i = 1; i <= framesArray.length; i++) {
+                const partialFrames = framesArray.slice(0, i);
+                const framedCanvas = window.StripEngine.buildHighResCanvas(partialFrames, settings);
+                if (framedCanvas) processedCanvases.push(framedCanvas);
             }
 
-            ctx.drawImage(frame, cropX, cropY, cropW, cropH, 0, 0, width, height);
+            // 2. Add complete full strip canvas at the end for hold
+            const fullCanvas = window.StripEngine.buildHighResCanvas(framesArray, settings);
+            if (fullCanvas) {
+                processedCanvases.push(fullCanvas);
+                processedCanvases.push(fullCanvas); // Hold on full frame
+            }
+        }
 
-            // Clean badge overlay
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.fillRect(20, height - 50, 320, 36);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 16px sans-serif';
-            ctx.fillText('✨ MOTION BOOTH // 35MM REEL', 30, height - 26);
+        // Fallback to raw HD motion frames if StripEngine build yielded empty
+        if (processedCanvases.length === 0) {
+            const width = 1280;
+            const height = 960;
+            framesArray.forEach(frame => {
+                const c = document.createElement('canvas');
+                c.width = width;
+                c.height = height;
+                const ctx = c.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
 
-            return c;
-        });
+                const srcW = frame.width;
+                const srcH = frame.height;
+                const srcAspect = srcW / srcH;
+                const targetAspect = width / height;
+
+                let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
+                if (srcAspect > targetAspect) {
+                    cropW = srcH * targetAspect;
+                    cropX = (srcW - cropW) / 2;
+                } else {
+                    cropH = srcW / targetAspect;
+                    cropY = (srcH - cropH) / 2;
+                }
+
+                ctx.drawImage(frame, cropX, cropY, cropW, cropH, 0, 0, width, height);
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(20, height - 50, 320, 36);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.fillText('✨ MOTION BOOTH // 35MM REEL', 30, height - 26);
+                processedCanvases.push(c);
+            });
+        }
+
+        const width = processedCanvases[0].width;
+        const height = processedCanvases[0].height;
 
         // Generate Data URL / Blob array representing HD motion loop
         return new Promise((resolve) => {
