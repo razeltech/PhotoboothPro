@@ -25,22 +25,28 @@ Built with zero framework build dependencies using native **Vanilla HTML5, CSS3,
 - 📲 **Native Progressive Web App (PWA)**:
   - Installable on iOS (Safari), Android (Chrome), and Desktop as a standalone native app (`manifest.json` + `sw.js`).
   - Includes a sleek floating **Bottom Install Banner Popup** for 1-tap mobile home screen installation.
+- 🎛️ **Quick 1-Tap 3-Column Filter Grid**:
+  - Adjustable grid below camera stream for instant 1-tap filter switching (**Silver B&W**, **Polaroid SX-70**, **Instax Color**, **Kodachrome**, **Sepia**, **35mm Color**).
+- 📷 **Authentic Polaroid i-Type Proportions**:
+  - Exact `3.5 × 4.2 in` print specifications with 1:1 square photo slot area and `0.9 in` bottom handwriting chin.
+- 🎨 **Custom Color Palette Picker**:
+  - Pick custom background paper colors and frame border edge colors with live real-time preview sync.
 - 📱 **Native Web Share API File Integration**:
   - One-tap direct sharing to **WhatsApp, Instagram Stories, Telegram, Photos, or Messages** using native OS share sheets (`ShareEngine.shareCanvasFile()`).
-- 🎞️ **Animated GIF Motion Export**:
-  - Export your captured photo frames into a looping **Animated GIF / WebM Motion Clip** for social media (`GifEngine.createAnimatedGif()`).
+- ⌨️ **Keyboard Accessibility Shortcuts**:
+  - Press **`Spacebar`** to trigger shutter, **`Delete`/`Backspace`** to remove sticker props, and **`Escape`** to deselect.
 - 👆 **Auto Countdown vs Manual Shutter Toggle**:
   - Switch between automatic timer countdown loops or manual click-to-shoot shutter mode per photo.
 - 🔄 **Individual Frame Retake & Retake All**:
   - Hover over any captured photo slot to click **`🔄 Retake`** and re-capture *just that single photo* without re-taking the entire strip!
 - 🎬 **Real-Time Live Viewfinder Shaders**:
   - Live webcam stream displays selected filters in real-time before taking photos:
-    - **🎞️ Silver Gelatin Vintage B&W** (Matching authentic photobooth prints)
-    - **1970s Warm Kodachrome**
-    - **Vintage Sepia Nostalgia**
-    - **Cyberpunk Neon Pop**
-    - **Emerald Cool Emulsion**
-    - **Vibrant 35mm Color**
+    - **🎞️ Silver Gelatin Vintage B&W** (Authentic photobooth print)
+    - **📸 Polaroid SX-70 Instant Film**
+    - **🌸 Fujifilm Instax Color**
+    - **☀️ 1970s Warm Kodachrome**
+    - **🌾 Vintage Sepia Nostalgia**
+    - **🎨 Vibrant 35mm Color**
 - 🎛️ **Custom Filter Tuning Sliders**:
   - Real-time controls for Exposure / Brightness, Contrast Intensity, Warmth / Sepia Tint, and Color Saturation.
 - 🖼️ **Paper Stock & Custom Background Uploads**:

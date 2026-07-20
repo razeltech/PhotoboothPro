@@ -632,7 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
         layoutSelect.disabled = false;
         if (exportBtn) exportBtn.style.display = 'block';
         if (shareBtn) shareBtn.style.display = 'block';
-        if (gifBtn) gifBtn.style.display = 'block';
+        // if (gifBtn) gifBtn.style.display = 'block'; // Hidden for Phase 2
         if (printBtn) printBtn.style.display = 'block';
         if (retakeAllBtn) retakeAllBtn.style.display = 'inline-flex';
 
