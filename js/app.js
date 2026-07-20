@@ -699,5 +699,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Keyboard Accessibility & Kiosk UX Shortcuts
+    document.addEventListener('keydown', (e) => {
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (activeTag === 'INPUT' || activeTag === 'SELECT' || activeTag === 'TEXTAREA') return;
+
+        if (e.code === 'Space') {
+            e.preventDefault();
+            if (triggerBtn && !triggerBtn.disabled) triggerBtn.click();
+        } else if ((e.code === 'Delete' || e.code === 'Backspace') && selectedStickerIndex >= 0) {
+            e.preventDefault();
+            activeStickers.splice(selectedStickerIndex, 1);
+            selectedStickerIndex = -1;
+            refreshPreviewBlueprint();
+        } else if (e.code === 'Escape') {
+            selectedStickerIndex = -1;
+            refreshPreviewBlueprint();
+        }
+    });
+
     refreshPreviewBlueprint();
 });
