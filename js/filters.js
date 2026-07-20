@@ -48,6 +48,18 @@ class FilterEngine {
                     b = Math.min(255, tb);
                     break;
 
+                case 'polaroid': // Polaroid SX-70 Instant Film (Warm amber highlights, cyan shadows)
+                    r = Math.min(255, (r * 1.10) + 18);
+                    g = Math.min(255, (g * 0.98) + 8);
+                    b = Math.min(255, (b * 0.88) + 24);
+                    break;
+
+                case 'fuji': // Fujifilm Instax Color (Vibrant crisp teal/magenta tone)
+                    r = Math.min(255, (r * 1.05) + 6);
+                    g = Math.min(255, (g * 1.02) + 10);
+                    b = Math.min(255, (b * 1.12) + 16);
+                    break;
+
                 case 'warm': // 35mm Warm Kodachrome
                     r = Math.min(255, (r * 1.08) + 12);
                     g = Math.min(255, (g * 0.96) + 4);
