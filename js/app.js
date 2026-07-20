@@ -268,6 +268,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const mobileJumpBtn = document.getElementById('mobile-jump-btn');
+    const newStripBtn = document.getElementById('new-strip-btn');
+    const newStripPaneBtn = document.getElementById('new-strip-pane-btn');
+
+    function resetPhotoboothSession() {
+        capturedFrames = [];
+        if (triggerBtn) {
+            triggerBtn.style.display = 'inline-flex';
+            triggerBtn.disabled = false;
+        }
+        if (newStripBtn) newStripBtn.style.display = 'none';
+        if (newStripPaneBtn) newStripPaneBtn.style.display = 'none';
+        if (exportBtn) exportBtn.style.display = 'none';
+        if (shareBtn) shareBtn.style.display = 'none';
+        if (printBtn) printBtn.style.display = 'none';
+        if (retakeAllBtn) retakeAllBtn.style.display = 'none';
+
+        refreshPreviewBlueprint();
+
+        const videoViewport = document.querySelector('.video-viewport');
+        if (videoViewport) {
+            videoViewport.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    if (newStripBtn) newStripBtn.addEventListener('click', resetPhotoboothSession);
+    if (newStripPaneBtn) newStripPaneBtn.addEventListener('click', resetPhotoboothSession);
 
     if (mobileJumpBtn) {
         mobileJumpBtn.addEventListener('click', () => {
@@ -296,6 +322,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const leakOverlayElem = document.getElementById('leak-overlay');
         if (leakOverlayElem) {
             leakOverlayElem.className = 'light-leak-overlay ' + (leakVal !== 'none' ? 'leak-' + leakVal : '');
+        }
+
+        if (capturedFrames.length === 0) {
+            if (triggerBtn) triggerBtn.style.display = 'inline-flex';
+            if (newStripBtn) newStripBtn.style.display = 'none';
+            if (newStripPaneBtn) newStripPaneBtn.style.display = 'none';
         }
 
         if (mobileJumpBtn) {
@@ -644,6 +676,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         triggerBtn.disabled = false;
         layoutSelect.disabled = false;
+
+        if (triggerBtn) triggerBtn.style.display = 'none';
+        if (newStripBtn) newStripBtn.style.display = 'inline-flex';
+        if (newStripPaneBtn) newStripPaneBtn.style.display = 'block';
+
         if (exportBtn) exportBtn.style.display = 'block';
         if (shareBtn) shareBtn.style.display = 'block';
         // if (gifBtn) gifBtn.style.display = 'block'; // Hidden for Phase 2
