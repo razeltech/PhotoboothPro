@@ -65,7 +65,6 @@ class StripEngine {
         ctx.imageSmoothingQuality = 'high';
 
         const isFilmstrip = borderTheme === 'filmstrip';
-        const sideMargin = isFilmstrip ? 70 : (borderTheme === 'vintage-card' ? 28 : 36);
 
         // Standard high-res target photo slot dimensions (4:3 for strips/grid, 1:1 square for Polaroid)
         const imgW = layout === 'polaroid' ? 620 : 600;
