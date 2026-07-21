@@ -145,6 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePoseTrackerUI(capturedFrames.length, reqCount);
         }
 
+        if (activeStep === 3) {
+            renderCustomizePreview();
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -247,6 +251,86 @@ document.addEventListener('DOMContentLoaded', () => {
     if (startSessionBtn) {
         startSessionBtn.addEventListener('click', () => {
             goToStep(2);
+        });
+    }
+
+    /**
+     * Step 3: Customize Studio Handlers (60 FPS RAF Sliders, Auto Enhance, Presets & Preview)
+     */
+    const customizeFilterChips = document.querySelectorAll('#customize-filter-bar .filter-chip');
+    const autoEnhanceBtn = document.getElementById('btn-auto-enhance');
+    const btnBackToCapture = document.getElementById('btn-back-to-capture');
+    const btnProceedToFinish = document.getElementById('btn-proceed-to-finish');
+    const previewContainerElem = document.getElementById('render-strip-preview');
+
+    let rafId = null;
+
+    function renderCustomizePreview() {
+        const targetContainer = document.getElementById('render-strip-preview') || stripContainer;
+        if (targetContainer) {
+            refreshPreviewBlueprint();
+        }
+    }
+
+    function scheduleRAFUpdate() {
+        DigiSmileSession.export.dirty = true;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            refreshPreviewBlueprint();
+        });
+    }
+
+    customizeFilterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const filterVal = chip.getAttribute('data-filter') || 'silver';
+            DigiSmileSession.selectedPreset = filterVal;
+            DigiSmileSession.export.dirty = true;
+
+            customizeFilterChips.forEach(c => c.classList.toggle('active', c === chip));
+
+            if (filterSelect) {
+                filterSelect.value = filterVal;
+            }
+
+            refreshPreviewBlueprint();
+        });
+    });
+
+    if (autoEnhanceBtn) {
+        autoEnhanceBtn.addEventListener('click', () => {
+            DigiSmileSession.adjustments.brightness = 10;
+            DigiSmileSession.adjustments.contrast = 15;
+            DigiSmileSession.adjustments.warmth = 5;
+            DigiSmileSession.adjustments.saturation = 115;
+            DigiSmileSession.autoEnhanced = true;
+
+            if (brightnessSlider) brightnessSlider.value = 10;
+            if (contrastSlider) contrastSlider.value = 15;
+            if (warmthSlider) warmthSlider.value = 5;
+            if (saturationSlider) saturationSlider.value = 115;
+
+            const valB = document.getElementById('val-brightness');
+            const valC = document.getElementById('val-contrast');
+            const valW = document.getElementById('val-warmth');
+            const valS = document.getElementById('val-saturation');
+            if (valB) valB.textContent = '+10';
+            if (valC) valC.textContent = '+15';
+            if (valW) valW.textContent = '+5';
+            if (valS) valS.textContent = '115%';
+
+            scheduleRAFUpdate();
+        });
+    }
+
+    if (btnBackToCapture) {
+        btnBackToCapture.addEventListener('click', () => {
+            goToStep(2);
+        });
+    }
+
+    if (btnProceedToFinish) {
+        btnProceedToFinish.addEventListener('click', () => {
+            goToStep(4);
         });
     }
 
@@ -447,12 +531,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgOpacityInput) bgOpacityInput.addEventListener('input', refreshPreviewBlueprint);
     if (bgBlendInput) bgBlendInput.addEventListener('change', refreshPreviewBlueprint);
 
-    // Filter Custom Sliders Input Events
+    // Filter Custom Sliders Input Events (60 FPS RAF Throttling)
     [brightnessSlider, contrastSlider, warmthSlider, saturationSlider].forEach(slider => {
         if (slider) {
             slider.addEventListener('input', () => {
+                const b = brightnessSlider ? parseInt(brightnessSlider.value) : 0;
+                const c = contrastSlider ? parseInt(contrastSlider.value) : 0;
+                const w = warmthSlider ? parseInt(warmthSlider.value) : 0;
+                const s = saturationSlider ? parseInt(saturationSlider.value) : 100;
+
+                DigiSmileSession.adjustments.brightness = b;
+                DigiSmileSession.adjustments.contrast = c;
+                DigiSmileSession.adjustments.warmth = w;
+                DigiSmileSession.adjustments.saturation = s;
+
+                const valB = document.getElementById('val-brightness');
+                const valC = document.getElementById('val-contrast');
+                const valW = document.getElementById('val-warmth');
+                const valS = document.getElementById('val-saturation');
+                if (valB) valB.textContent = b > 0 ? `+${b}` : b;
+                if (valC) valC.textContent = c > 0 ? `+${c}` : c;
+                if (valW) valW.textContent = w > 0 ? `+${w}` : w;
+                if (valS) valS.textContent = `${s}%`;
+
                 updateLiveVideoFilter();
-                refreshPreviewBlueprint();
+                scheduleRAFUpdate();
             });
         }
     });

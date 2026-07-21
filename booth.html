@@ -556,15 +556,136 @@
             </div>
         </div>
 
-        <!-- Step 3 View: Customize (Placeholder shell for Task 5) -->
+        <!-- Step 3 View: Customize & Stylize Studio -->
         <div class="step-view" id="step-customize">
-            <div class="app-card" style="text-align:center; padding: 40px;">
-                <h2 style="margin-bottom:8px;">🎨 Step 3: Stylize & Customize Studio</h2>
-                <p style="color:var(--text-muted); margin-bottom:20px;">Dominant live preview & 60 FPS filter sliders workspace shell ready for Task 5.</p>
-                <div class="btn-group" style="display:flex; justify-center; gap:12px;">
-                    <button class="btn btn-secondary" onclick="window.DigiSmileNav.previousStep()">← BACK TO CAPTURE</button>
-                    <button class="btn btn-primary" onclick="window.DigiSmileNav.nextStep()">PROCEED TO FINISH →</button>
+            <div class="app-card customize-card">
+                
+                <!-- Hero 65% Live Preview Box -->
+                <div class="customize-preview-section">
+                    <label class="customize-section-title">✨ Live Finished Strip Preview</label>
+                    <div class="customize-preview-container">
+                        <div class="strip-wrapper border-vintage-card" id="render-strip-preview"></div>
+                    </div>
                 </div>
+
+                <!-- 1-Tap Film Emulsion Presets & Auto Enhance Bar -->
+                <div class="customize-presets-section">
+                    <div class="presets-header-row">
+                        <label>🎬 Film Emulsion Filter Presets</label>
+                        <button class="btn btn-auto-enhance" id="btn-auto-enhance" title="1-Tap Auto Color & Exposure Vibrancy Boost">
+                            ✨ Auto Enhance
+                        </button>
+                    </div>
+                    <div class="quick-filter-bar customize-filter-bar" id="customize-filter-bar">
+                        <button class="filter-chip active" data-filter="silver">🎞️ Silver B&W</button>
+                        <button class="filter-chip" data-filter="polaroid">📸 Polaroid</button>
+                        <button class="filter-chip" data-filter="fuji">🌸 Instax</button>
+                        <button class="filter-chip" data-filter="warm">☀️ Kodachrome</button>
+                        <button class="filter-chip" data-filter="sepia">🌾 Sepia</button>
+                        <button class="filter-chip" data-filter="color">🎨 35mm Color</button>
+                        <button class="filter-chip" data-filter="neon">⚡ Cyber Neon</button>
+                        <button class="filter-chip" data-filter="cool">💎 Emerald Cool</button>
+                    </div>
+                </div>
+
+                <!-- Collapsible Advanced Fine-Tuning Accordion -->
+                <details class="advanced-tuning-accordion" id="advanced-tuning-accordion">
+                    <summary class="advanced-summary">
+                        <span>🎛️ Advanced Fine-Tuning (Sliders, Grain & Light Leaks)</span>
+                        <span class="accordion-arrow">▼</span>
+                    </summary>
+                    <div class="advanced-tuning-body">
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Exposure / Brightness</label>
+                                <span class="slider-val" id="val-brightness">0</span>
+                            </div>
+                            <input type="range" id="filter-brightness" min="-50" max="50" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Contrast Intensity</label>
+                                <span class="slider-val" id="val-contrast">0</span>
+                            </div>
+                            <input type="range" id="filter-contrast" min="-50" max="50" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Warmth / Sepia Tint</label>
+                                <span class="slider-val" id="val-warmth">0</span>
+                            </div>
+                            <input type="range" id="filter-warmth" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Color Saturation</label>
+                                <span class="slider-val" id="val-saturation">100</span>
+                            </div>
+                            <input type="range" id="filter-saturation" min="0" max="200" value="100">
+                        </div>
+
+                        <div class="control-group" style="margin-top: 10px;">
+                            <label>🎞️ Film Grain ISO Intensity</label>
+                            <select id="setting-grain">
+                                <option value="none">None (Clean Digital)</option>
+                                <option value="light">Fine Grain (ISO 100)</option>
+                                <option value="medium" selected>Medium Grain (ISO 400)</option>
+                                <option value="heavy">Coarse Heavy Grain (ISO 1600)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group" style="margin-top: 10px;">
+                            <label>☀️ Light Leak Flare Shader</label>
+                            <select id="setting-leak">
+                                <option value="none" selected>None (Clean Negative)</option>
+                                <option value="subtle">Subtle Side Flare</option>
+                                <option value="dramatic">Dramatic Retro Burn Flare</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Captions & Draggable Props Section -->
+                <div class="captions-props-section">
+                    <div class="control-group">
+                        <label>✍️ Custom Top Title / Caption</label>
+                        <input type="text" id="setting-text" value="DIGISMILE STUDIO" placeholder="Type caption..." maxlength="36">
+                    </div>
+
+                    <div class="control-group">
+                        <label>🏷️ Custom Bottom Tagline / Subtitle</label>
+                        <input type="text" id="setting-tagline" value="" placeholder="Type subtitle (optional)..." maxlength="44">
+                    </div>
+
+                    <div class="control-group">
+                        <label>👑 Draggable Sticker Props</label>
+                        <div class="stickers-tray" id="stickers-tray">
+                            <button class="sticker-btn" data-emoji="👑" title="Add Crown">👑</button>
+                            <button class="sticker-btn" data-emoji="😎" title="Add Sunglasses">😎</button>
+                            <button class="sticker-btn" data-emoji="❤️" title="Add Heart">❤️</button>
+                            <button class="sticker-btn" data-emoji="✨" title="Add Sparkles">✨</button>
+                            <button class="sticker-btn" data-emoji="⭐" title="Add Star">⭐</button>
+                            <button class="sticker-btn" data-emoji="🥳" title="Add Party">🥳</button>
+                            <button class="sticker-btn" data-emoji="🎀" title="Add Ribbon">🎀</button>
+                            <button class="sticker-btn" data-emoji="🌺" title="Add Flower">🌺</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action CTA Row -->
+                <div class="customize-actions-row">
+                    <button class="btn btn-secondary" id="btn-back-to-capture">
+                        ← BACK TO CAPTURE
+                    </button>
+                    <button class="btn btn-primary btn-proceed-finish" id="btn-proceed-to-finish">
+                        <span>PROCEED TO FINISH</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+
             </div>
         </div>
 
