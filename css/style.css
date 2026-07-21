@@ -536,6 +536,54 @@ h1, h2, h3, h4 {
     animation: btsPulse 1.5s infinite ease-in-out;
 }
 
+.countdown-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: clamp(1.8rem, 8vw, 4rem) !important;
+    font-weight: 900 !important;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 35px rgba(225, 29, 72, 0.8);
+    z-index: 50;
+    pointer-events: none;
+    text-align: center;
+    padding: 12px;
+    line-height: 1.1;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.countdown-overlay.show {
+    display: flex;
+}
+
+.capture-viewport video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block;
+}
+
+.capture-viewport.aspect-4-3 {
+    aspect-ratio: 4 / 3 !important;
+    max-height: 480px;
+}
+
+.capture-viewport.aspect-16-9 {
+    aspect-ratio: 16 / 9 !important;
+    max-height: 420px;
+}
+
+.capture-viewport.aspect-1-1 {
+    aspect-ratio: 1 / 1 !important;
+    max-width: 420px;
+    max-height: 420px;
+}
+
 .capture-settings-accordion {
     background: var(--control-bg);
     border: 1px solid var(--panel-border);

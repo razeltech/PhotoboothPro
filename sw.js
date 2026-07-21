@@ -2,7 +2,7 @@
  * Razel Tech Photo Booth Pro - Service Worker
  * Enables offline capability and PWA standalone app execution
  */
-const CACHE_NAME = 'photobooth-pro-v1';
+const CACHE_NAME = 'digismile-studio-v3.2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -44,13 +44,21 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+    // Network-First with Cache Fallback for instant updates
     e.respondWith(
-        caches.match(e.request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-            return fetch(e.request).catch(() => {
-                // Fallback for document navigation when offline
+        fetch(e.request).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200 && e.request.method === 'GET') {
+                const responseClone = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(e.request, responseClone);
+                });
+            }
+            return networkResponse;
+        }).catch(() => {
+            return caches.match(e.request).then((cachedResponse) => {
+                if (cachedResponse) return cachedResponse;
                 if (e.request.mode === 'navigate') {
-                    return caches.match('./index.html');
+                    return caches.match('./booth.html') || caches.match('./index.html');
                 }
             });
         })

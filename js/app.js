@@ -1533,9 +1533,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.warn('Cache purge error during hardRefreshApp:', err);
         } finally {
-            window.location.reload();
+            window.location.reload(true);
         }
     }
+
+    window.hardRefreshApp = hardRefreshApp;
 
     const btnPwaUpdate = document.getElementById('btn-pwa-update');
     const mobileBtnPwaUpdate = document.getElementById('mobile-btn-pwa-update');
