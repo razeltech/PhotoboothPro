@@ -51,6 +51,107 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let DigiSmileSession = createInitialSession();
 
+    /**
+     * DigiSmile Wizard Navigation Engine (Task 2 Framework API)
+     */
+    const STEP_NAMES = {
+        1: 'start',
+        2: 'capture',
+        3: 'customize',
+        4: 'finish'
+    };
+
+    const STEP_NUMBERS = {
+        'start': 1,
+        'capture': 2,
+        'customize': 3,
+        'finish': 4
+    };
+
+    function canTransitionToStep(targetStep) {
+        if (targetStep < 1 || targetStep > 4) return false;
+        // Validation hooks ready for future step rules
+        return true;
+    }
+
+    function updateStepperUI(activeStep) {
+        const stepItems = document.querySelectorAll('.step-item');
+        stepItems.forEach(item => {
+            const stepNum = parseInt(item.getAttribute('data-step')) || 1;
+            item.classList.remove('active', 'completed', 'upcoming');
+            if (stepNum === activeStep) {
+                item.classList.add('active');
+            } else if (stepNum < activeStep) {
+                item.classList.add('completed');
+            } else {
+                item.classList.add('upcoming');
+            }
+        });
+    }
+
+    function renderCurrentStepView(activeStep) {
+        const stepViews = document.querySelectorAll('.step-view');
+        stepViews.forEach(view => {
+            view.classList.remove('active');
+        });
+
+        const targetViewId = `step-${STEP_NAMES[activeStep] || 'start'}`;
+        const activeView = document.getElementById(targetViewId);
+        if (activeView) {
+            activeView.classList.add('active');
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goToStep(targetStep, updateHash = true) {
+        let targetNum = typeof targetStep === 'number' ? targetStep : (STEP_NUMBERS[targetStep] || 1);
+        if (!canTransitionToStep(targetNum)) return false;
+
+        DigiSmileSession.currentStep = targetNum;
+        updateStepperUI(targetNum);
+        renderCurrentStepView(targetNum);
+
+        if (updateHash) {
+            const hashName = STEP_NAMES[targetNum] || 'start';
+            if (window.location.hash !== `#${hashName}`) {
+                history.pushState(null, '', `#${hashName}`);
+            }
+        }
+        return true;
+    }
+
+    function nextStep() {
+        return goToStep(DigiSmileSession.currentStep + 1);
+    }
+
+    function previousStep() {
+        return goToStep(DigiSmileSession.currentStep - 1);
+    }
+
+    function syncStepFromHash() {
+        const hash = window.location.hash.replace('#', '');
+        const stepNum = STEP_NUMBERS[hash] || 1;
+        goToStep(stepNum, false);
+    }
+
+    window.addEventListener('hashchange', syncStepFromHash);
+
+    document.querySelectorAll('.step-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const stepNum = parseInt(item.getAttribute('data-step')) || 1;
+            goToStep(stepNum);
+        });
+    });
+
+    window.DigiSmileNav = {
+        goToStep,
+        nextStep,
+        previousStep,
+        canTransitionToStep,
+        getCurrentStep: () => DigiSmileSession.currentStep
+    };
+
     const camera = new CameraController('preview-stream');
     let capturedFrames = [];
     let sessionStripsHistory = [];

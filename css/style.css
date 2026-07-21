@@ -72,6 +72,113 @@ h1, h2, h3, h4 {
     z-index: 200;
 }
 
+/* Stepper Navigation Bar System */
+.stepper-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 24px auto;
+    padding: 0 10px;
+}
+
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 16px 24px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+}
+
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.step-item {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.step-node {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #12141c;
+    border: 2px solid var(--panel-border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.step-item.active .step-node {
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-pink));
+    border-color: var(--accent-pink);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(225, 29, 72, 0.6);
+    transform: scale(1.1);
+}
+
+.step-item.active .step-label {
+    color: var(--text-primary);
+}
+
+.step-item.completed .step-node {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+}
+
+.step-item.completed .step-label {
+    color: #10b981;
+}
+
+/* Wizard Shell & Step View Transitions */
+.wizard-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.step-view {
+    display: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.step-view.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .brand-container {
     display: flex;
     align-items: center;

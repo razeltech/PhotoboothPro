@@ -76,8 +76,33 @@
         </div>
     </header>
 
-    <!-- Main Studio Workspace -->
-    <main class="studio-layout">
+    <!-- Stepper Navigation Header -->
+    <div class="stepper-wrapper" id="stepper-wrapper">
+        <div class="stepper" id="stepper">
+            <div class="step-item active" data-step="1" id="st1">
+                <div class="step-node">1</div>
+                <div class="step-label">Start</div>
+            </div>
+            <div class="step-item upcoming" data-step="2" id="st2">
+                <div class="step-node">2</div>
+                <div class="step-label">Capture</div>
+            </div>
+            <div class="step-item upcoming" data-step="3" id="st3">
+                <div class="step-node">3</div>
+                <div class="step-label">Customize</div>
+            </div>
+            <div class="step-item upcoming" data-step="4" id="st4">
+                <div class="step-node">4</div>
+                <div class="step-label">Finish</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Studio Wizard Shell -->
+    <main class="wizard-container" id="wizard">
+        <!-- Step 1 View: Start (Contains existing layout for non-breaking Task 2 framework) -->
+        <div class="step-view active" id="step-start">
+            <div class="studio-layout">
 
         <!-- Left Column: Camera Viewport & Capture Run -->
         <div class="workspace">
@@ -398,6 +423,44 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                     <span>PRINT PHOTO STRIP</span>
                 </button>
+            </div>
+        </div>
+        </div>
+        <!-- End Step 1 View: Start -->
+
+        <!-- Step 2 View: Capture (Placeholder shell for Task 4) -->
+        <div class="step-view" id="step-capture">
+            <div class="app-card" style="text-align:center; padding: 40px;">
+                <h2 style="margin-bottom:8px;">📸 Step 2: Pose & Capture Studio</h2>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Camera capture workspace shell ready for Task 4.</p>
+                <div class="btn-group" style="display:flex; justify-center; gap:12px;">
+                    <button class="btn btn-secondary" onclick="window.DigiSmileNav.previousStep()">← BACK TO START</button>
+                    <button class="btn btn-primary" onclick="window.DigiSmileNav.nextStep()">PROCEED TO CUSTOMIZE →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 View: Customize (Placeholder shell for Task 5) -->
+        <div class="step-view" id="step-customize">
+            <div class="app-card" style="text-align:center; padding: 40px;">
+                <h2 style="margin-bottom:8px;">🎨 Step 3: Stylize & Customize Studio</h2>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Dominant live preview & 60 FPS filter sliders workspace shell ready for Task 5.</p>
+                <div class="btn-group" style="display:flex; justify-center; gap:12px;">
+                    <button class="btn btn-secondary" onclick="window.DigiSmileNav.previousStep()">← BACK TO CAPTURE</button>
+                    <button class="btn btn-primary" onclick="window.DigiSmileNav.nextStep()">PROCEED TO FINISH →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4 View: Finish (Placeholder shell for Task 6) -->
+        <div class="step-view" id="step-finish">
+            <div class="app-card" style="text-align:center; padding: 40px;">
+                <h2 style="margin-bottom:8px;">🎉 Step 4: Finish & Export Studio</h2>
+                <p style="color:var(--text-muted); margin-bottom:20px;">High-res export, download, share & print workspace shell ready for Task 6.</p>
+                <div class="btn-group" style="display:flex; justify-center; gap:12px;">
+                    <button class="btn btn-secondary" onclick="window.DigiSmileNav.previousStep()">← BACK TO CUSTOMIZE</button>
+                    <button class="btn btn-primary" onclick="window.DigiSmileNav.goToStep(1)">START NEW SESSION 🔄</button>
+                </div>
             </div>
         </div>
 
