@@ -2,7 +2,7 @@
  * Razel Tech Photo Booth Pro - Service Worker
  * Enables offline capability and PWA standalone app execution
  */
-const CACHE_NAME = 'digismile-studio-v3.8';
+const CACHE_NAME = 'digismile-studio-v3.9';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
