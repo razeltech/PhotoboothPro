@@ -212,43 +212,45 @@
             </div>
         </div>
 
-        <!-- Step 2 View: Capture (Contains camera workspace) -->
+        <!-- Step 2 View: Capture (Camera Viewfinder & Shot Flow) -->
         <div class="step-view" id="step-capture">
-            <div class="studio-layout">
+            <div class="app-card capture-card">
+                
+                <!-- Pose Tracker Dots Header -->
+                <div class="pose-tracker-header">
+                    <div class="pose-tracker" id="pose-tracker">
+                        <!-- Dynamic Pose Dots rendered via JS -->
+                        <div class="pose-dot active">1</div>
+                        <div class="pose-dot">2</div>
+                        <div class="pose-dot">3</div>
+                        <div class="pose-dot">4</div>
+                    </div>
+                    <!-- Shot Status Indicator Badge -->
+                    <div class="status-badge ready" id="status-badge">📸 Ready to Shoot</div>
+                </div>
 
-        <!-- Left Column: Camera Viewport & Capture Run -->
-        <div class="workspace">
-            <div class="app-card">
-                <!-- Shot Status Indicator Badge -->
-                <div class="status-badge ready" id="status-badge">📸 Ready to Shoot</div>
-
-                <div class="video-viewport">
+                <!-- Camera Viewfinder Viewport -->
+                <div class="video-viewport capture-viewport">
+                    <div class="camera-guide-overlay">
+                        <span>ALIGN FACE HERE</span>
+                    </div>
                     <div class="flash-overlay" id="flash"></div>
                     <div class="light-leak-overlay" id="leak-overlay"></div>
                     <div class="countdown-overlay" id="countdown">3</div>
                     <video id="preview-stream" autoplay playsinline class="mirrored"></video>
                 </div>
 
-                <!-- Quick 1-Tap Filter Chips Grid -->
-                <div class="quick-filter-bar" id="quick-filter-bar">
-                    <button class="filter-chip active" data-filter="silver">🎞️ Silver B&W</button>
-                    <button class="filter-chip" data-filter="polaroid">📸 Polaroid</button>
-                    <button class="filter-chip" data-filter="fuji">🌸 Instax</button>
-                    <button class="filter-chip" data-filter="warm">☀️ Kodachrome</button>
-                    <button class="filter-chip" data-filter="sepia">🌾 Sepia</button>
-                    <button class="filter-chip" data-filter="color">🎨 35mm Color</button>
-                </div>
-
-                <div class="btn-row">
-                    <button class="btn btn-primary" id="capture-trigger">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        <span>TAKE PHOTOS</span>
+                <!-- Main Shutter & Retake Controls -->
+                <div class="btn-row capture-btn-row">
+                    <button class="btn btn-primary btn-shutter-main" id="capture-trigger">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <span>START SHOOTING</span>
                     </button>
-                    <button class="btn btn-primary" id="new-strip-btn" style="display:none;" title="Start Fresh New Photo Strip">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        <span>NEW STRIP</span>
+                    <button class="btn btn-secondary" id="retake-last-btn" style="display:none;" title="Retake Last Photo Only">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        <span>RETAKE LAST</span>
                     </button>
-                    <button class="btn btn-secondary" id="retake-all-btn" style="display:none;" title="Retake All Shots">
+                    <button class="btn btn-secondary" id="retake-all-btn" style="display:none;" title="Clear All & Restart Session">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
                         <span>RETAKE ALL</span>
                     </button>
@@ -262,11 +264,13 @@
                     </button>
                 </div>
 
-                <!-- Mobile & Tablet Quick Jump to Preview Button -->
-                <button class="btn btn-mobile-jump" id="mobile-jump-btn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-                    <span>VIEW FINISHED STRIP</span>
-                </button>
+                <!-- Secondary Back Button -->
+                <div class="capture-nav-row" style="margin-top: 14px; text-align:center;">
+                    <button class="btn btn-secondary" id="btn-back-to-start" style="font-size:0.8rem; padding:8px 16px;">
+                        ← CHANGE LAYOUT / BACK
+                    </button>
+                </div>
+
             </div>
 
             <!-- Session History Thumbnails -->

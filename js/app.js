@@ -68,10 +68,46 @@ document.addEventListener('DOMContentLoaded', () => {
         'finish': 4
     };
 
+    function getRequiredPhotosCount(layoutVal) {
+        const l = layoutVal || DigiSmileSession.layout || '4';
+        if (l === 'polaroid' || l === '1') return 1;
+        if (l === '2') return 2;
+        if (l === '3') return 3;
+        if (l === '5') return 5;
+        return 4; // '4' and 'grid'
+    }
+
     function canTransitionToStep(targetStep) {
         if (targetStep < 1 || targetStep > 4) return false;
-        // Validation hooks ready for future step rules
+        if (targetStep === 3 || targetStep === 4) {
+            const required = getRequiredPhotosCount(DigiSmileSession.layout);
+            if (capturedFrames.length < required) {
+                alert(`Please take all ${required} photos before proceeding to Customize!`);
+                return false;
+            }
+        }
         return true;
+    }
+
+    function updatePoseTrackerUI(currentIdx, totalCount) {
+        const trackerEl = document.getElementById('pose-tracker');
+        if (!trackerEl) return;
+        trackerEl.innerHTML = '';
+
+        for (let i = 0; i < totalCount; i++) {
+            const dot = document.createElement('div');
+            if (i < currentIdx) {
+                dot.className = 'pose-dot done';
+                dot.textContent = '✓';
+            } else if (i === currentIdx) {
+                dot.className = 'pose-dot active';
+                dot.textContent = (i + 1);
+            } else {
+                dot.className = 'pose-dot';
+                dot.textContent = (i + 1);
+            }
+            trackerEl.appendChild(dot);
+        }
     }
 
     function updateStepperUI(activeStep) {
@@ -99,6 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeView = document.getElementById(targetViewId);
         if (activeView) {
             activeView.classList.add('active');
+        }
+
+        if (activeStep === 2) {
+            if (camera && typeof camera.startStream === 'function') {
+                camera.startStream();
+            }
+            const reqCount = getRequiredPhotosCount(DigiSmileSession.layout);
+            updatePoseTrackerUI(capturedFrames.length, reqCount);
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -786,64 +830,79 @@ document.addEventListener('DOMContentLoaded', () => {
         saveToSessionHistory();
     }
 
+    const retakeLastBtn = document.getElementById('retake-last-btn');
+    const btnBackToStart = document.getElementById('btn-back-to-start');
+
+    if (btnBackToStart) {
+        btnBackToStart.addEventListener('click', () => {
+            goToStep(1);
+        });
+    }
+
+    if (retakeLastBtn) {
+        retakeLastBtn.addEventListener('click', () => {
+            if (capturedFrames.length > 0) {
+                capturedFrames.pop();
+                DigiSmileSession.capturedFrames = capturedFrames;
+                DigiSmileSession.export.dirty = true;
+                const reqCount = getRequiredPhotosCount(DigiSmileSession.layout);
+                updatePoseTrackerUI(capturedFrames.length, reqCount);
+                if (statusBadge) {
+                    statusBadge.textContent = `⚡ Shot ${capturedFrames.length}/${reqCount} Taken`;
+                    statusBadge.className = 'status-badge shooting';
+                }
+                if (capturedFrames.length === 0) {
+                    if (retakeLastBtn) retakeLastBtn.style.display = 'none';
+                    if (retakeAllBtn) retakeAllBtn.style.display = 'none';
+                    if (statusBadge) {
+                        statusBadge.textContent = '📸 Ready to Shoot';
+                        statusBadge.className = 'status-badge ready';
+                    }
+                }
+            }
+        });
+    }
+
+    if (retakeAllBtn) {
+        retakeAllBtn.addEventListener('click', () => {
+            capturedFrames = [];
+            DigiSmileSession.capturedFrames = [];
+            DigiSmileSession.export.dirty = true;
+            const reqCount = getRequiredPhotosCount(DigiSmileSession.layout);
+            updatePoseTrackerUI(0, reqCount);
+            if (retakeLastBtn) retakeLastBtn.style.display = 'none';
+            if (retakeAllBtn) retakeAllBtn.style.display = 'none';
+            if (triggerBtn) {
+                triggerBtn.style.display = 'inline-flex';
+                triggerBtn.disabled = false;
+            }
+            if (statusBadge) {
+                statusBadge.textContent = '📸 Ready to Shoot';
+                statusBadge.className = 'status-badge ready';
+            }
+        });
+    }
+
     async function runCaptureSequence() {
-        if (!layoutSelect || !triggerBtn) return;
+        if (!triggerBtn) return;
 
-        const layoutMode = layoutSelect.value;
-        let targetCount = parseInt(layoutMode) || 4;
-        if (layoutMode === 'grid') targetCount = 4;
-        if (layoutMode === 'polaroid' || layoutMode === '1') targetCount = 1;
-
+        const targetCount = getRequiredPhotosCount(DigiSmileSession.layout);
         const timerDelay = parseInt(timerSelect ? timerSelect.value : 3) || 3;
 
-        if (captureMode === 'manual') {
-            if (capturedFrames.length >= targetCount) {
-                capturedFrames = [];
-            }
-
-            const step = capturedFrames.length;
-
-            let countdown = timerDelay;
-            if (countdownOverlay) {
-                countdownOverlay.style.display = 'flex';
-                countdownOverlay.textContent = countdown;
-            }
-
-            while (countdown > 0) {
-                await new Promise(r => setTimeout(r, 1000));
-                countdown--;
-                if (countdown > 0 && countdownOverlay) countdownOverlay.textContent = countdown;
-            }
-
-            if (countdownOverlay) countdownOverlay.style.display = 'none';
-
-            if (flashOverlay) flashOverlay.classList.add('active');
-            window.shutterAudio.playShutterSound();
-            if (flashOverlay) setTimeout(() => flashOverlay.classList.remove('active'), 120);
-
-            const frameCanvas = camera.captureFrameToCanvas();
-            capturedFrames[step] = frameCanvas;
-
-            refreshPreviewBlueprint();
-
-            if (capturedFrames.length === targetCount) {
-                saveToSessionHistory();
-            }
-            return;
-        }
-
         triggerBtn.disabled = true;
-        layoutSelect.disabled = true;
-        if (exportBtn) exportBtn.style.display = 'none';
-        if (shareBtn) shareBtn.style.display = 'none';
-        if (gifBtn) gifBtn.style.display = 'none';
-        if (printBtn) printBtn.style.display = 'none';
+        if (retakeLastBtn) retakeLastBtn.style.display = 'none';
         if (retakeAllBtn) retakeAllBtn.style.display = 'none';
-        capturedFrames = [];
 
-        refreshPreviewBlueprint();
+        const startIdx = capturedFrames.length;
 
-        for (let step = 0; step < targetCount; step++) {
+        for (let step = startIdx; step < targetCount; step++) {
+            updatePoseTrackerUI(step, targetCount);
+
+            if (statusBadge) {
+                statusBadge.textContent = `📸 Get Ready for Shot ${step + 1}/${targetCount}`;
+                statusBadge.className = 'status-badge shooting';
+            }
+
             let countdown = timerDelay;
             if (countdownOverlay) {
                 countdownOverlay.style.display = 'flex';
@@ -856,41 +915,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (countdown > 0 && countdownOverlay) countdownOverlay.textContent = countdown;
             }
 
+            if (countdownOverlay) countdownOverlay.textContent = 'SMILE! 📸';
+            await new Promise(r => setTimeout(r, 300));
             if (countdownOverlay) countdownOverlay.style.display = 'none';
 
             if (flashOverlay) flashOverlay.classList.add('active');
-            window.shutterAudio.playShutterSound();
+            if (window.shutterAudio) window.shutterAudio.playShutterSound();
+            if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
             if (flashOverlay) setTimeout(() => flashOverlay.classList.remove('active'), 120);
 
             const frameCanvas = camera.captureFrameToCanvas();
             capturedFrames[step] = frameCanvas;
 
-            const slot = document.getElementById(`slot-${step}`);
-            if (slot) {
-                const img = slot.querySelector('img');
-                img.src = frameCanvas.toDataURL('image/jpeg');
-                slot.classList.add('filled');
+            updatePoseTrackerUI(step + 1, targetCount);
+
+            if (retakeLastBtn) retakeLastBtn.style.display = 'inline-flex';
+            if (retakeAllBtn) retakeAllBtn.style.display = 'inline-flex';
+
+            // Brief 1.2s pause between shots for comfortable pose reset
+            if (step < targetCount - 1) {
+                if (statusBadge) {
+                    statusBadge.textContent = `✓ Shot ${step + 1} Taken! Reset Pose...`;
+                    statusBadge.className = 'status-badge shooting';
+                }
+                await new Promise(r => setTimeout(r, 1200));
             }
-
-            refreshPreviewBlueprint();
-
-            await new Promise(r => setTimeout(r, 600));
         }
 
         triggerBtn.disabled = false;
-        layoutSelect.disabled = false;
+        DigiSmileSession.capturedFrames = capturedFrames;
+        DigiSmileSession.export.dirty = true;
 
-        if (triggerBtn) triggerBtn.style.display = 'none';
-        if (newStripBtn) newStripBtn.style.display = 'inline-flex';
-        if (newStripPaneBtn) newStripPaneBtn.style.display = 'block';
+        if (statusBadge) {
+            statusBadge.textContent = '🎉 All Photos Captured!';
+            statusBadge.className = 'status-badge complete';
+        }
 
-        if (exportBtn) exportBtn.style.display = 'block';
-        if (shareBtn) shareBtn.style.display = 'block';
-        // if (gifBtn) gifBtn.style.display = 'block'; // Hidden for Phase 2
-        if (printBtn) printBtn.style.display = 'block';
-        if (retakeAllBtn) retakeAllBtn.style.display = 'inline-flex';
+        await new Promise(r => setTimeout(r, 800));
 
-        saveToSessionHistory();
+        // Auto-advance to Step 3: Customize!
+        goToStep(3);
     }
 
     function saveToSessionHistory() {
