@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>DigiSmile Studio App 📸 | Capture Every Smile, Print Every Memory</title>
+    <meta name="title" content="DigiSmile Studio App 📸 | Capture Every Smile, Print Every Memory">
+    <meta name="description" content="Launch DigiSmile Photobooth Studio! Shoot HD webcam photos, apply vintage film emulsion filters, custom background uploads & draggable stickers. Direct WhatsApp sharing & PWA installable.">
+    <meta name="robots" content="index, follow">
+
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff334b">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://razeltech.github.io/PhotoboothPro/booth.html">
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://razeltech.github.io/PhotoboothPro/booth.html">
+    <meta property="og:title" content="DigiSmile Studio App 📸">
+    <meta property="og:description" content="Shoot HD webcam photos with film emulsion filters, single photo retakes, custom background uploads & draggable stickers. Direct WhatsApp sharing & PWA installable.">
+    <meta property="og:image" content="https://razeltech.github.io/PhotoboothPro/assets/logo.png">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://razeltech.github.io/PhotoboothPro/booth.html">
+    <meta name="twitter:title" content="DigiSmile Studio App 📸">
+    <meta name="twitter:description" content="Shoot HD webcam photos with film filters, custom backgrounds & draggable stickers.">
+    <meta name="twitter:image" content="https://razeltech.github.io/PhotoboothPro/assets/logo.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- App Header Navbar -->
+    <header class="app-navbar">
+        <a href="index.html" class="brand-container" title="DigiSmile Studio Pro">
+            <img src="assets/logo.png" alt="DigiSmile Studio Logo">
+            <span class="brand-title">DIGISMILE STUDIO</span>
+        </a>
+        
+        <!-- Desktop Nav Links -->
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="booth.html" class="nav-link active">📸 Studio App</a>
+            <!-- Version Switcher Pill -->
+            <div class="version-switcher-pill">
+                <a href="booth_v1.html" class="ver-badge">← v1 Classic</a>
+                <span class="ver-badge active">v2 Wizard</span>
+            </div>
+            <button class="btn-pwa pwa-install-btn" style="display:none;" title="Install DigiSmile App on Phone/Desktop">
+                📲 INSTALL APP
+            </button>
+            <button class="btn-pwa-update" id="btn-pwa-update" title="Hard-Refresh PWA & Purge Cache">
+                🔄 Update
+            </button>
+            <a href="index.html" class="btn-launch" title="Back to Home Page">
+                🏠 Home Page
+            </a>
+        </nav>
+
+        <!-- Mobile Hamburger Button -->
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Mobile Slide-Down Menu Drawer -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="index.html" class="nav-link">🏠 Home Page</a>
+            <a href="booth.html" class="nav-link active">📸 DigiSmile Studio App</a>
+            <button class="btn-pwa pwa-install-btn" style="display:none; text-align:center;">
+                📲 Install App on Phone
+            </button>
+            <button class="btn-pwa-update mobile-pwa-update" id="mobile-btn-pwa-update" style="text-align:center;">
+                🔄 Update App (Purge Cache)
+            </button>
+        </div>
+    </header>
+
+    <!-- Stepper Navigation Header -->
+    <div class="stepper-wrapper" id="stepper-wrapper">
+        <div class="stepper" id="stepper">
+            <div class="step-item active" data-step="1" id="st1">
+                <div class="step-node">1</div>
+                <div class="step-label">Start</div>
+            </div>
+            <div class="step-item upcoming" data-step="2" id="st2">
+                <div class="step-node">2</div>
+                <div class="step-label">Capture</div>
+            </div>
+            <div class="step-item upcoming" data-step="3" id="st3">
+                <div class="step-node">3</div>
+                <div class="step-label">Customize</div>
+            </div>
+            <div class="step-item upcoming" data-step="4" id="st4">
+                <div class="step-node">4</div>
+                <div class="step-label">Finish</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Studio Wizard Shell -->
+    <main class="wizard-container" id="wizard">
+        <!-- Step 1 View: Start (Configure Session & Layout Selection) -->
+        <div class="step-view active" id="step-start">
+            <div class="app-card start-card">
+                <!-- Compact Hero Header -->
+                <div class="start-hero">
+                    <h1 class="hero-brand">DIGISMILE <span class="accent-dot">.</span></h1>
+                    <p class="hero-tagline">Capture Every Smile, Print Every Memory</p>
+                </div>
+
+                <!-- Section Header -->
+                <div class="section-title-row">
+                    <h2>📐 Choose Your Layout Template</h2>
+                    <p>Select a photo grid format to configure your photoshoot</p>
+                </div>
+
+                <!-- Template Selection Cards Grid -->
+                <div class="template-cards-grid" role="radiogroup" aria-label="Layout Template Selection">
+                    
+                    <!-- 4-Pic Classic Strip (Default) -->
+                    <div class="layout-card selected" data-layout="4" tabindex="0" role="radio" aria-checked="true" title="4 Photos Classic Vertical Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-4">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Classic Photo Strip</h3>
+                        <p class="card-meta">4 Photos • 2×6 in Print</p>
+                        <div class="card-time-badge">⏱️ ~45 seconds</div>
+                    </div>
+
+                    <!-- Single Photo Card -->
+                    <div class="layout-card" data-layout="1" tabindex="0" role="radio" aria-checked="false" title="1 Photo Single Frame Portrait">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-1">
+                                <span></span>
+                            </div>
+                        </div>
+                        <h3>Single Photo Card</h3>
+                        <p class="card-meta">1 Photo • 4×5 in Print</p>
+                        <div class="card-time-badge">⏱️ ~15 seconds</div>
+                    </div>
+
+                    <!-- Single Polaroid Card -->
+                    <div class="layout-card" data-layout="polaroid" tabindex="0" role="radio" aria-checked="false" title="Single Hero Polaroid Photo Frame">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-polaroid">
+                                <span></span>
+                            </div>
+                        </div>
+                        <h3>Vintage Polaroid</h3>
+                        <p class="card-meta">1 Hero Photo • 3.5×4.2 in</p>
+                        <div class="card-time-badge">⏱️ ~15 seconds</div>
+                    </div>
+
+                    <!-- Duo Mini Strip -->
+                    <div class="layout-card" data-layout="2" tabindex="0" role="radio" aria-checked="false" title="2 Photos Mini Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-2">
+                                <span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Duo Mini-Strip</h3>
+                        <p class="card-meta">2 Photos • 2×4 in Print</p>
+                        <div class="card-time-badge">⏱️ ~25 seconds</div>
+                    </div>
+
+                    <!-- Trio Midi Strip -->
+                    <div class="layout-card" data-layout="3" tabindex="0" role="radio" aria-checked="false" title="3 Photos Midi Vertical Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-3">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Trio Midi-Strip</h3>
+                        <p class="card-meta">3 Photos • 2×5 in Print</p>
+                        <div class="card-time-badge">⏱️ ~35 seconds</div>
+                    </div>
+
+                    <!-- 2x2 Postcard Grid -->
+                    <div class="layout-card" data-layout="grid" tabindex="0" role="radio" aria-checked="false" title="4 Photos Postcard Grid Card">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-grid-2x2">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Postcard 2x2 Grid</h3>
+                        <p class="card-meta">4 Photos • 4×6 in Postcard</p>
+                        <div class="card-time-badge">⏱️ ~45 seconds</div>
+                    </div>
+
+                    <!-- 5-Pic Mega Strip -->
+                    <div class="layout-card" data-layout="5" tabindex="0" role="radio" aria-checked="false" title="5 Photos Mega Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-5">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Mega Photo Strip</h3>
+                        <p class="card-meta">5 Photos • 2×7.5 in Print</p>
+                        <div class="card-time-badge">⏱️ ~60 seconds</div>
+                    </div>
+
+                </div>
+
+                <!-- Paper Stock Quick Option -->
+                <div class="quick-paper-row">
+                    <div class="quick-paper-group">
+                        <label for="step1-paper-select">🖼️ Paper Stock Theme</label>
+                        <select id="step1-paper-select" class="custom-select-styled">
+                            <option value="vintage-card" selected>🎞️ Vintage Cardstock (Classic)</option>
+                            <option value="classic">Classic Matte Off-White</option>
+                            <option value="dark">Minimalist Charcoal Dark</option>
+                            <option value="birthday">🎂 Birthday Party Confetti</option>
+                            <option value="valentine">💖 Valentine Hearts</option>
+                            <option value="filmstrip">🎞️ 35mm Film Strip Perforations</option>
+                            <option value="custom-color">🎨 Custom Color Palette...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Primary CTA -->
+                <div class="start-cta-row">
+                    <button class="btn btn-hero-cta" id="btn-start-session">
+                        <span>📸 BEGIN SESSION</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Step 2 View: Capture (Camera Viewfinder & Shot Flow) -->
+        <div class="step-view" id="step-capture">
+            <div class="app-card capture-card">
+                
+                <!-- Top Header Row: Back Link on Left, Webcam Device Dropdown on Right -->
+                <div class="capture-top-bar">
+                    <button class="btn-back-link" id="btn-back-to-start">
+                        ← Change Layout
+                    </button>
+                    <div class="camera-device-picker">
+                        <select id="setting-camera-device" class="select-camera-device" aria-label="Select Camera Device">
+                            <option value="">Detecting Webcams...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Camera Viewfinder Viewport with Overlay Controls -->
+                <div class="video-viewport capture-viewport" id="capture-viewport">
+                    <!-- Functional overlays only — no decorative clutter -->
+                    <div class="bts-recording-badge" id="bts-recording-badge" style="display:none;">🔴 BTS</div>
+                    <div class="status-badge ready" id="status-badge">📸 Ready</div>
+                    <div class="flash-overlay" id="flash"></div>
+                    <div class="light-leak-overlay" id="leak-overlay"></div>
+                    <div class="countdown-overlay" id="countdown">3</div>
+
+                    <video id="preview-stream" autoplay playsinline class="mirrored"></video>
+
+                    <!-- Viewfinder Bottom Right Floating Circle Actions -->
+                    <div class="viewfinder-floating-actions">
+                        <button class="circle-action-btn" id="cam-toggle" title="Switch Front/Rear Camera">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0-4.4-3.6-8-8-8s-8 3.6-8 8h-3l4 4 4-4h-3c0-3.3 2.7-6 6-6s6 2.7 6 6h-3l4 4 4-4h-3z"/></svg>
+                        </button>
+                        <button class="circle-action-btn active" id="mirror-toggle" title="Toggle Mirroring">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M16 7l4 4-4 4"/><path d="M8 7L4 11l4 4"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Collapsible Settings Controls Accordion (Below Viewfinder) -->
+                <details class="capture-settings-accordion">
+                    <summary class="capture-settings-summary">
+                        <span>🎛️ Camera Settings &amp; Pose Timer Options</span>
+                        <span class="accordion-arrow">▼</span>
+                    </summary>
+                    <div class="capture-settings-card">
+
+                        <!-- Row 0: Camera Controls — Flip + Mirror as wide pill buttons -->
+                        <div class="capture-cam-actions-row">
+                            <button class="cam-action-pill" id="cam-toggle-pill" title="Switch Front/Rear Camera">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0-4.4-3.6-8-8-8s-8 3.6-8 8h-3l4 4 4-4h-3c0-3.3 2.7-6 6-6s6 2.7 6 6h-3l4 4 4-4h-3z"/></svg>
+                                Flip Camera
+                            </button>
+                            <button class="cam-action-pill active" id="mirror-toggle-pill" title="Toggle Mirror">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M16 7l4 4-4 4"/><path d="M8 7L4 11l4 4"/></svg>
+                                Mirror On
+                            </button>
+                        </div>
+
+                        <!-- Row 1: Quick Film Filter Presets -->
+                        <div class="capture-filter-row">
+                            <label class="settings-row-label">🎞️ Quick Filter Preset</label>
+                            <div class="quick-filter-bar capture-filter-chips" id="capture-filter-bar">
+                                <button class="filter-chip active" data-filter="silver">◼ Silver B&amp;W</button>
+                                <button class="filter-chip" data-filter="polaroid">📷 Polaroid</button>
+                                <button class="filter-chip" data-filter="fuji">🌿 Instax</button>
+                                <button class="filter-chip" data-filter="warm">☀ Kodachrome</button>
+                                <button class="filter-chip" data-filter="sepia">🎞 Sepia</button>
+                                <button class="filter-chip" data-filter="color">🎨 35mm Color</button>
+                                <button class="filter-chip" data-filter="neon">⚡ Neon</button>
+                                <button class="filter-chip" data-filter="cool">🍃 Emerald Cool</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-grid-2col">
+
+                            <!-- Col 1: Toggles -->
+                            <div class="settings-col">
+                                <div class="toggle-control-item">
+                                    <div class="toggle-info">
+                                        <label>Screen Flash Overlay</label>
+                                        <span>Flashes screen white during capture</span>
+                                    </div>
+                                    <label class="switch-toggle">
+                                        <input type="checkbox" id="toggle-flash-switch" checked>
+                                        <span class="slider-round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-control-item">
+                                    <div class="toggle-info">
+                                        <label>Record Behind-The-Scenes Video</label>
+                                        <span>Generates a live MP4 timelapse of your poses</span>
+                                    </div>
+                                    <label class="switch-toggle">
+                                        <input type="checkbox" id="toggle-bts-switch" checked>
+                                        <span class="slider-round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-control-item">
+                                    <div class="toggle-info">
+                                        <label>Audio Shutter Sound</label>
+                                        <span>Play vintage shutter beeps &amp; clicks</span>
+                                    </div>
+                                    <button class="audio-toggle-btn active" id="toggle-audio-btn" title="Toggle Audio Shutter Sound">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Col 2: Pill Selectors -->
+                            <div class="settings-col">
+                                <div class="pill-select-item">
+                                    <div class="pill-info">
+                                        <label>Timer Delay</label>
+                                        <span>Seconds between pose captures</span>
+                                    </div>
+                                    <div class="pill-options" id="pill-timer-group">
+                                        <button class="pill-btn active" data-val="3">3s</button>
+                                        <button class="pill-btn" data-val="5">5s</button>
+                                        <button class="pill-btn" data-val="10">10s</button>
+                                    </div>
+                                </div>
+
+                                <div class="pill-select-item">
+                                    <div class="pill-info">
+                                        <label>Camera Aspect Ratio</label>
+                                        <span>Capture resolution format</span>
+                                    </div>
+                                    <div class="pill-options" id="pill-aspect-group">
+                                        <button class="pill-btn active" data-val="4:3">4:3</button>
+                                        <button class="pill-btn" data-val="16:9">16:9</button>
+                                        <button class="pill-btn" data-val="1:1">1:1</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Primary Action CTA Button (Full Width) -->
+                <div class="capture-cta-row">
+                    <button class="btn btn-primary btn-start-capture-main" id="capture-trigger">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <span>START CAPTURE SESSION</span>
+                    </button>
+                    <button class="btn btn-secondary" id="retake-last-btn" style="display:none;" title="Retake Last Photo Only">
+                        <span>🔄 RETAKE LAST</span>
+                    </button>
+                    <button class="btn btn-secondary" id="retake-all-btn" style="display:none;" title="Clear All & Restart Session">
+                        <span>🔄 RETAKE ALL</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Step 3 View: Customize & Stylize Studio -->
+        <div class="step-view" id="step-customize">
+            <div class="app-card customize-card">
+                
+                <!-- Hero 65% Live Preview Box -->
+                <div class="customize-preview-section">
+                    <label class="customize-section-title">✨ Live Finished Strip Preview</label>
+                    <div class="customize-preview-container">
+                        <div class="strip-wrapper border-vintage-card" id="render-strip-preview"></div>
+                    </div>
+                </div>
+
+                <!-- 1-Tap Film Emulsion Presets Bar -->
+                <div class="customize-presets-section">
+                    <div class="presets-header-row">
+                        <label>🎬 Film Emulsion Filter Presets</label>
+                    </div>
+                    <div class="quick-filter-bar customize-filter-bar" id="customize-filter-bar">
+                        <button class="filter-chip active" data-filter="silver">🎞️ Silver B&W</button>
+                        <button class="filter-chip" data-filter="polaroid">📸 Polaroid</button>
+                        <button class="filter-chip" data-filter="fuji">🌸 Instax</button>
+                        <button class="filter-chip" data-filter="warm">☀️ Kodachrome</button>
+                        <button class="filter-chip" data-filter="sepia">🌾 Sepia</button>
+                        <button class="filter-chip" data-filter="color">🎨 35mm Color</button>
+                        <button class="filter-chip" data-filter="neon">⚡ Cyber Neon</button>
+                        <button class="filter-chip" data-filter="cool">💎 Emerald Cool</button>
+                    </div>
+                </div>
+
+                <!-- Collapsible Advanced Fine-Tuning Accordion -->
+                <details class="advanced-tuning-accordion" id="advanced-tuning-accordion">
+                    <summary class="advanced-summary">
+                        <span>🎛️ Advanced Fine-Tuning (Sliders, Grain & Light Leaks)</span>
+                        <span class="accordion-arrow">▼</span>
+                    </summary>
+                    <div class="advanced-tuning-body">
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Exposure / Brightness</label>
+                                <span class="slider-val" id="val-brightness">0</span>
+                            </div>
+                            <input type="range" id="filter-brightness" min="-50" max="50" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Contrast Intensity</label>
+                                <span class="slider-val" id="val-contrast">0</span>
+                            </div>
+                            <input type="range" id="filter-contrast" min="-50" max="50" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Warmth / Sepia Tint</label>
+                                <span class="slider-val" id="val-warmth">0</span>
+                            </div>
+                            <input type="range" id="filter-warmth" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <label>Color Saturation</label>
+                                <span class="slider-val" id="val-saturation">100</span>
+                            </div>
+                            <input type="range" id="filter-saturation" min="0" max="200" value="100">
+                        </div>
+
+                        <div class="control-group" style="margin-top: 10px;">
+                            <label>🎞️ Film Grain ISO Intensity</label>
+                            <select id="setting-grain">
+                                <option value="none">None (Clean Digital)</option>
+                                <option value="light">Fine Grain (ISO 100)</option>
+                                <option value="medium" selected>Medium Grain (ISO 400)</option>
+                                <option value="heavy">Coarse Heavy Grain (ISO 1600)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group" style="margin-top: 10px;">
+                            <label>☀️ Light Leak Flare Shader</label>
+                            <select id="setting-leak">
+                                <option value="none" selected>None (Clean Negative)</option>
+                                <option value="subtle">Subtle Side Flare</option>
+                                <option value="dramatic">Dramatic Retro Burn Flare</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Captions & Draggable Props Section -->
+                <div class="captions-props-section">
+                    <div class="control-group">
+                        <label>✍️ Custom Top Title / Caption</label>
+                        <input type="text" id="setting-text" value="DIGISMILE STUDIO" placeholder="Type caption..." maxlength="36">
+                    </div>
+
+                    <div class="control-group">
+                        <label>🏷️ Custom Bottom Tagline / Subtitle</label>
+                        <input type="text" id="setting-tagline" value="" placeholder="Type subtitle (optional)..." maxlength="44">
+                    </div>
+
+                    <div class="control-group">
+                        <label>👑 Draggable Sticker Props</label>
+                        <div class="stickers-tray" id="stickers-tray">
+                            <button class="sticker-btn" data-emoji="👑" title="Add Crown">👑</button>
+                            <button class="sticker-btn" data-emoji="😎" title="Add Sunglasses">😎</button>
+                            <button class="sticker-btn" data-emoji="❤️" title="Add Heart">❤️</button>
+                            <button class="sticker-btn" data-emoji="✨" title="Add Sparkles">✨</button>
+                            <button class="sticker-btn" data-emoji="⭐" title="Add Star">⭐</button>
+                            <button class="sticker-btn" data-emoji="🥳" title="Add Party">🥳</button>
+                            <button class="sticker-btn" data-emoji="🎀" title="Add Ribbon">🎀</button>
+                            <button class="sticker-btn" data-emoji="🌺" title="Add Flower">🌺</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action CTA Row -->
+                <div class="customize-actions-row">
+                    <button class="btn btn-secondary" id="btn-back-to-capture">
+                        ← BACK TO CAPTURE
+                    </button>
+                    <button class="btn btn-primary btn-proceed-finish" id="btn-proceed-to-finish">
+                        <span>PROCEED TO FINISH</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Step 4 View: Finish & Export Studio -->
+        <div class="step-view" id="step-finish">
+            <div class="app-card finish-card">
+                
+                <!-- Celebratory Entrance Header -->
+                <div class="finish-header">
+                    <div class="celebrate-badge">🎉 PHOTOS READY FOR PRINT & SHARE!</div>
+                    <h2>High-Resolution Memory Created</h2>
+                    <p>Your photo strip is rendered in high resolution for printing and sharing.</p>
+                </div>
+
+                <!-- High-Res Output Viewport Box -->
+                <div class="finish-preview-box">
+                    <div class="strip-wrapper border-vintage-card" id="render-strip-finish"></div>
+                </div>
+
+                <!-- Export Action Buttons Grid -->
+                <div class="finish-actions-grid">
+                    <button class="btn btn-success btn-finish-action" id="btn-download-png">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>DOWNLOAD PNG</span>
+                    </button>
+
+                    <button class="btn btn-primary btn-finish-action" id="btn-download-jpg">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>DOWNLOAD JPG</span>
+                    </button>
+
+                    <button class="btn btn-share btn-finish-action" id="btn-share-finish">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        <span>SHARE TO WHATSAPP</span>
+                    </button>
+
+                    <button class="btn btn-secondary btn-finish-action" id="btn-print-finish">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        <span>PRINT STRIP</span>
+                    </button>
+
+                    <button class="btn btn-secondary btn-finish-action" id="btn-download-bts" style="display:none;" title="Download Behind-The-Scenes Motion Reel Clip">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        <span>DOWNLOAD BTS VIDEO</span>
+                    </button>
+                </div>
+
+                <!-- Reset Session Footer Row -->
+                <div class="finish-reset-row">
+                    <button class="btn btn-secondary" id="btn-back-to-customize">
+                        ← EDIT AGAIN
+                    </button>
+                    <button class="btn btn-hero-cta" id="btn-start-new-session" style="font-size:0.9rem; padding:12px 28px;">
+                        <span>🔄 START NEW SESSION</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>© 2026 <strong>Razel Tech</strong> 🇮🇳 | Powered by <a href="https://razeltech.github.io" target="_blank" class="footer-link">Razel Tech</a></p>
+        <p style="font-size:0.85rem; margin-top:4px;">
+            Official Company Profile: <a href="https://razeltech.github.io" target="_blank" class="footer-link">https://razeltech.github.io</a>
+        </p>
+    </footer>
+
+    <!-- Modular JavaScript Suite -->
+    <script src="js/audio.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/strip.js"></script>
+    <script src="js/pwa.js"></script>
+    <script src="js/share.js"></script>
+    <script src="js/gif.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
