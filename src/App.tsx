@@ -585,7 +585,9 @@ export default function App() {
         <div className="flex items-center gap-1">
           <span>Engineered with precision by</span>
           <a 
-            href="#" 
+            href="https://razeltech.github.io" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-bold text-white/50 hover:text-razel-neon transition-colors tracking-widest uppercase"
           >
             Razel Tech
