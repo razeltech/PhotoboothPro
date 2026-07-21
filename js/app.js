@@ -341,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * Step 3: Customize Studio Handlers (60 FPS RAF Sliders, Auto Enhance, Presets & Preview)
      */
     const customizeFilterChips = document.querySelectorAll('#customize-filter-bar .filter-chip');
-    const autoEnhanceBtn = document.getElementById('btn-auto-enhance');
     const btnBackToCapture = document.getElementById('btn-back-to-capture');
     const btnProceedToFinish = document.getElementById('btn-proceed-to-finish');
     const previewContainerElem = document.getElementById('render-strip-preview');
@@ -403,32 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateLiveVideoFilter();
         });
     });
-
-    if (autoEnhanceBtn) {
-        autoEnhanceBtn.addEventListener('click', () => {
-            DigiSmileSession.adjustments.brightness = 10;
-            DigiSmileSession.adjustments.contrast = 15;
-            DigiSmileSession.adjustments.warmth = 5;
-            DigiSmileSession.adjustments.saturation = 115;
-            DigiSmileSession.autoEnhanced = true;
-
-            if (brightnessSlider) brightnessSlider.value = 10;
-            if (contrastSlider) contrastSlider.value = 15;
-            if (warmthSlider) warmthSlider.value = 5;
-            if (saturationSlider) saturationSlider.value = 115;
-
-            const valB = document.getElementById('val-brightness');
-            const valC = document.getElementById('val-contrast');
-            const valW = document.getElementById('val-warmth');
-            const valS = document.getElementById('val-saturation');
-            if (valB) valB.textContent = '+10';
-            if (valC) valC.textContent = '+15';
-            if (valW) valW.textContent = '+5';
-            if (valS) valS.textContent = '115%';
-
-            scheduleRAFUpdate();
-        });
-    }
 
     if (btnBackToCapture) {
         btnBackToCapture.addEventListener('click', () => {
@@ -1044,6 +1017,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function triggerCameraFlash() {
+        const toggleFlash = document.getElementById('toggle-flash-switch');
+        const flashEnabled = toggleFlash ? toggleFlash.checked : true;
+        if (flashEnabled && flashOverlay) {
+            flashOverlay.classList.add('active');
+            setTimeout(() => flashOverlay.classList.remove('active'), 120);
+        }
+    }
+
     async function runSingleFrameRetake(frameIndex) {
         const timerDelay = parseInt(timerSelect ? timerSelect.value : 3) || 3;
 
@@ -1063,9 +1045,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (countdownOverlay) countdownOverlay.style.display = 'none';
 
-        if (flashOverlay) flashOverlay.classList.add('active');
+        triggerCameraFlash();
         window.shutterAudio.playShutterSound();
-        if (flashOverlay) setTimeout(() => flashOverlay.classList.remove('active'), 120);
+
 
         const frameCanvas = camera.captureFrameToCanvas();
         capturedFrames[frameIndex] = frameCanvas;
@@ -1242,10 +1224,9 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(r => setTimeout(r, 300));
             if (countdownOverlay) countdownOverlay.style.display = 'none';
 
-            if (flashOverlay) flashOverlay.classList.add('active');
+            triggerCameraFlash();
             if (window.shutterAudio) window.shutterAudio.playShutterSound();
             if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
-            if (flashOverlay) setTimeout(() => flashOverlay.classList.remove('active'), 120);
 
             const frameCanvas = camera.captureFrameToCanvas();
             capturedFrames[step] = frameCanvas;
