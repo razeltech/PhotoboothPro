@@ -100,8 +100,120 @@
 
     <!-- Main Studio Wizard Shell -->
     <main class="wizard-container" id="wizard">
-        <!-- Step 1 View: Start (Contains existing layout for non-breaking Task 2 framework) -->
+        <!-- Step 1 View: Start (Configure Session & Layout Selection) -->
         <div class="step-view active" id="step-start">
+            <div class="app-card start-card">
+                <!-- Compact Hero Header -->
+                <div class="start-hero">
+                    <h1 class="hero-brand">DIGISMILE <span class="accent-dot">.</span></h1>
+                    <p class="hero-tagline">Capture Every Smile, Print Every Memory</p>
+                </div>
+
+                <!-- Section Header -->
+                <div class="section-title-row">
+                    <h2>📐 Choose Your Layout Template</h2>
+                    <p>Select a photo grid format to configure your photoshoot</p>
+                </div>
+
+                <!-- Template Selection Cards Grid -->
+                <div class="template-cards-grid" role="radiogroup" aria-label="Layout Template Selection">
+                    
+                    <!-- 4-Pic Classic Strip (Default) -->
+                    <div class="layout-card selected" data-layout="4" tabindex="0" role="radio" aria-checked="true" title="4 Photos Classic Vertical Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-4">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Classic Photo Strip</h3>
+                        <p class="card-meta">4 Photos • 2×6 in Print</p>
+                        <div class="card-time-badge">⏱️ ~45 seconds</div>
+                    </div>
+
+                    <!-- Single Polaroid Card -->
+                    <div class="layout-card" data-layout="polaroid" tabindex="0" role="radio" aria-checked="false" title="Single Hero Polaroid Photo Frame">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-polaroid">
+                                <span></span>
+                            </div>
+                        </div>
+                        <h3>Vintage Polaroid</h3>
+                        <p class="card-meta">1 Hero Photo • 3.5×4.2 in</p>
+                        <div class="card-time-badge">⏱️ ~15 seconds</div>
+                    </div>
+
+                    <!-- 2x2 Postcard Grid -->
+                    <div class="layout-card" data-layout="grid" tabindex="0" role="radio" aria-checked="false" title="4 Photos Postcard Grid Card">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-grid-2x2">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Postcard 2x2 Grid</h3>
+                        <p class="card-meta">4 Photos • 4×6 in Postcard</p>
+                        <div class="card-time-badge">⏱️ ~45 seconds</div>
+                    </div>
+
+                    <!-- 2-Pic Mini Strip -->
+                    <div class="layout-card" data-layout="2" tabindex="0" role="radio" aria-checked="false" title="2 Photos Mini Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-2">
+                                <span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Duo Mini-Strip</h3>
+                        <p class="card-meta">2 Photos • 2×4 in Print</p>
+                        <div class="card-time-badge">⏱️ ~25 seconds</div>
+                    </div>
+
+                    <!-- 5-Pic Mega Strip -->
+                    <div class="layout-card" data-layout="5" tabindex="0" role="radio" aria-checked="false" title="5 Photos Mega Strip">
+                        <div class="card-check-badge">✓</div>
+                        <div class="card-preview-box">
+                            <div class="thumb-strip-5">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <h3>Mega Photo Strip</h3>
+                        <p class="card-meta">5 Photos • 2×7.5 in Print</p>
+                        <div class="card-time-badge">⏱️ ~60 seconds</div>
+                    </div>
+
+                </div>
+
+                <!-- Paper Stock Quick Option -->
+                <div class="quick-paper-row">
+                    <div class="quick-paper-group">
+                        <label for="step1-paper-select">🖼️ Paper Stock Theme</label>
+                        <select id="step1-paper-select" class="custom-select-styled">
+                            <option value="vintage-card" selected>🎞️ Vintage Cardstock (Classic)</option>
+                            <option value="classic">Classic Matte Off-White</option>
+                            <option value="dark">Minimalist Charcoal Dark</option>
+                            <option value="birthday">🎂 Birthday Party Confetti</option>
+                            <option value="valentine">💖 Valentine Hearts</option>
+                            <option value="filmstrip">🎞️ 35mm Film Strip Perforations</option>
+                            <option value="custom-color">🎨 Custom Color Palette...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Primary CTA -->
+                <div class="start-cta-row">
+                    <button class="btn btn-hero-cta" id="btn-start-session">
+                        <span>📸 BEGIN SESSION</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Step 2 View: Capture (Contains camera workspace) -->
+        <div class="step-view" id="step-capture">
             <div class="studio-layout">
 
         <!-- Left Column: Camera Viewport & Capture Run -->

@@ -152,6 +152,60 @@ document.addEventListener('DOMContentLoaded', () => {
         getCurrentStep: () => DigiSmileSession.currentStep
     };
 
+    /**
+     * Step 1: Configure Session Handlers
+     */
+    const layoutCards = document.querySelectorAll('.layout-card');
+    const step1PaperSelect = document.getElementById('step1-paper-select');
+    const startSessionBtn = document.getElementById('btn-start-session');
+
+    function selectLayoutTemplate(layoutVal) {
+        DigiSmileSession.layout = layoutVal;
+
+        layoutCards.forEach(card => {
+            const isSelected = card.getAttribute('data-layout') === layoutVal;
+            card.classList.toggle('selected', isSelected);
+            card.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+        });
+
+        if (layoutSelect) {
+            layoutSelect.value = layoutVal;
+        }
+
+        refreshPreviewBlueprint();
+    }
+
+    layoutCards.forEach(card => {
+        const handleCardSelect = () => {
+            const layoutVal = card.getAttribute('data-layout') || '4';
+            selectLayoutTemplate(layoutVal);
+        };
+
+        card.addEventListener('click', handleCardSelect);
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleCardSelect();
+            }
+        });
+    });
+
+    if (step1PaperSelect) {
+        step1PaperSelect.addEventListener('change', (e) => {
+            DigiSmileSession.borderTheme = e.target.value;
+            if (borderSelect) {
+                borderSelect.value = e.target.value;
+            }
+            refreshPreviewBlueprint();
+        });
+    }
+
+    if (startSessionBtn) {
+        startSessionBtn.addEventListener('click', () => {
+            goToStep(2);
+        });
+    }
+
     const camera = new CameraController('preview-stream');
     let capturedFrames = [];
     let sessionStripsHistory = [];
