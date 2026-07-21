@@ -371,11 +371,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
             customizeFilterChips.forEach(c => c.classList.toggle('active', c === chip));
 
-            if (filterSelect) {
-                filterSelect.value = filterVal;
-            }
+            // Sync capture step filter bar active state
+            document.querySelectorAll('#capture-filter-bar .filter-chip').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('data-filter') === filterVal);
+            });
 
+            if (filterSelect) filterSelect.value = filterVal;
             refreshPreviewBlueprint();
+        });
+    });
+
+    // Capture Step Quick Filter chips (Step 2 accordion)
+    const captureFilterChips = document.querySelectorAll('#capture-filter-bar .filter-chip');
+    captureFilterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const filterVal = chip.getAttribute('data-filter') || 'silver';
+            DigiSmileSession.selectedPreset = filterVal;
+            DigiSmileSession.export.dirty = true;
+
+            captureFilterChips.forEach(c => c.classList.toggle('active', c === chip));
+
+            // Sync customize step filter bar active state
+            document.querySelectorAll('#customize-filter-bar .filter-chip').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('data-filter') === filterVal);
+            });
+
+            if (filterSelect) filterSelect.value = filterVal;
         });
     });
 
@@ -1310,6 +1331,37 @@ document.addEventListener('DOMContentLoaded', () => {
         mirrorToggleBtn.addEventListener('click', () => {
             const isMirrored = camera.toggleMirror();
             mirrorToggleBtn.classList.toggle('active', isMirrored);
+            // Sync pill button state
+            const mirrorPill = document.getElementById('mirror-toggle-pill');
+            if (mirrorPill) {
+                mirrorPill.classList.toggle('active', isMirrored);
+                mirrorPill.textContent = '';
+                mirrorPill.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M16 7l4 4-4 4"/><path d="M8 7L4 11l4 4"/></svg> Mirror ${isMirrored ? 'On' : 'Off'}`;
+            }
+        });
+    }
+
+    // Pill buttons in the accordion settings card (delegate to same actions)
+    const camTogglePill = document.getElementById('cam-toggle-pill');
+    const mirrorTogglePill = document.getElementById('mirror-toggle-pill');
+
+    if (camTogglePill) {
+        camTogglePill.addEventListener('click', () => {
+            camera.toggleCameraFacingMode();
+            // Show brief flash text
+            const orig = camTogglePill.textContent;
+            camTogglePill.textContent = '↩ Switching...';
+            setTimeout(() => { camTogglePill.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0-4.4-3.6-8-8-8s-8 3.6-8 8h-3l4 4 4-4h-3c0-3.3 2.7-6 6-6s6 2.7 6 6h-3l4 4 4-4h-3z"/></svg> Flip Camera`; }, 1200);
+        });
+    }
+
+    if (mirrorTogglePill) {
+        mirrorTogglePill.addEventListener('click', () => {
+            const isMirrored = camera.toggleMirror();
+            mirrorTogglePill.classList.toggle('active', isMirrored);
+            mirrorTogglePill.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M16 7l4 4-4 4"/><path d="M8 7L4 11l4 4"/></svg> Mirror ${isMirrored ? 'On' : 'Off'}`;
+            // Sync circle button state
+            if (mirrorToggleBtn) mirrorToggleBtn.classList.toggle('active', isMirrored);
         });
     }
 

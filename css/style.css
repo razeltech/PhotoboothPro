@@ -2310,3 +2310,77 @@ input[type="text"], input[type="file"], input[type="range"] {
 .version-chooser-card:hover .vc-cta {
     text-decoration: underline;
 }
+
+/* Hero version hint line */
+.hero-version-hint {
+    margin-top: 14px;
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.45);
+}
+.hero-hint-link {
+    color: var(--accent-red);
+    text-decoration: none;
+    font-weight: 600;
+}
+.hero-hint-link:hover { text-decoration: underline; }
+
+/* ========= Capture Settings Card New Rows ========= */
+.capture-cam-actions-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.cam-action-pill {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.cam-action-pill:hover {
+    background: rgba(255,255,255,0.14);
+    color: var(--text-primary);
+    border-color: rgba(255,255,255,0.3);
+}
+
+.cam-action-pill.active {
+    background: rgba(225,29,72,0.2);
+    border-color: rgba(225,29,72,0.5);
+    color: #ff334b;
+}
+
+.capture-filter-row {
+    margin-bottom: 14px;
+}
+
+.settings-row-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.capture-filter-chips {
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.capture-filter-chips .filter-chip {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+}
