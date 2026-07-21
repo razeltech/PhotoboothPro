@@ -93,8 +93,8 @@ class StripEngine {
             customBorderColor = '#b8ac9c'
         } = settings;
 
-        const count = framesArray.length;
-        if (count === 0) return null;
+        const targetSlotCount = parseInt(layout) || (layout === 'grid' ? 4 : (layout === 'polaroid' ? 1 : (layout === '2' ? 2 : (layout === '5' ? 5 : 4))));
+        const count = framesArray.length > 0 ? framesArray.length : targetSlotCount;
 
         const colors = this.getBorderColor(borderTheme, customPaperColor, customBorderColor);
         const canvas = document.createElement('canvas');
@@ -192,9 +192,9 @@ class StripEngine {
             }
         }
 
-        // 4. Render Photo Frames with aspect ratio preserving cover crop (prevents stretching)
-        framesArray.forEach((sourceCanvas, idx) => {
-            if (idx >= positions.length) return;
+        // 4. Render Photo Frames with aspect ratio preserving cover crop (or placeholder slots)
+        for (let idx = 0; idx < count; idx++) {
+            if (idx >= positions.length) continue;
             const pos = positions[idx];
 
             const tempCanvas = document.createElement('canvas');
@@ -204,28 +204,52 @@ class StripEngine {
             tempCtx.imageSmoothingEnabled = true;
             tempCtx.imageSmoothingQuality = 'high';
 
-            // Calculate smart center-crop to prevent image stretching (object-fit: cover)
-            const srcW = sourceCanvas.width;
-            const srcH = sourceCanvas.height;
-            const srcAspect = srcW / srcH;
-            const targetAspect = imgW / imgH;
+            const sourceCanvas = framesArray[idx];
 
-            let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
-            if (srcAspect > targetAspect) {
-                cropW = srcH * targetAspect;
-                cropX = (srcW - cropW) / 2;
+            if (sourceCanvas) {
+                // Calculate smart center-crop to prevent image stretching (object-fit: cover)
+                const srcW = sourceCanvas.width;
+                const srcH = sourceCanvas.height;
+                const srcAspect = srcW / srcH;
+                const targetAspect = imgW / imgH;
+
+                let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
+                if (srcAspect > targetAspect) {
+                    cropW = srcH * targetAspect;
+                    cropX = (srcW - cropW) / 2;
+                } else {
+                    cropH = srcW / targetAspect;
+                    cropY = (srcH - cropH) / 2;
+                }
+
+                tempCtx.drawImage(sourceCanvas, cropX, cropY, cropW, cropH, 0, 0, imgW, imgH);
+
+                let imgData = tempCtx.getImageData(0, 0, imgW, imgH);
+                imgData = FilterEngine.applyFilterToImageData(imgData, filterMode, grainLevel, customFilterParams);
+                tempCtx.putImageData(imgData, 0, 0);
+
+                FilterEngine.applyLightLeakToContext(tempCtx, imgW, imgH, leakMode);
             } else {
-                cropH = srcW / targetAspect;
-                cropY = (srcH - cropH) / 2;
+                // Render Elegant Placeholder Frame Slot when no photo captured yet
+                tempCtx.fillStyle = '#1e1e24';
+                tempCtx.fillRect(0, 0, imgW, imgH);
+
+                tempCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                tempCtx.lineWidth = 4;
+                tempCtx.setLineDash([12, 12]);
+                tempCtx.strokeRect(16, 16, imgW - 32, imgH - 32);
+                tempCtx.setLineDash([]);
+
+                tempCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                tempCtx.font = 'bold 36px sans-serif';
+                tempCtx.textAlign = 'center';
+                tempCtx.textBaseline = 'middle';
+                tempCtx.fillText('📷 POSE #' + (idx + 1), imgW / 2, imgH / 2);
+
+                let imgData = tempCtx.getImageData(0, 0, imgW, imgH);
+                imgData = FilterEngine.applyFilterToImageData(imgData, filterMode, grainLevel, customFilterParams);
+                tempCtx.putImageData(imgData, 0, 0);
             }
-
-            tempCtx.drawImage(sourceCanvas, cropX, cropY, cropW, cropH, 0, 0, imgW, imgH);
-
-            let imgData = tempCtx.getImageData(0, 0, imgW, imgH);
-            imgData = FilterEngine.applyFilterToImageData(imgData, filterMode, grainLevel, customFilterParams);
-            tempCtx.putImageData(imgData, 0, 0);
-
-            FilterEngine.applyLightLeakToContext(tempCtx, imgW, imgH, leakMode);
 
             ctx.drawImage(tempCanvas, pos.x, pos.y);
 
@@ -233,19 +257,12 @@ class StripEngine {
                 ctx.strokeStyle = '#cbd5e1';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(pos.x - 2, pos.y - 2, imgW + 4, imgH + 4);
-                ctx.strokeStyle = '#64748b';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                for (let tx = pos.x; tx <= pos.x + imgW; tx += 12) {
-                    ctx.lineTo(tx, pos.y + (Math.sin(tx) * 3));
-                }
-                ctx.stroke();
             } else {
                 ctx.strokeStyle = colors.border;
                 ctx.lineWidth = 1.5;
                 ctx.strokeRect(pos.x, pos.y, imgW, imgH);
             }
-        });
+        }
 
         // 5. Render Stickers with Size & Rotation
         stickers.forEach(stk => {
