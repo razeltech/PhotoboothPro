@@ -1,59 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
     <!-- Primary SEO Meta Tags -->
-    <title>DigiSmile Photobooth Studio 📸 | Capture Every Smile, Print Every Memory</title>
-    <meta name="title" content="DigiSmile Photobooth Studio 📸 | Capture Every Smile, Print Every Memory">
-    <meta name="description"
-        content="Welcome to DigiSmile — Capture Every Smile, Print Every Memory! Your free browser-based online photobooth studio app. Shoot HD camera photos, apply film emulsion filters, custom backgrounds, draggable stickers, WhatsApp sharing & native PWA mobile app.">
-    <meta name="keywords"
-        content="DigiSmile, digismile studio, photo booth online, free photo strip maker, vintage photobooth app, pwa photobooth, razel tech">
+    <title>DigiSmile V3 Pro 📸 | Capture Every Smile, Print Every Memory</title>
+    <meta name="title" content="DigiSmile V3 Pro 📸 | Capture Every Smile, Print Every Memory">
+    <meta name="description" content="Welcome to DigiSmile V3 Pro — Capture Every Smile, Print Every Memory! Your high-performance browser digital photobooth app. Shoot HD photos, apply realistic analog filters, customize borders, stamp stickers, and export looping GIFs & timelapses.">
+    <meta name="keywords" content="DigiSmile, photo booth online, free photo strip maker, vintage photobooth app, pwa photobooth, razel tech">
     <meta name="author" content="Razel Tech">
     <meta name="robots" content="index, follow">
 
     <!-- PWA Manifest & Theme -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff334b">
-    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#ff334b" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://razeltech.github.io/PhotoboothPro/">
 
-    <!-- Open Graph / WhatsApp / Facebook -->
+    <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://razeltech.github.io/PhotoboothPro/">
-    <meta property="og:title" content="DigiSmile Photobooth Studio 📸">
-    <meta property="og:description"
-        content="Capture Every Smile, Print Every Memory! Take aesthetic photo booth shots right in your browser. Add film grain, light leaks, custom background uploads & draggable stickers.">
-    <meta property="og:image" content="https://razeltech.github.io/PhotoboothPro/assets/logo.png">
+    <meta property="og:title" content="DigiSmile V3 Pro 📸 | Razel Tech">
+    <meta property="og:description" content="Take aesthetic vintage photo strips directly in your browser. Complete with film grain, behind-the-scenes recording, and interactive sticker stamps.">
+    <meta property="og:image" content="https://razeltech.github.io/PhotoboothPro/logo.png">
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://razeltech.github.io/PhotoboothPro/">
-    <meta name="twitter:title" content="DigiSmile Photobooth Studio 📸">
-    <meta name="twitter:description"
-        content="Capture Every Smile, Print Every Memory — Free browser vintage photobooth app & installable PWA.">
-    <meta name="twitter:image" content="https://razeltech.github.io/PhotoboothPro/assets/logo.png">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/favicon.png">
-
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="twitter:title" content="DigiSmile V3 Pro 📸 | Razel Tech">
+    <meta name="twitter:description" content="Capture Every Smile, Print Every Memory — Premium browser-based vintage photobooth & installable PWA.">
+    <meta name="twitter:image" content="https://razeltech.github.io/PhotoboothPro/logo.png">
 
     <!-- Structured Data Schema.org (JSON-LD) for Google SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "DigiSmile Photobooth Studio",
-      "alternateName": "Free Vintage Photo Strip App",
+      "name": "DigiSmile V3 Pro",
+      "alternateName": "DigiSmile Photobooth Studio",
       "url": "https://razeltech.github.io/PhotoboothPro/",
-      "description": "Capture Every Smile, Print Every Memory — Free web-based photobooth app for capturing, customizing, and printing high-resolution photo strips with film filters, custom backgrounds, and draggable stickers.",
+      "description": "Premium browser-based photobooth app for capturing, customizing, and printing high-resolution photo strips with film filters, custom background uploads, and draggable stickers.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "All",
       "author": {
@@ -63,278 +53,10 @@
       }
     }
     </script>
-</head>
-
-<body>
-
-    <!-- App Header Navbar -->
-    <header class="app-navbar">
-        <a href="index.html" class="brand-container" title="DigiSmile Studio Pro">
-            <img src="assets/logo.png" alt="DigiSmile Studio Logo">
-            <span class="brand-title">DIGISMILE STUDIO</span>
-        </a>
-
-        <!-- Desktop Navigation Links -->
-        <nav class="nav-links">
-            <a href="index.html" class="nav-link active">🏠 Home</a>
-            <a href="#why-us" class="nav-link">✨ Features</a>
-            <a href="#privacy" class="nav-link">🔒 Privacy</a>
-            <a href="#themes" class="nav-link">🎨 Themes</a>
-            <button class="btn-pwa-update" id="btn-pwa-update" onclick="hardRefreshApp()"
-                title="Purge local cache and force refresh application update">
-                <span>🔄 Update</span>
-            </button>
-            <button class="btn-pwa pwa-install-btn" style="display:none;"
-                title="Install DigiSmile App on Phone/Desktop">
-                📲 INSTALL APP
-            </button>
-            <a href="booth.html" class="btn-launch" title="Launch DigiSmile Studio App">
-                📸 Launch Studio
-            </a>
-        </nav>
-
-        <!-- Mobile Hamburger Button -->
-        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-        <!-- Mobile Slide-Down Menu Drawer -->
-        <div class="mobile-menu" id="mobile-menu">
-            <a href="index.html" class="nav-link active">🏠 Home Page</a>
-            <a href="#why-us" class="nav-link">✨ Features</a>
-            <a href="#privacy" class="nav-link">🔒 Data Privacy & Security</a>
-            <a href="#themes" class="nav-link">🎨 Themes</a>
-            <button class="btn-pwa-update" onclick="hardRefreshApp()" style="margin: 6px 0; text-align:center;">
-                <span>🔄 Update App</span>
-            </button>
-            <button class="btn-pwa pwa-install-btn" style="display:none; text-align:center;">
-                📲 Install App on Phone
-            </button>
-            <a href="booth.html" class="btn-launch" style="text-align:center;">
-                📸 Launch Studio App
-            </a>
-        </div>
-    </header>
-
-    <!-- Dynamic Hero Section -->
-    <section class="hero-section">
-        <div class="hero-badge">⚡ POWERED BY RAZEL TECH 🇮🇳</div>
-        <h1 class="hero-title">Capture Every Smile, Print Every Memory</h1>
-        <p class="hero-subtitle">
-            Welcome to <strong>DigiSmile Photobooth Studio</strong>! Your free browser-based online photobooth studio &
-            installable PWA app. Shoot HD camera photos, apply film emulsion filters, upload custom backgrounds, place
-            draggable stickers, share to WhatsApp, and download high-res memories!
-        </p>
-        <div class="hero-actions">
-            <a href="booth.html" class="btn-hero-primary">📸 Launch v2 Wizard Studio</a>
-            <a href="booth_v1.html" class="btn-hero-secondary">🎛️ Classic Studio v1</a>
-        </div>
-        <p class="hero-version-hint">Not sure which? <a href="#choose-version" class="hero-hint-link">Compare both versions ↓</a></p>
-    </section>
-
-    <!-- Section 1: Why Our Photobooth Is Best -->
-    <section class="section-container" id="why-us">
-        <div class="section-header">
-            <h2 class="section-title">Why Our Photobooth is Best</h2>
-            <p class="section-subtitle">Loaded with premium features designed for birthdays, weddings, events, and
-                everyday fun</p>
-        </div>
-
-        <div class="feature-grid">
-            <div class="feature-card">
-                <span class="feature-icon">📸</span>
-                <h3>Instant HD Studio Feed</h3>
-                <p>Seamless webcam stream with front/rear camera flip, mirror toggle, 1-5 photo strip counts, 2x2 quad
-                    box grids, and single Polaroid cards.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🎬</span>
-                <h3>Analog Film Shaders & Polaroid Tones</h3>
-                <p>Silver Gelatin B&W, Polaroid SX-70 Instant, Fujifilm Instax, 1970s Kodachrome, Sepia, ISO grain,
-                    light leak flares, and 1-tap quick filter grid.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🎨</span>
-                <h3>Custom Color Palette & Paper Stock</h3>
-                <p>Pick custom background paper colors, frame border edge colors, uploaded background images, custom
-                    typography fonts, and paper textures.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📱</span>
-                <h3>Direct WhatsApp & App Sharing</h3>
-                <p>One-tap native Web Share API file integration to send your finished photo strip directly to WhatsApp,
-                    Instagram Stories, Telegram, or Photos.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📲</span>
-                <h3>Installable PWA App</h3>
-                <p>Works natively on iPhone, Android, and Desktop! Tap 'Add to Home Screen' to launch full-screen like a
-                    native app with zero app store installs.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">👑</span>
-                <h3>Draggable & Rotatable Props</h3>
-                <p>Place cute party crowns, sunglasses, hearts, sparkles, and stars directly onto your photos. Drag,
-                    position, resize, and rotate stickers freely.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Version Chooser Section -->
-    <section class="section-container" id="choose-version">
-        <div class="section-header">
-            <h2 class="section-title">Choose Your Studio Experience</h2>
-            <p class="section-subtitle">Two interfaces, same powerful engine. Pick the one that fits your style.</p>
-        </div>
-
-        <div class="version-chooser-grid">
-
-            <!-- v1: Classic -->
-            <a href="booth_v1.html" class="version-chooser-card" id="card-v1">
-                <div class="vc-badge">v1 · CLASSIC</div>
-                <div class="vc-icon">🎛️</div>
-                <h3>Classic Studio</h3>
-                <p>All controls visible at once. Camera + settings + preview in a single-screen layout. Familiar, fast,
-                    and direct — great for experienced users and desktop setups.</p>
-                <ul class="vc-features">
-                    <li>✓ Single-page all-in-one workspace</li>
-                    <li>✓ Tabbed control panel (Camera, Shaders, BG, Props)</li>
-                    <li>✓ Full filter & paper stock library</li>
-                    <li>✓ Session history thumbnails</li>
-                    <li>✓ Stable, tested codebase</li>
-                </ul>
-                <span class="vc-cta">Launch Classic Studio →</span>
-            </a>
-
-            <!-- v2: Wizard -->
-            <a href="booth.html" class="version-chooser-card recommended" id="card-v2">
-                <div class="vc-badge recommended-badge">v2 · NEW </div>
-                <div class="vc-icon">📸</div>
-                <h3>DigiSmile Wizard</h3>
-                <p>Step-by-step guided photobooth experience. Choose layout → Capture → Customize → Finish. Optimized
-                    for mobile, touch-first, and beginner-friendly events.</p>
-                <ul class="vc-features">
-                    <li>✓ 4-step guided wizard flow</li>
-                    <li>✓ Mobile-first touch layout</li>
-                    <li>✓ Live strip preview at every step</li>
-                    <li>✓ Behind-the-scenes video recording</li>
-                    <li>✓ Under active development</li>
-                </ul>
-                <span class="vc-cta">Launch Wizard Studio →</span>
-            </a>
-
-        </div>
-    </section>
-
-    <!-- Section 2: 100% Data Privacy & Security -->
-    <section class="section-container" id="privacy">
-        <div class="privacy-banner">
-            <span class="privacy-icon">🛡️</span>
-            <div class="privacy-content">
-                <h3>100% Data Privacy & Security Guarantee</h3>
-                <p>
-                    Your photos are strictly private! All camera feeds, image transformations, custom background
-                    uploads, and canvas stitching occur <strong>100% locally inside your web browser</strong>. No photos
-                    or camera video streams are ever uploaded, recorded, or saved to any cloud server.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 3: Happy to Make Memories -->
-    <section class="section-container">
-        <div class="section-header">
-            <h2 class="section-title">Happy to Make Memories</h2>
-            <p class="section-subtitle">Perfect for birthday parties, weddings, reunions, and social media aesthetic
-                collages</p>
-        </div>
-
-        <div class="feature-grid">
-            <div class="feature-card" style="text-align:center;">
-                <span style="font-size:3rem;">🎉</span>
-                <h3 style="margin-top:10px;">Birthday Parties</h3>
-                <p>Capture fun group shots with party hats, crowns, and custom date stamps to cherish special
-                    celebration moments.</p>
-            </div>
-            <div class="feature-card" style="text-align:center;">
-                <span style="font-size:3rem;">💍</span>
-                <h3 style="margin-top:10px;">Weddings & Engagements</h3>
-                <p>Elegant Polaroid-style frames and warm vintage film shaders to create timeless souvenir strips for
-                    your guests.</p>
-            </div>
-            <div class="feature-card" style="text-align:center;">
-                <span style="font-size:3rem;">✨</span>
-                <h3 style="margin-top:10px;">Social Media Collages</h3>
-                <p>Generate aesthetic Y2K and Cyberpunk neon photo strips ready to share on Instagram, WhatsApp, and
-                    TikTok.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 4: Upcoming Themes Preview -->
-    <section class="section-container" id="themes">
-        <div class="section-header">
-            <h2 class="section-title">Upcoming Themes Preview</h2>
-            <p class="section-subtitle">We are constantly crafting new visual styles and paper stock themes for you</p>
-        </div>
-
-        <div class="themes-grid">
-            <div class="theme-card">
-                <span class="theme-tag">Coming Soon</span>
-                <div class="theme-preview-box theme-kodachrome">🎞️</div>
-                <h3>1970s Kodachrome</h3>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Warm vintage analog warm tone</p>
-            </div>
-
-            <div class="theme-card">
-                <span class="theme-tag">Coming Soon</span>
-                <div class="theme-preview-box theme-cyber">⚡</div>
-                <h3>Cyberpunk Neon Glow</h3>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Electric cyan & neon purple
-                    flares</p>
-            </div>
-
-            <div class="theme-card">
-                <span class="theme-tag">Coming Soon</span>
-                <div class="theme-preview-box theme-wedding">✨</div>
-                <h3>Wedding Gold Elegance</h3>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Luxurious golden foil border
-                    frame</p>
-            </div>
-
-            <div class="theme-card">
-                <span class="theme-tag">Coming Soon</span>
-                <div class="theme-preview-box theme-vintage">📽️</div>
-                <h3>Classic Silver Mono</h3>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Deep silver contrast black &
-                    white</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <p>
-            © 2026 <strong>Razel Tech</strong> 🇮🇳 | Powered by <a href="https://razeltech.github.io" target="_blank"
-                class="footer-link">Razel Tech</a>
-        </p>
-        <p style="font-size:0.85rem; margin-top:4px;">
-            Official Company Profile: <a href="https://razeltech.github.io" target="_blank"
-                class="footer-link">https://razeltech.github.io</a>
-        </p>
-    </footer>
-
-    <!-- Modular JavaScript Suite -->
-    <script src="js/audio.js"></script>
-    <script src="js/camera.js"></script>
-    <script src="js/filters.js"></script>
-    <script src="js/strip.js"></script>
-    <script src="js/pwa.js"></script>
-    <script src="js/share.js"></script>
-    <script src="js/gif.js"></script>
-    <script src="js/app.js"></script>
-</body>
-
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
+

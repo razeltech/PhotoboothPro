@@ -1,0 +1,6 @@
+{
+  "name": "AeroBooth V3",
+  "description": "A premium high-fidelity digital photobooth powered by Razel Tech. Features realistic analog filters, customizable vertical photo strips, postcard grids, animated loop GIF synthesis, and behind-the-scenes video timelapse exports.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

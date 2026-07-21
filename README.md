@@ -1,105 +1,110 @@
-# 📸 DigiSmile Photobooth Studio 📸
+# AeroBooth 📸
+> **Powered by Razel Tech**
 
-> **Capture Every Smile, Print Every Memory**  
-> Powered by **Razel Tech** | Official Company Website: [https://razeltech.github.io](https://razeltech.github.io)
-
-<p align="center">
-  <img src="assets/logo.png" alt="DigiSmile Photobooth Logo" width="140" />
-</p>
+A premium, lightweight, and ultra-high-fidelity client-side digital photobooth application. **AeroBooth** operates entirely within the browser with **100% offline-capability and privacy protection**. Users can capture poses, apply realistic analog photo filters, customize layouts (vertical ticket strips, postcard grids, retro polaroids), stamp digital emojis with intuitive dragging controls, and compile animated looping GIFs or behind-the-scenes video timelapses.
 
 ---
 
-## ✨ Overview
+## ✨ Features and Capabilities
 
-**DigiSmile Photobooth Studio** is a high-performance, responsive web application and Progressive Web App (PWA) designed for creating vintage 35mm photo strips, single-shot portrait cards, 2x2 quad-box collages, and Polaroid-style photos directly inside your web browser. 
+### 1. 🎞️ Frame Layout Templates
+*   **Classic Vertical Strip (2" x 6")**: Triggers a **4-pose session** resulting in the iconic retail vertical strip card.
+*   **2x2 Postcard Grid (4" x 6")**: An elegant 4-pose grid card suitable for landscape sharing.
+*   **Nostalgic Polaroid**: Takes a **single cinematic snapshot** with a wide bottom margin optimized for handwritten-style caption writing.
+*   **Double Portrait Duo**: Takes **2 vertical snapshots** and prints them side-by-side.
+*   **Cinematic Wide (16:9)**: Captures **3 widescreen panoramas** aligned in a premium vertical film slice layout.
 
-Built with zero framework build dependencies using native **Vanilla HTML5, CSS3, and ES6 JavaScript**, it is 100% optimized for instant 1-click deployment on **GitHub Pages**.
+### 2. 🎨 Realistic Analog Filters & Lab Adjustments
+*   **Analog Presets**: Select from high-fidelity custom presets like *Retro Noir (Monochrome)*, *70s Sepia (Warm Aged Film)*, *Neon Glitch (Cyberpunk)*, *Nordic Ice (Crisp Blue)*, *VHS Tape (distressed chroma)*, *Tokyo Soft (Pastel)*, and *Classic Polaroid Faded Matte*.
+*   **Custom Darkroom Adjustment Sliders**: Real-time filters and adjustments including:
+    *   **Brightness** (70% to 130%)
+    *   **Contrast** (70% to 130%)
+    *   **Saturation** (0% to 180%)
+    *   **Retro Vignette** (dark-corner vignette strength slider)
+    *   **Organic Film Grain** (procedurally generates high-fidelity noise grains dynamically)
 
----
+### 3. ✍️ Typography & Frame Borders
+*   **Custom Caption Inputs**: Input custom event names or date timestamps.
+*   **Chic Font Pairings**: Choose between *Space Grotesk (Modern Bold)*, *Playfair Display (Serif/Fashion italic)*, *Courier Prime (Typewriter)*, and *Caveat (Nostalgic Handwriting)*.
+*   **Premium Frame Skins**: Custom border background options like *Snow White*, *Stealth Matte Black*, *Butter Cream*, *Sakura Pink*, *Retro Newsprint Grid*, and *Acid Neon Red Grid*.
 
-## 🚀 Key Features
+### 4. 🧸 Interactive Sticker Stamps
+*   Choose from a beautiful sticker deck of emojis, hearts, sparkles, retro labels, and headwear.
+*   **Canva-Style Dragging & Controls**: Click stamps to select them directly on the canvas, then use touch-responsive pointer events to **drag, scale up/down, rotate, or delete them** instantly with real-time feedback.
 
-- 📱 **2-Page Dynamic Architecture**:
-  - **Home Page (`index.html`)**: Dynamic landing page featuring Hero Section, Feature Highlights, 100% Data Privacy Guarantee, Use Case Gallery, and Theme Previews.
-  - **Photobooth Studio App (`booth.html`)**: Dedicated interactive photobooth studio workspace with live webcam feed, real-time filters, single frame retakes, and canvas stitching.
-- 📲 **Native Progressive Web App (PWA)**:
-  - Installable on iOS (Safari), Android (Chrome), and Desktop as a standalone native app (`manifest.json` + `sw.js`).
-  - Includes a sleek floating **Bottom Install Banner Popup** for 1-tap mobile home screen installation.
-- 🎛️ **Quick 1-Tap 3-Column Filter Grid**:
-  - Adjustable grid below camera stream for instant 1-tap filter switching (**Silver B&W**, **Polaroid SX-70**, **Instax Color**, **Kodachrome**, **Sepia**, **35mm Color**).
-- 📷 **Authentic Polaroid i-Type Proportions**:
-  - Exact `3.5 × 4.2 in` print specifications with 1:1 square photo slot area and `0.9 in` bottom handwriting chin.
-- 🎨 **Custom Color Palette Picker**:
-  - Pick custom background paper colors and frame border edge colors with live real-time preview sync.
-- 📱 **Native Web Share API File Integration**:
-  - One-tap direct sharing to **WhatsApp, Instagram Stories, Telegram, Photos, or Messages** using native OS share sheets (`ShareEngine.shareCanvasFile()`).
-- ⌨️ **Keyboard Accessibility Shortcuts**:
-  - Press **`Spacebar`** to trigger shutter, **`Delete`/`Backspace`** to remove sticker props, and **`Escape`** to deselect.
-- 👆 **Auto Countdown vs Manual Shutter Toggle**:
-  - Switch between automatic timer countdown loops or manual click-to-shoot shutter mode per photo.
-- 🔄 **Individual Frame Retake & Retake All**:
-  - Hover over any captured photo slot to click **`🔄 Retake`** and re-capture *just that single photo* without re-taking the entire strip!
-- 🎬 **Real-Time Live Viewfinder Shaders**:
-  - Live webcam stream displays selected filters in real-time before taking photos:
-    - **🎞️ Silver Gelatin Vintage B&W** (Authentic photobooth print)
-    - **📸 Polaroid SX-70 Instant Film**
-    - **🌸 Fujifilm Instax Color**
-    - **☀️ 1970s Warm Kodachrome**
-    - **🌾 Vintage Sepia Nostalgia**
-    - **🎨 Vibrant 35mm Color**
-- 🎛️ **Custom Filter Tuning Sliders**:
-  - Real-time controls for Exposure / Brightness, Contrast Intensity, Warmth / Sepia Tint, and Color Saturation.
-- 🖼️ **Paper Stock & Custom Background Uploads**:
-  - Vintage Cardstock, 35mm Filmstrip sprocket holes, Teared Paper Cut Edges, Birthday Confetti, Valentine Hearts, or upload custom image patterns with opacity and blend mode controls.
-- ✍️ **100% Pure Custom Text & Typography (Zero Hardcoded Text)**:
-  - Custom Top Caption, Custom Bottom Tagline, Custom Timestamp Formatting (Date Only, Date & Time, Custom String, or Hide Timestamp), and separate font family choices (Cursive Handwriting, Bold Geometric, Retro Monospace, Serif).
-- 🔊 **Authentic DSLR Mechanical Shutter Audio**:
-  - Web Audio API synthesizer generating realistic camera feedback (mirror thump, shutter snap, and film advance winder tick).
-- 🛡️ **100% In-Browser Data Privacy**:
-  - Zero cloud servers. All video streams, image filters, custom uploads, and exports are processed 100% locally inside the user's browser.
+### 5. ⚡ Animated GIF Synthesis (AeroLoop)
+*   Utilizes a fast, client-side, zero-dependency frame-quantization engine powered by `gifenc` to package your captured snapshots into a looping animated digital flipbook.
+
+### 6. 🎥 Behind-The-Scenes Video Export
+*   Captures live timelapse footage of your preparation, laughter, and poses throughout the capture session using a high-performance WebRTC `MediaRecorder` stream, compiling a beautiful video export file on the fly.
+
+### 7. 📤 Instant Native Sharing & Printing
+*   **Web Share API Integration**: Triggers native sharing sheets on iOS, Android, and compatible desktops to share actual PNGs or GIFs directly to apps like Instagram Stories, WhatsApp, Discord, or iMessage.
+*   **Formatted Printing Layouts**: Formats the photo strip correctly inside the system print manager to print direct hard-copies to any standard photobooth printer.
 
 ---
 
-## 📂 Repository Structure
+## 🛠️ Tech Stack & Architecture
 
-```
-PhotoboothPro/
-├── index.html           # Dynamic Home Landing Page
-├── booth.html           # Dedicated Photobooth Studio App
-├── css/
-│   └── style.css        # Master Design System, Dark Palette & Dropdowns
-├── js/
-│   ├── audio.js         # Web Audio API DSLR Shutter Synthesizer
-│   ├── camera.js        # MediaStream Hardware Manager & Mirror Logic
-│   ├── filters.js       # Emulsion Shader Engine & Custom Tuning Sliders
-│   ├── strip.js         # Canvas Layout, Text & Stacking Engine
-│   ├── pwa.js           # PWA Service Worker & Install Banner Popup
-│   ├── share.js         # Native Web Share API File Integration
-│   ├── gif.js           # Animated GIF Motion Exporter
-│   └── app.js           # Master UI Controller & State Manager
-├── assets/
-│   ├── logo.png         # 35mm Film Wrapped RT Logo (512x512)
-│   └── favicon.png      # High-Res Favicon Icon
-├── manifest.json        # PWA Web Application Manifest
-├── sw.js                # Service Worker for Offline Caching
-├── LICENSE              # Strict Proprietary License (All Rights Reserved)
-└── README.md            # Senior Developer Documentation
+*   **Runtime**: React 19 + TypeScript + Vite 6
+*   **Styling**: Tailwind CSS V4
+*   **Icons**: Lucide React
+*   **GIF Compilation**: `gifenc` (zero-dependency, high-speed quantization)
+*   **Audio Synthesis**: Web Audio API (Synthesizes mechanical shutter sound and warning beep frequencies dynamically without needing static media assets)
+*   **Video Recording**: Web MediaRecorder API
+
+### Code Directory Structure
+```text
+/src
+ ├── types.ts                # TypeScript interfaces (Photos, Stickers, Filters)
+ ├── App.tsx                 # Core state machine and stepper navigator
+ ├── main.tsx                # Client-entry point
+ ├── index.css               # Global Tailwind CSS and noise animations
+ ├── utils/
+ │    └── audio.ts           # Dynamic HTML5 Web Audio Synthesizer
+ └── components/
+      ├── Header.tsx         # Sleek navigation and step progress indicator
+      ├── WelcomeView.tsx    # Immersive landing page and instruction set
+      ├── LayoutSelector.tsx # Aspect ratio and frame template picker
+      ├── CameraView.tsx     # Webcam stream binder and countdown flash
+      ├── CustomizePanel.tsx # Darkroom filters, caption fonts, and draggable stickers
+      └── ExportPanel.tsx    # High-resolution rendering canvas and Web Share manager
 ```
 
 ---
 
-## ⚡ Deployment to GitHub Pages (3-Step Setup)
+## ⚙️ Development & Deployment Instructions
 
-1. **Commit and push** all project files to your GitHub repository (`https://github.com/razeltech/PhotoboothPro`).
-2. Navigate to your repository **Settings** > **Pages**.
-3. Under **Branch**, select `main` (or `master`) and `/root`, then click **Save**.
+### Installation
 
-Your live website will be accessible instantly at:  
-👉 **`https://razeltech.github.io/PhotoboothPro/`**
+To set up the project locally, install dependencies using npm:
+
+```bash
+npm install
+```
+
+### Running the Dev Server
+
+Start the local development server on port `3000`:
+
+```bash
+npm run dev
+```
+
+The application will be accessible at `http://localhost:3000`.
+
+### Building for Production
+
+Compile a production-ready optimized build inside the `dist/` folder:
+
+```bash
+npm run build
+```
 
 ---
 
-## 📜 Copyright & License
+## 🔒 Security, Privacy, and Performance
 
-Copyright (c) 2026 **Razel Tech** ([https://razeltech.github.io](https://razeltech.github.io)). **All Rights Reserved.**  
-Licensed under the [Strict Proprietary License](LICENSE). Unauthorized copying, reproduction, or redistribution is strictly prohibited.
+*   **100% Client-Side**: No image data, video frame, or audio capture is ever transmitted to a server. All canvas rendering, GIF quantization, and video packaging occur locally in the user's browser sandbox.
+*   **Sub-Millisecond Rendering**: Rendering previews use optimized hardware-accelerated CSS filters rather than blocking the Javascript event loop with canvas redraws, keeping the editor running at a stable 60 FPS.
+*   **Zero Asset Overhead**: Shutter clicks and warning sounds are synthesized mathematically on the fly via the browser's audio nodes, eliminating cold-load network latencies.
