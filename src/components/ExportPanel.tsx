@@ -1602,7 +1602,7 @@ export default function ExportPanel({
         await navigator.share({
           files: [file],
           title: 'DigiSmile Photobooth Session',
-          text: `Check out my photo strip taken with DigiSmile! Powered by Razel Tech.`,
+          text: `Check out my photo strip captured with DigiSmile! 📸\n\nCreate yours free here:\nhttps://razeltech.github.io/PhotoboothPro/`,
         });
       } catch (err: any) {
         if (err.name !== 'AbortError') {
