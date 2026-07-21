@@ -689,15 +689,55 @@
             </div>
         </div>
 
-        <!-- Step 4 View: Finish (Placeholder shell for Task 6) -->
+        <!-- Step 4 View: Finish & Export Studio -->
         <div class="step-view" id="step-finish">
-            <div class="app-card" style="text-align:center; padding: 40px;">
-                <h2 style="margin-bottom:8px;">🎉 Step 4: Finish & Export Studio</h2>
-                <p style="color:var(--text-muted); margin-bottom:20px;">High-res export, download, share & print workspace shell ready for Task 6.</p>
-                <div class="btn-group" style="display:flex; justify-center; gap:12px;">
-                    <button class="btn btn-secondary" onclick="window.DigiSmileNav.previousStep()">← BACK TO CUSTOMIZE</button>
-                    <button class="btn btn-primary" onclick="window.DigiSmileNav.goToStep(1)">START NEW SESSION 🔄</button>
+            <div class="app-card finish-card">
+                
+                <!-- Celebratory Entrance Header -->
+                <div class="finish-header">
+                    <div class="celebrate-badge">🎉 PHOTOS READY FOR PRINT & SHARE!</div>
+                    <h2>High-Resolution Memory Created</h2>
+                    <p>Your photo strip is rendered in high resolution for printing and sharing.</p>
                 </div>
+
+                <!-- High-Res Output Viewport Box -->
+                <div class="finish-preview-box">
+                    <div class="strip-wrapper border-vintage-card" id="render-strip-finish"></div>
+                </div>
+
+                <!-- Export Action Buttons Grid -->
+                <div class="finish-actions-grid">
+                    <button class="btn btn-success btn-finish-action" id="btn-download-png">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>DOWNLOAD PNG</span>
+                    </button>
+
+                    <button class="btn btn-primary btn-finish-action" id="btn-download-jpg">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>DOWNLOAD JPG</span>
+                    </button>
+
+                    <button class="btn btn-share btn-finish-action" id="btn-share-finish">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        <span>SHARE TO WHATSAPP</span>
+                    </button>
+
+                    <button class="btn btn-secondary btn-finish-action" id="btn-print-finish">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        <span>PRINT STRIP</span>
+                    </button>
+                </div>
+
+                <!-- Reset Session Footer Row -->
+                <div class="finish-reset-row">
+                    <button class="btn btn-secondary" id="btn-back-to-customize">
+                        ← EDIT AGAIN
+                    </button>
+                    <button class="btn btn-hero-cta" id="btn-start-new-session" style="font-size:0.9rem; padding:12px 28px;">
+                        <span>🔄 START NEW SESSION</span>
+                    </button>
+                </div>
+
             </div>
         </div>
 

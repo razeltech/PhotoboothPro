@@ -149,6 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCustomizePreview();
         }
 
+        if (activeStep === 4) {
+            renderFinishExportView();
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -331,6 +335,132 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnProceedToFinish) {
         btnProceedToFinish.addEventListener('click', () => {
             goToStep(4);
+        });
+    }
+
+    /**
+     * Step 4: Finish & Export Handlers (Lazy Export Pipeline, Branded Filenames, Share & Reset)
+     */
+    const btnDownloadPng = document.getElementById('btn-download-png');
+    const btnDownloadJpg = document.getElementById('btn-download-jpg');
+    const btnShareFinish = document.getElementById('btn-share-finish');
+    const btnPrintFinish = document.getElementById('btn-print-finish');
+    const btnBackToCustomize = document.getElementById('btn-back-to-customize');
+    const btnStartNewSession = document.getElementById('btn-start-new-session');
+
+    function generateDigiSmileFilename(extension = 'png') {
+        const rawCaption = (captionInput && captionInput.value.trim()) ? captionInput.value.trim() : 'memory';
+        const cleanCaption = rawCaption.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+        const safeCaption = cleanCaption || 'photo';
+
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const sec = String(now.getSeconds()).padStart(2, '0');
+
+        return `DigiSmile_${safeCaption}_${yyyy}-${mm}-${dd}_${hh}${min}${sec}.${extension}`;
+    }
+
+    async function renderFinishExportView() {
+        const finishContainer = document.getElementById('render-strip-finish');
+        if (!finishContainer) return;
+
+        if (DigiSmileSession.export.dirty || !DigiSmileSession.export.canvas) {
+            if (window.StripEngine && typeof window.StripEngine.buildHighResCanvas === 'function') {
+                const highResCanvas = await window.StripEngine.buildHighResCanvas(DigiSmileSession);
+                DigiSmileSession.export.canvas = highResCanvas;
+                DigiSmileSession.export.dirty = false;
+            }
+        }
+
+        if (DigiSmileSession.export.canvas) {
+            finishContainer.innerHTML = '';
+            const imgPreview = new Image();
+            imgPreview.src = DigiSmileSession.export.canvas.toDataURL('image/png');
+            imgPreview.style.maxWidth = '100%';
+            imgPreview.style.borderRadius = '12px';
+            imgPreview.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.6)';
+            finishContainer.appendChild(imgPreview);
+        }
+    }
+
+    function downloadCanvasFile(canvas, filename, mimeType) {
+        if (!canvas) return;
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL(mimeType, 0.95);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function resetDigiSmileSession() {
+        Object.assign(DigiSmileSession, createInitialSession());
+        capturedFrames = [];
+        const reqCount = getRequiredPhotosCount('4');
+        updatePoseTrackerUI(0, reqCount);
+
+        layoutCards.forEach(card => {
+            const isSelected = card.getAttribute('data-layout') === '4';
+            card.classList.toggle('selected', isSelected);
+            card.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+        });
+
+        goToStep(1);
+    }
+
+    if (btnDownloadPng) {
+        btnDownloadPng.addEventListener('click', () => {
+            if (DigiSmileSession.export.canvas) {
+                const filename = generateDigiSmileFilename('png');
+                downloadCanvasFile(DigiSmileSession.export.canvas, filename, 'image/png');
+            }
+        });
+    }
+
+    if (btnDownloadJpg) {
+        btnDownloadJpg.addEventListener('click', () => {
+            if (DigiSmileSession.export.canvas) {
+                const filename = generateDigiSmileFilename('jpg');
+                downloadCanvasFile(DigiSmileSession.export.canvas, filename, 'image/jpeg');
+            }
+        });
+    }
+
+    if (btnShareFinish) {
+        btnShareFinish.addEventListener('click', async () => {
+            if (!DigiSmileSession.export.canvas) return;
+            const filename = generateDigiSmileFilename('png');
+            if (window.ShareEngine && typeof window.ShareEngine.shareCanvasFile === 'function') {
+                const shared = await window.ShareEngine.shareCanvasFile(DigiSmileSession.export.canvas, filename);
+                if (!shared) {
+                    downloadCanvasFile(DigiSmileSession.export.canvas, filename, 'image/png');
+                    alert('Web Share API not supported on this browser. Your photo strip has been downloaded!');
+                }
+            } else {
+                downloadCanvasFile(DigiSmileSession.export.canvas, filename, 'image/png');
+            }
+        });
+    }
+
+    if (btnPrintFinish) {
+        btnPrintFinish.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    if (btnBackToCustomize) {
+        btnBackToCustomize.addEventListener('click', () => {
+            goToStep(3);
+        });
+    }
+
+    if (btnStartNewSession) {
+        btnStartNewSession.addEventListener('click', () => {
+            resetDigiSmileSession();
         });
     }
 
