@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>DigiSmile Studio v1 (Classic) 📸 | Razel Tech</title>
+    <meta name="title" content="Photobooth Studio App | Razel Tech Photo Booth Pro ≡ƒç«≡ƒç│">
+    <meta name="description" content="Launch the Razel Tech Photobooth Studio App! Shoot HD webcam photos with Silver Gelatin B&W filters, single photo retakes, custom background uploads & draggable stickers. Direct WhatsApp sharing & PWA installable.">
+    <meta name="robots" content="index, follow">
+
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e11d48">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://razeltech.github.io/PhotoboothPro/booth.html">
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://razeltech.github.io/PhotoboothPro/booth.html">
+    <meta property="og:title" content="Photobooth Studio App | Razel Tech Photo Booth Pro ≡ƒç«≡ƒç│">
+    <meta property="og:description" content="Shoot HD webcam photos with Silver Gelatin B&W filters, single photo retakes, custom background uploads & draggable stickers. Direct WhatsApp sharing & PWA installable.">
+    <meta property="og:image" content="https://razeltech.github.io/PhotoboothPro/assets/logo.png">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://razeltech.github.io/PhotoboothPro/booth.html">
+    <meta name="twitter:title" content="Photobooth Studio App | Razel Tech Photo Booth Pro ≡ƒç«≡ƒç│">
+    <meta name="twitter:description" content="Shoot HD webcam photos with Silver Gelatin B&W filters, custom backgrounds & draggable stickers.">
+    <meta name="twitter:image" content="https://razeltech.github.io/PhotoboothPro/assets/logo.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style_v1.css">
+</head>
+<body>
+
+    <!-- App Header Navbar -->
+    <header class="app-navbar">
+        <a href="index.html" class="brand-container" title="Razel Tech Photo Booth Pro">
+            <img src="assets/logo.png" alt="Razel Tech Film Monogram Logo">
+            <span class="brand-title">PHOTOBOOTH STUDIO</span>
+        </a>
+        
+        <!-- Desktop Nav Links -->
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="booth_v1.html" class="nav-link active">📸 Classic Studio</a>
+            <!-- Version Switcher Pill -->
+            <div class="version-switcher-pill">
+                <span class="ver-badge active">v1 Classic</span>
+                <a href="booth.html" class="ver-badge">v2 Wizard →</a>
+            </div>
+            <button class="btn-pwa pwa-install-btn" style="display:none;" title="Install DigiSmile App">
+                📲 INSTALL APP
+            </button>
+            <a href="index.html" class="btn-launch" title="Back to Home Page">
+                🏠 Home Page
+            </a>
+        </nav>
+
+        <!-- Mobile Hamburger Button -->
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Mobile Slide-Down Menu Drawer -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="index.html" class="nav-link">≡ƒÅá Home Page</a>
+            <a href="booth.html" class="nav-link active">≡ƒô╕ Photobooth Studio App</a>
+            <button class="btn-pwa pwa-install-btn" style="display:none; text-align:center;">
+                ≡ƒô▓ Install App on Phone
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Studio Workspace -->
+    <main class="studio-layout">
+
+        <!-- Left Column: Camera Viewport & Capture Run -->
+        <div class="workspace">
+            <div class="app-card">
+                <!-- Shot Status Indicator Badge -->
+                <div class="status-badge ready" id="status-badge">≡ƒô╕ Ready to Shoot</div>
+
+                <div class="video-viewport">
+                    <div class="flash-overlay" id="flash"></div>
+                    <div class="light-leak-overlay" id="leak-overlay"></div>
+                    <div class="countdown-overlay" id="countdown">3</div>
+                    <video id="preview-stream" autoplay playsinline class="mirrored"></video>
+                </div>
+
+                <!-- Quick 1-Tap Filter Chips Grid -->
+                <div class="quick-filter-bar" id="quick-filter-bar">
+                    <button class="filter-chip active" data-filter="silver">≡ƒÄ₧∩╕Å Silver B&W</button>
+                    <button class="filter-chip" data-filter="polaroid">≡ƒô╕ Polaroid</button>
+                    <button class="filter-chip" data-filter="fuji">≡ƒî╕ Instax</button>
+                    <button class="filter-chip" data-filter="warm">ΓÿÇ∩╕Å Kodachrome</button>
+                    <button class="filter-chip" data-filter="sepia">≡ƒî╛ Sepia</button>
+                    <button class="filter-chip" data-filter="color">≡ƒÄ¿ 35mm Color</button>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="capture-trigger">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <span>TAKE PHOTOS</span>
+                    </button>
+                    <button class="btn btn-primary" id="new-strip-btn" style="display:none;" title="Start Fresh New Photo Strip">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>NEW STRIP</span>
+                    </button>
+                    <button class="btn btn-secondary" id="retake-all-btn" style="display:none;" title="Retake All Shots">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        <span>RETAKE ALL</span>
+                    </button>
+                    <button class="btn btn-secondary" id="cam-toggle" title="Switch Front/Rear Camera">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0-4.4-3.6-8-8-8s-8 3.6-8 8h-3l4 4 4-4h-3c0-3.3 2.7-6 6-6s6 2.7 6 6h-3l4 4 4-4h-3z"/></svg>
+                        <span>FLIP CAM</span>
+                    </button>
+                    <button class="btn btn-secondary active" id="mirror-toggle" title="Toggle Mirroring">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M16 7l4 4-4 4"/><path d="M8 7L4 11l4 4"/></svg>
+                        <span>MIRROR</span>
+                    </button>
+                </div>
+
+                <!-- Mobile & Tablet Quick Jump to Preview Button -->
+                <button class="btn btn-mobile-jump" id="mobile-jump-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                    <span>VIEW FINISHED STRIP</span>
+                </button>
+            </div>
+
+            <!-- Session History Thumbnails -->
+            <div class="app-card history-pane">
+                <label>≡ƒôü Session Photo Strips History</label>
+                <div class="history-grid" id="history-container">
+                    <span style="color:#777; font-size:0.8rem;">No strips taken yet.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Column: Tabbed UX Studio Control Suite -->
+        <div class="controls-panel">
+            <div class="app-card">
+                
+                <!-- Icon Tabs Header -->
+                <div class="studio-tabs">
+                    <button class="studio-tab-btn active" data-tab="camera">≡ƒô╖ Camera</button>
+                    <button class="studio-tab-btn" data-tab="shaders">≡ƒÄ¼ Shaders</button>
+                    <button class="studio-tab-btn" data-tab="bg">≡ƒû╝∩╕Å Background</button>
+                    <button class="studio-tab-btn" data-tab="props">≡ƒææ Props</button>
+                </div>
+
+                <!-- Tab Pane 1: Camera Controls -->
+                <div class="studio-tab-pane active" id="tab-camera">
+                    <div class="control-group">
+                        <label>ΓÜí Shutter Trigger Mode</label>
+                        <select id="setting-mode">
+                            <option value="auto" selected>ΓÜí Auto Countdown Loop (Automatic)</option>
+                            <option value="manual">≡ƒæå Manual Shutter (Click For Each Shot)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>ΓÅ▒∩╕Å Countdown Timer Delay</label>
+                        <select id="setting-timer">
+                            <option value="3" selected>3 Seconds Interval</option>
+                            <option value="5">5 Seconds Interval</option>
+                            <option value="10">10 Seconds Interval</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒôÉ Photo Strip Grid Format</label>
+                        <select id="setting-layout">
+                            <option value="1">1 Picture Single Shot</option>
+                            <option value="2">2 Pictures Mini-Strip</option>
+                            <option value="3">3 Pictures Midi-Strip</option>
+                            <option value="4" selected>4 Pictures Classic Strip</option>
+                            <option value="5">5 Pictures Mega-Strip</option>
+                            <option value="grid">2x2 Quad Box Grid</option>
+                            <option value="polaroid">Single Polaroid Card</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tab Pane 2: Film Shaders, Custom Sliders & Grain -->
+                <div class="studio-tab-pane" id="tab-shaders">
+                    <div class="control-group">
+                        <label>≡ƒÄ¼ Film Emulsion Filter Presets</label>
+                        <select id="setting-filter">
+                            <option value="silver" selected>≡ƒÄ₧∩╕Å Silver Gelatin Vintage B&W (Original)</option>
+                            <option value="polaroid">≡ƒô╕ Polaroid SX-70 Instant Film</option>
+                            <option value="fuji">≡ƒî╕ Fujifilm Instax Color</option>
+                            <option value="warm">ΓÿÇ∩╕Å 1970s Warm Kodachrome</option>
+                            <option value="sepia">≡ƒî╛ Vintage Sepia Nostalgia</option>
+                            <option value="color">≡ƒÄ¿ Vibrant 35mm Color</option>
+                            <option value="neon">ΓÜí Cyberpunk Neon Pop</option>
+                            <option value="cool">≡ƒÆÄ Emerald Cool Emulsion</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom Filter Tuning Sliders -->
+                    <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; margin-bottom:14px;">
+                        <label style="color:var(--accent-gold); font-size:0.7rem;">≡ƒÄ¢∩╕Å CUSTOM FILTER FINE-TUNING</label>
+
+                        <label style="margin-top:6px;">Exposure / Brightness</label>
+                        <input type="range" id="filter-brightness" min="-50" max="50" value="0">
+
+                        <label style="margin-top:6px;">Contrast Intensity</label>
+                        <input type="range" id="filter-contrast" min="-50" max="50" value="0">
+
+                        <label style="margin-top:6px;">Warmth / Sepia Tint</label>
+                        <input type="range" id="filter-warmth" min="0" max="100" value="0">
+
+                        <label style="margin-top:6px;">Color Saturation</label>
+                        <input type="range" id="filter-saturation" min="0" max="200" value="100">
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒÄ₧∩╕Å Film Grain ISO Intensity</label>
+                        <select id="setting-grain">
+                            <option value="none">None (Clean Digital)</option>
+                            <option value="light">Fine Grain (ISO 100)</option>
+                            <option value="medium" selected>Medium Grain (ISO 400)</option>
+                            <option value="heavy">Coarse Heavy Grain (ISO 1600)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>ΓÿÇ∩╕Å Light Leak Flare Shader</label>
+                        <select id="setting-leak">
+                            <option value="none" selected>None (Clean Negative)</option>
+                            <option value="subtle">Subtle Side Flare</option>
+                            <option value="dramatic">Dramatic Retro Burn Flare</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tab Pane 3: Paper Stock & Backgrounds -->
+                <div class="studio-tab-pane" id="tab-bg">
+                    <div class="control-group">
+                        <label>≡ƒû╝∩╕Å Paper Stock / Custom Background</label>
+                        <select id="setting-border">
+                            <option value="vintage-card" selected>≡ƒÄ₧∩╕Å Vintage Cardstock (Classic Strip)</option>
+                            <option value="classic">Classic Matte Off-White</option>
+                            <option value="dark">Minimalist Charcoal Dark</option>
+                            <option value="birthday">≡ƒÄé Birthday Party Confetti</option>
+                            <option value="valentine">≡ƒÆû Valentine Hearts</option>
+                            <option value="teared">Γ£é∩╕Å Teared Paper Cut Edges</option>
+                            <option value="filmstrip">≡ƒÄ₧∩╕Å 35mm Film Strip Perforations</option>
+                            <option value="retro">Vintage Mustard Yellow</option>
+                            <option value="pink">Soft Bubblegum Pink</option>
+                            <option value="neon">Cyber Electric Blue</option>
+                            <option value="custom-color">≡ƒÄ¿ Custom Color Palette...</option>
+                            <option value="custom">≡ƒôü Custom Image Upload...</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom Paper & Frame Edge Color Picker Group -->
+                    <div class="control-group" id="custom-color-picker-group" style="display:none; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; margin-bottom:14px;">
+                        <label style="color:var(--accent-gold); font-size:0.7rem;">≡ƒÄ¿ CUSTOM PAPER & FRAME EDGE COLOR</label>
+                        <div style="display:flex; gap:12px; align-items:center; margin-top:6px;">
+                            <div style="flex:1;">
+                                <label style="font-size:0.65rem;">Paper Base Color</label>
+                                <input type="color" id="custom-paper-color" value="#e2d9cc" style="height:36px; padding:2px; cursor:pointer; width:100%;">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:0.65rem;">Frame Border Color</label>
+                                <input type="color" id="custom-border-color" value="#b8ac9c" style="height:36px; padding:2px; cursor:pointer; width:100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Background Upload, Opacity & Blend Mode -->
+                    <div class="control-group" id="custom-bg-group" style="display:none; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px;">
+                        <label>Upload Custom Background File</label>
+                        <input type="file" id="bg-file-input" accept="image/*">
+                        <label style="margin-top:8px;">Background Pattern Scale</label>
+                        <input type="range" id="bg-scale-input" min="0.2" max="3.0" step="0.1" value="1.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Opacity / Transparency</label>
+                        <input type="range" id="bg-opacity-input" min="0.1" max="1.0" step="0.05" value="1.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Layer Blend Mode</label>
+                        <select id="bg-blend-input">
+                            <option value="normal" selected>Normal</option>
+                            <option value="multiply">Multiply</option>
+                            <option value="screen">Screen</option>
+                            <option value="overlay">Overlay</option>
+                            <option value="darken">Darken</option>
+                            <option value="lighten">Lighten</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tab Pane 4: 100% Custom Text, Timestamp & Props -->
+                <div class="studio-tab-pane" id="tab-props">
+                    <div class="control-group">
+                        <label>Γ£ì∩╕Å Custom Top Title / Caption</label>
+                        <input type="text" id="setting-text" value="PHOTO STUDIO" placeholder="Type caption..." maxlength="36">
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒÅ╖∩╕Å Custom Bottom Tagline / Subtitle</label>
+                        <input type="text" id="setting-tagline" value="" placeholder="Type subtitle (optional)..." maxlength="44">
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒôà Timestamp Display Format</label>
+                        <select id="setting-timestamp-mode">
+                            <option value="date" selected>Current Date (e.g. Jul 19, 2026)</option>
+                            <option value="datetime">Date & Time (e.g. Jul 19, 9:15 PM)</option>
+                            <option value="custom">Custom Timestamp Text...</option>
+                            <option value="none">Hide Timestamp Complete</option>
+                        </select>
+                        <input type="text" id="setting-custom-timestamp" placeholder="Type custom timestamp..." style="display:none; margin-top:6px;" maxlength="32">
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒöñ Caption Typography Font</label>
+                        <select id="setting-font">
+                            <option value="mono" selected>Retro Monospace</option>
+                            <option value="cursive">Cursive Handwriting</option>
+                            <option value="serif">Elegant Serif</option>
+                            <option value="sans">Modern Sans-Serif</option>
+                            <option value="bold-sans">Bold Geometric Headings</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒöñ Subtitle Typography Font</label>
+                        <select id="setting-subfont">
+                            <option value="mono" selected>Retro Monospace</option>
+                            <option value="cursive">Cursive Handwriting</option>
+                            <option value="serif">Elegant Serif</option>
+                            <option value="sans">Modern Sans-Serif</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>≡ƒææ Draggable Sticker Props</label>
+                        <div class="stickers-tray" id="stickers-tray">
+                            <button class="sticker-btn" data-emoji="≡ƒææ" title="Add Crown">≡ƒææ</button>
+                            <button class="sticker-btn" data-emoji="≡ƒÿÄ" title="Add Sunglasses">≡ƒÿÄ</button>
+                            <button class="sticker-btn" data-emoji="Γ¥ñ∩╕Å" title="Add Heart">Γ¥ñ∩╕Å</button>
+                            <button class="sticker-btn" data-emoji="Γ£¿" title="Add Sparkles">Γ£¿</button>
+                            <button class="sticker-btn" data-emoji="Γ¡É" title="Add Star">Γ¡É</button>
+                            <button class="sticker-btn" data-emoji="≡ƒÑ│" title="Add Party">≡ƒÑ│</button>
+                            <button class="sticker-btn" data-emoji="≡ƒÄÇ" title="Add Ribbon">≡ƒÄÇ</button>
+                            <button class="sticker-btn" data-emoji="≡ƒî║" title="Add Flower">≡ƒî║</button>
+                        </div>
+                        <label style="margin-top:8px;">Sticker Size Adjuster</label>
+                        <input type="range" id="sticker-scale-slider" min="20" max="100" value="48">
+                        <label style="margin-top:8px;">Sticker Rotation Adjuster</label>
+                        <input type="range" id="sticker-rotation-slider" min="-180" max="180" value="0">
+                        <button class="btn btn-secondary" id="clear-stickers-btn" style="margin-top:8px; font-size:0.75rem; padding:4px 8px; width:100%;">
+                            ≡ƒùæ∩╕Å Clear All Stickers
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Column: Live Developing Strip Preview & Actions -->
+        <div class="preview-pane">
+            <div class="app-card" style="width: 100%; display:flex; flex-direction:column; align-items:center;">
+                <label style="margin-bottom: 12px;">Live Finished Strip Preview</label>
+
+                <!-- Live Strip Render Viewport -->
+                <div class="strip-wrapper border-vintage-card" id="render-strip"></div>
+
+                <!-- Export, Share & Print Actions -->
+                <button class="btn btn-primary" id="new-strip-pane-btn" style="display:none; margin-top:16px; width:100%;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>START NEW PHOTO STRIP</span>
+                </button>
+                <button class="btn btn-success" id="export-trigger" style="display:none; margin-top:8px; width:100%;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>DOWNLOAD PHOTO STRIP</span>
+                </button>
+                <button class="btn btn-share" id="share-trigger" style="display:none; margin-top:8px; width:100%;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    <span>SHARE PHOTO STRIP</span>
+                </button>
+                <!-- GIF Export button hidden for Phase 2 -->
+                <button class="btn btn-gif" id="gif-trigger" style="display:none!important; margin-top:8px; width:100%;">
+                    ≡ƒÄ₧∩╕Å EXPORT ANIMATED GIF
+                </button>
+                <button class="btn btn-secondary" id="print-trigger" style="display:none; margin-top:8px; width:100%;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    <span>PRINT PHOTO STRIP</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>┬⌐ 2026 <strong>Razel Tech</strong> ≡ƒç«≡ƒç│ | Powered by <a href="https://razeltech.github.io" target="_blank" class="footer-link">Razel Tech</a></p>
+        <p style="font-size:0.85rem; margin-top:4px;">
+            Official Company Profile: <a href="https://razeltech.github.io" target="_blank" class="footer-link">https://razeltech.github.io</a>
+        </p>
+    </footer>
+
+    <!-- Modular JavaScript Suite -->
+    <script src="js/audio.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/strip.js"></script>
+    <script src="js/pwa.js"></script>
+    <script src="js/share.js"></script>
+    <script src="js/gif.js"></script>
+    <script src="js/app_v1.js"></script>
+</body>
+</html>
+
