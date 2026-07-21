@@ -377,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (filterSelect) filterSelect.value = filterVal;
+            updateLiveVideoFilter();
             refreshPreviewBlueprint();
         });
     });
@@ -397,6 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (filterSelect) filterSelect.value = filterVal;
+
+            // Apply filter to live camera immediately
+            updateLiveVideoFilter();
         });
     });
 
@@ -705,11 +709,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLiveVideoFilter() {
         if (!liveVideoElem) return;
 
-        const filterVal = filterSelect ? filterSelect.value : 'silver';
-        const b = brightnessSlider ? parseInt(brightnessSlider.value) : 0;
-        const c = contrastSlider ? parseInt(contrastSlider.value) : 0;
-        const w = warmthSlider ? parseInt(warmthSlider.value) : 0;
-        const s = saturationSlider ? parseInt(saturationSlider.value) : 100;
+        // Always read from DigiSmileSession first (v2 chips), then fall back to DOM select (v1)
+        const filterVal = DigiSmileSession.selectedPreset ||
+                          (filterSelect ? filterSelect.value : 'silver') ||
+                          'silver';
+        const b = DigiSmileSession.adjustments.brightness || (brightnessSlider ? parseInt(brightnessSlider.value) : 0);
+        const c = DigiSmileSession.adjustments.contrast || (contrastSlider ? parseInt(contrastSlider.value) : 0);
+        const w = DigiSmileSession.adjustments.warmth || (warmthSlider ? parseInt(warmthSlider.value) : 0);
+        const s = DigiSmileSession.adjustments.saturation || (saturationSlider ? parseInt(saturationSlider.value) : 100);
 
         let baseCss = "";
         switch (filterVal) {
@@ -1135,28 +1142,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pill Selectors for Aspect Ratio (4:3, 16:9, 1:1)
     const pillAspectBtns = document.querySelectorAll('#pill-aspect-group .pill-btn');
-    const formatBadgeText = document.querySelector('#viewfinder-format-badge span');
-    const captureViewportElem = document.querySelector('.capture-viewport');
+    const captureViewportElem = document.getElementById('capture-viewport') || document.querySelector('.capture-viewport');
+
+    function applyAspectRatio(val) {
+        DigiSmileSession.captureAspectRatio = val;
+
+        if (!captureViewportElem) return;
+
+        // Map ratio string to CSS values
+        const ratioMap = {
+            '4:3':  { css: '4/3',  maxH: '380px' },
+            '16:9': { css: '16/9', maxH: '300px' },
+            '1:1':  { css: '1/1',  maxH: '340px' }
+        };
+        const r = ratioMap[val] || ratioMap['4:3'];
+
+        captureViewportElem.style.aspectRatio = r.css;
+        captureViewportElem.style.maxHeight   = r.maxH;
+        captureViewportElem.style.overflow    = 'hidden';
+
+        // Crop the video stream to fill the viewport exactly
+        const videoEl = captureViewportElem.querySelector('video');
+        if (videoEl) {
+            videoEl.style.width      = '100%';
+            videoEl.style.height     = '100%';
+            videoEl.style.objectFit  = 'cover';
+            videoEl.style.objectPosition = 'center';
+        }
+    }
+
+    // Apply default on load
+    applyAspectRatio('4:3');
+
     pillAspectBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             pillAspectBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const val = btn.getAttribute('data-val');
-            if (formatBadgeText) {
-                formatBadgeText.textContent = `FORMAT: STANDARD ${val}`;
-            }
-            if (captureViewportElem) {
-                if (val === '16:9') {
-                    captureViewportElem.style.aspectRatio = '16/9';
-                    captureViewportElem.style.maxHeight = '420px';
-                } else if (val === '1:1') {
-                    captureViewportElem.style.aspectRatio = '1/1';
-                    captureViewportElem.style.maxHeight = '420px';
-                } else {
-                    captureViewportElem.style.aspectRatio = '4/3';
-                    captureViewportElem.style.maxHeight = '480px';
-                }
-            }
+            applyAspectRatio(btn.getAttribute('data-val') || '4:3');
         });
     });
 

@@ -23,8 +23,9 @@ class ShareEngine {
                         await navigator.share({
                             files: [file],
                             title: title,
-                            text: shareText,
-                            url: siteUrl
+                            text: shareText
+                            // NOTE: url omitted intentionally — combining files+url causes
+                            // browsers to show two separate share items instead of one
                         });
                         resolve(true);
                         return;
