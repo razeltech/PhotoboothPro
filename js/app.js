@@ -892,17 +892,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Blueprint Layout Refresh Engine — Always canvas-rendered via StripEngine
+    // Reads from DigiSmileSession (source of truth), never bails on missing DOM selects
     function refreshPreviewBlueprint() {
         const stripContainer = document.getElementById('render-strip-preview') || document.getElementById('render-strip-finish') || document.getElementById('render-strip');
-        if (!stripContainer || !layoutSelect) return;
+        if (!stripContainer) return;
 
-        const layoutMode = layoutSelect.value;
+        // Always sync local capturedFrames into session before rendering
+        DigiSmileSession.capturedFrames = capturedFrames;
+
+        // Derive layout and theme from Session (source of truth) with DOM fallback
+        const layoutMode = DigiSmileSession.layout || '4';
+        const borderTheme = DigiSmileSession.borderTheme || 'vintage-card';
+        const leakVal = (DigiSmileSession.adjustments && DigiSmileSession.adjustments.leak) || 'none';
+
         let targetCount = parseInt(layoutMode) || 4;
         if (layoutMode === 'grid') targetCount = 4;
         if (layoutMode === 'polaroid' || layoutMode === '1') targetCount = 1;
-
-        const borderTheme = borderSelect ? borderSelect.value : 'vintage-card';
-        const leakVal = leakSelect ? leakSelect.value : 'none';
+        if (layoutMode === '2') targetCount = 2;
+        if (layoutMode === '5') targetCount = 5;
 
         // Sync Light Leak overlay on live camera video viewport
         const leakOverlayElem = document.getElementById('leak-overlay');
@@ -920,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const liveImg = document.createElement('img');
                 liveImg.src = liveCanvas.toDataURL('image/jpeg', 0.92);
-                liveImg.style.cssText = 'max-width:100%; height:auto; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.6); display:block;';
+                liveImg.style.cssText = 'max-width:100%; height:auto; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.6); display:block; margin:0 auto;';
                 stripContainer.appendChild(liveImg);
 
                 // Status badge update
