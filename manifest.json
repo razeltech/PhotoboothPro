@@ -2,19 +2,20 @@
   "name": "DigiSmile Photobooth Studio 📸",
   "short_name": "DigiSmile",
   "description": "Capture Every Smile, Print Every Memory — Online Vintage Photo Strip Studio App by Razel Tech",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#090a0f",
   "theme_color": "#ff334b",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     }
