@@ -44,12 +44,91 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             media: {
                 btsBlob: null,
-                recorder: null
+                recorder: null,
+                chunks: [],
+                mimeType: null,
+                recording: false,
+                objectUrl: null
             }
         };
     }
 
     let DigiSmileSession = createInitialSession();
+
+    /**
+     * Behind-the-Scenes (BTS) Video Recording Engine
+     */
+    function getSupportedBTSRecorderMimeType() {
+        if (typeof MediaRecorder === 'undefined') return null;
+        const candidateTypes = [
+            'video/mp4',
+            'video/webm;codecs=vp9',
+            'video/webm;codecs=vp8',
+            'video/webm'
+        ];
+        for (let type of candidateTypes) {
+            if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
+                return type;
+            }
+        }
+        return '';
+    }
+
+    function startBTSRecording() {
+        if (!camera || !camera.stream) return;
+        const mimeType = getSupportedBTSRecorderMimeType();
+        if (mimeType === null) return;
+
+        try {
+            DigiSmileSession.media.chunks = [];
+            DigiSmileSession.media.mimeType = mimeType;
+
+            const options = mimeType ? { mimeType } : undefined;
+            const recorder = new MediaRecorder(camera.stream, options);
+
+            recorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) {
+                    DigiSmileSession.media.chunks.push(e.data);
+                }
+            };
+
+            recorder.onstop = () => {
+                if (DigiSmileSession.media.chunks.length > 0) {
+                    const blobType = DigiSmileSession.media.mimeType || 'video/webm';
+                    const blob = new Blob(DigiSmileSession.media.chunks, { type: blobType });
+                    DigiSmileSession.media.btsBlob = blob;
+                    if (DigiSmileSession.media.objectUrl) {
+                        URL.revokeObjectURL(DigiSmileSession.media.objectUrl);
+                    }
+                    DigiSmileSession.media.objectUrl = URL.createObjectURL(blob);
+                }
+                const btsBadge = document.getElementById('bts-recording-badge');
+                if (btsBadge) btsBadge.style.display = 'none';
+            };
+
+            DigiSmileSession.media.recorder = recorder;
+            DigiSmileSession.media.recording = true;
+            recorder.start(500);
+
+            const btsBadge = document.getElementById('bts-recording-badge');
+            if (btsBadge) btsBadge.style.display = 'block';
+        } catch (err) {
+            console.warn('BTS MediaRecorder failed to start gracefully:', err);
+        }
+    }
+
+    function stopBTSRecording() {
+        if (DigiSmileSession.media.recorder && DigiSmileSession.media.recording) {
+            try {
+                DigiSmileSession.media.recording = false;
+                if (DigiSmileSession.media.recorder.state !== 'inactive') {
+                    DigiSmileSession.media.recorder.stop();
+                }
+            } catch (err) {
+                console.warn('Error stopping BTS recorder:', err);
+            }
+        }
+    }
 
     /**
      * DigiSmile Wizard Navigation Engine (Task 2 Framework API)
@@ -364,6 +443,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return `DigiSmile_${safeCaption}_${yyyy}-${mm}-${dd}_${hh}${min}${sec}.${extension}`;
     }
 
+    const btnDownloadBts = document.getElementById('btn-download-bts');
+
     async function renderFinishExportView() {
         const finishContainer = document.getElementById('render-strip-finish');
         if (!finishContainer) return;
@@ -385,6 +466,14 @@ document.addEventListener('DOMContentLoaded', () => {
             imgPreview.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.6)';
             finishContainer.appendChild(imgPreview);
         }
+
+        if (btnDownloadBts) {
+            if (DigiSmileSession.media.btsBlob && DigiSmileSession.media.objectUrl) {
+                btnDownloadBts.style.display = 'flex';
+            } else {
+                btnDownloadBts.style.display = 'none';
+            }
+        }
     }
 
     function downloadCanvasFile(canvas, filename, mimeType) {
@@ -398,6 +487,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetDigiSmileSession() {
+        stopBTSRecording();
+        if (DigiSmileSession.media.objectUrl) {
+            URL.revokeObjectURL(DigiSmileSession.media.objectUrl);
+        }
         Object.assign(DigiSmileSession, createInitialSession());
         capturedFrames = [];
         const reqCount = getRequiredPhotosCount('4');
@@ -410,6 +503,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         goToStep(1);
+    }
+
+    if (btnDownloadBts) {
+        btnDownloadBts.addEventListener('click', () => {
+            if (DigiSmileSession.media.objectUrl) {
+                const ext = DigiSmileSession.media.mimeType && DigiSmileSession.media.mimeType.includes('mp4') ? 'mp4' : 'webm';
+                const filename = generateDigiSmileFilename(ext).replace('DigiSmile_', 'DigiSmile_BTS_');
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = DigiSmileSession.media.objectUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
     }
 
     if (btnDownloadPng) {
@@ -1128,6 +1236,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const startIdx = capturedFrames.length;
 
+        // Start BTS Motion Video Recording silently in background
+        if (startIdx === 0) {
+            startBTSRecording();
+        }
+
         for (let step = startIdx; step < targetCount; step++) {
             updatePoseTrackerUI(step, targetCount);
 
@@ -1174,6 +1287,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 await new Promise(r => setTimeout(r, 1200));
             }
         }
+
+        // Stop BTS Video Recording upon final shot
+        stopBTSRecording();
 
         triggerBtn.disabled = false;
         DigiSmileSession.capturedFrames = capturedFrames;
