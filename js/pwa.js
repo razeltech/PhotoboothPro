@@ -23,8 +23,8 @@ class PWAEngine {
                 <div class="pwa-banner-content">
                     <img src="assets/logo.png" alt="Razel Tech Icon" class="pwa-banner-icon">
                     <div class="pwa-banner-text">
-                        <h4>Install Photo Booth Pro</h4>
-                        <p>Add to home screen for full-screen camera studio experience</p>
+                        <h4>Install DigiSmile App</h4>
+                        <p>Add DigiSmile to home screen for full-screen camera studio experience</p>
                     </div>
                 </div>
                 <div class="pwa-banner-actions">

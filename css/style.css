@@ -548,6 +548,300 @@ h1, h2, h3, h4 {
     box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5);
 }
 
+/* Step 2 React-Inspired Clean Capture Viewport & Settings Grid */
+.capture-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+.btn-back-link {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease;
+}
+
+.btn-back-link:hover {
+    color: var(--text-primary);
+}
+
+.select-camera-device {
+    background: var(--control-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    outline: none;
+}
+
+.viewfinder-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.viewfinder-grid-overlay .grid-line {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.viewfinder-grid-overlay .horizontal { width: 100%; height: 1px; }
+.viewfinder-grid-overlay .horizontal.h1 { top: 33.33%; }
+.viewfinder-grid-overlay .horizontal.h2 { top: 66.66%; }
+
+.viewfinder-grid-overlay .vertical { height: 100%; width: 1px; }
+.viewfinder-grid-overlay .vertical.v1 { left: 33.33%; }
+.viewfinder-grid-overlay .vertical.v2 { left: 66.66%; }
+
+.crop-zone-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 2px;
+}
+.crop-zone-label.left { left: 8px; }
+.crop-zone-label.right { right: 8px; transform: translateY(-50%) rotate(90deg); }
+
+.viewfinder-format-badge {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 15;
+}
+
+.viewfinder-floating-actions {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    display: flex;
+    gap: 8px;
+    z-index: 15;
+}
+
+.circle-action-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.circle-action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.08);
+}
+
+.circle-action-btn.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #000000;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+}
+
+.capture-settings-card {
+    background: var(--control-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.settings-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.settings-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.toggle-control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.toggle-info label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.toggle-info span {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+/* Custom Switch Toggle */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-round {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--panel-border);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.slider-round:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-round {
+    background-color: #ff334b;
+}
+
+input:checked + .slider-round:before {
+    transform: translateX(20px);
+}
+
+.audio-toggle-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--panel-border);
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.audio-toggle-btn.active {
+    background: rgba(225, 29, 72, 0.2);
+    color: #ff334b;
+    border: 1px solid rgba(225, 29, 72, 0.4);
+}
+
+.pill-select-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.pill-info label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.pill-info span {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.pill-options {
+    display: flex;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 3px;
+    gap: 3px;
+}
+
+.pill-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pill-btn.active {
+    background: #ff334b;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(255, 51, 75, 0.4);
+}
+
+.btn-start-capture-main {
+    width: 100%;
+    padding: 16px 32px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff334b, #e11d48);
+    box-shadow: 0 8px 25px rgba(255, 51, 75, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-start-capture-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(255, 51, 75, 0.7);
+}
+
 .btn-pwa-update {
     background: rgba(255, 255, 255, 0.08);
     color: var(--text-secondary);

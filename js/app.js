@@ -1224,6 +1224,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Pill Selectors for Timer Delay (3s, 5s, 10s)
+    const pillTimerBtns = document.querySelectorAll('#pill-timer-group .pill-btn');
+    pillTimerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            pillTimerBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const val = btn.getAttribute('data-val');
+            if (timerSelect) timerSelect.value = val;
+        });
+    });
+
+    // Pill Selectors for Aspect Ratio (4:3, 16:9, 1:1)
+    const pillAspectBtns = document.querySelectorAll('#pill-aspect-group .pill-btn');
+    const formatBadgeText = document.querySelector('#viewfinder-format-badge span');
+    pillAspectBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            pillAspectBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const val = btn.getAttribute('data-val');
+            if (formatBadgeText) {
+                formatBadgeText.textContent = `FORMAT: STANDARD ${val}`;
+            }
+        });
+    });
+
+    // Audio Shutter Toggle Switch
+    const toggleAudioBtn = document.getElementById('toggle-audio-btn');
+    if (toggleAudioBtn) {
+        toggleAudioBtn.addEventListener('click', () => {
+            toggleAudioBtn.classList.toggle('active');
+            window.audioEnabled = toggleAudioBtn.classList.contains('active');
+        });
+    }
+
+    // Toggle Mirror Switch
+    const toggleMirrorSwitch = document.getElementById('toggle-mirror-switch');
+    if (toggleMirrorSwitch) {
+        toggleMirrorSwitch.addEventListener('change', () => {
+            if (camera && typeof camera.toggleMirror === 'function') {
+                camera.toggleMirror();
+            }
+        });
+    }
+
     async function runCaptureSequence() {
         if (!triggerBtn) return;
 
