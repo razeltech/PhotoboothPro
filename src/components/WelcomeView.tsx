@@ -68,6 +68,22 @@ export default function WelcomeView({ onStart, generatedPreviews, deferredPrompt
     }
   };
 
+  const handleForceUpdate = async () => {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const reg of registrations) {
+        await reg.unregister();
+      }
+    }
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      for (const name of cacheNames) {
+        await caches.delete(name);
+      }
+    }
+    window.location.reload();
+  };
+
   return (
     <div className="w-full select-none" id="welcome-view-container">
       
@@ -93,6 +109,13 @@ export default function WelcomeView({ onStart, generatedPreviews, deferredPrompt
             <button onClick={() => scrollToSection('choose-version')} className="text-xs font-semibold text-white/60 hover:text-white transition-colors cursor-pointer">🎛️ Compare Versions</button>
             <button onClick={() => scrollToSection('privacy')} className="text-xs font-semibold text-white/60 hover:text-white transition-colors cursor-pointer">🔒 Privacy</button>
             <button onClick={() => scrollToSection('themes')} className="text-xs font-semibold text-white/60 hover:text-white transition-colors cursor-pointer">🎨 Themes</button>
+            <button 
+              onClick={handleForceUpdate}
+              className="text-xs font-semibold text-white/60 hover:text-razel-neon transition-colors cursor-pointer flex items-center gap-1"
+              title="Purge local cache and force refresh application update"
+            >
+              🔄 Update
+            </button>
             
             {deferredPrompt && (
               <button 
@@ -129,6 +152,12 @@ export default function WelcomeView({ onStart, generatedPreviews, deferredPrompt
             <button onClick={() => scrollToSection('choose-version')} className="text-sm font-semibold text-white/70 hover:text-white text-left py-1 cursor-pointer">🎛️ Compare Versions</button>
             <button onClick={() => scrollToSection('privacy')} className="text-sm font-semibold text-white/70 hover:text-white text-left py-1 cursor-pointer">🔒 Data Privacy</button>
             <button onClick={() => scrollToSection('themes')} className="text-sm font-semibold text-white/70 hover:text-white text-left py-1 cursor-pointer">🎨 Themes Preview</button>
+            <button 
+              onClick={handleForceUpdate}
+              className="text-sm font-semibold text-white/70 hover:text-razel-neon text-left py-1 cursor-pointer flex items-center gap-1"
+            >
+              🔄 Update App
+            </button>
             
             {deferredPrompt && (
               <button 
