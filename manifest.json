@@ -1,11 +1,11 @@
 {
-  "name": "Razel Tech Photo Booth Pro 🇮🇳",
-  "short_name": "PhotoboothPro",
-  "description": "Free Online Vintage Photo Strip Studio & App by Razel Tech",
+  "name": "DigiSmile Photobooth Studio 📸",
+  "short_name": "DigiSmile",
+  "description": "Capture Every Smile, Print Every Memory — Online Vintage Photo Strip Studio App by Razel Tech",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#090a0f",
-  "theme_color": "#e11d48",
+  "theme_color": "#ff334b",
   "orientation": "any",
   "icons": [
     {

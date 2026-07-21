@@ -1,8 +1,56 @@
 /**
- * Razel Tech Photo Booth Pro - Modular Application Controller
- * Handles App UI tab switching, camera capture (Auto/Manual Shutter), live camera shaders, Native Web Share, GIF motion export & canvas stitching
+ * DigiSmile Photobooth Studio — Master Application Controller
+ * Powered by Razel Tech
  */
 document.addEventListener('DOMContentLoaded', () => {
+    /**
+     * DigiSmile Centralized Session State Factory
+     */
+    function createInitialSession() {
+        return {
+            currentStep: 1, // 1: Start, 2: Capture, 3: Customize, 4: Finish
+            layout: '4', // '1', '2', '3', '4', '5', 'grid', 'polaroid'
+            capturedFrames: [],
+            selectedPreset: 'silver',
+            adjustments: {
+                brightness: 0,
+                contrast: 0,
+                warmth: 0,
+                saturation: 100,
+                grain: 'medium',
+                leak: 'none'
+            },
+            autoEnhanced: false,
+            captionTop: 'DIGISMILE STUDIO',
+            captionBottom: '',
+            captionFont: 'mono',
+            subtextFont: 'mono',
+            timestampMode: 'date',
+            customTimestamp: '',
+            stickers: [],
+            paperColor: '#e2d9cc',
+            borderColor: '#b8ac9c',
+            borderTheme: 'vintage-card',
+            customBgImage: null,
+            bgOpacity: 1.0,
+            bgScale: 1.0,
+            bgBlendMode: 'normal',
+
+            // Derived Export Canvas & Media Artifacts
+            export: {
+                dirty: true,
+                canvas: null,
+                previewUrl: null
+            },
+            media: {
+                btsBlob: null,
+                recorder: null
+            }
+        };
+    }
+
+    let DigiSmileSession = createInitialSession();
+
     const camera = new CameraController('preview-stream');
     let capturedFrames = [];
     let sessionStripsHistory = [];

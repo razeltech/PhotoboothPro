@@ -1,17 +1,17 @@
-# 📸 Razel Tech Photo Booth Pro 🇮🇳
+# 📸 DigiSmile Photobooth Studio 📸
 
-> **The Ultimate Free, Responsive, Customisable Online Photo Booth Studio & PWA Application.**  
+> **Capture Every Smile, Print Every Memory**  
 > Powered by **Razel Tech** | Official Company Website: [https://razeltech.github.io](https://razeltech.github.io)
 
 <p align="center">
-  <img src="assets/logo.png" alt="Razel Tech Photo Booth Logo" width="140" />
+  <img src="assets/logo.png" alt="DigiSmile Photobooth Logo" width="140" />
 </p>
 
 ---
 
 ## ✨ Overview
 
-**Razel Tech Photo Booth Pro** is a high-performance, responsive web application and Progressive Web App (PWA) designed for creating vintage 35mm photo strips, single-shot portrait cards, 2x2 quad-box collages, and Polaroid-style photos directly inside your web browser. 
+**DigiSmile Photobooth Studio** is a high-performance, responsive web application and Progressive Web App (PWA) designed for creating vintage 35mm photo strips, single-shot portrait cards, 2x2 quad-box collages, and Polaroid-style photos directly inside your web browser. 
 
 Built with zero framework build dependencies using native **Vanilla HTML5, CSS3, and ES6 JavaScript**, it is 100% optimized for instant 1-click deployment on **GitHub Pages**.
 
