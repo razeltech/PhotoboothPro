@@ -1466,6 +1466,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Task 8: Safe PWA Hard-Refresh & ServiceWorker Purge Recovery Engine
+     */
+    async function hardRefreshApp() {
+        try {
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+            }
+
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+        } catch (err) {
+            console.warn('Cache purge error during hardRefreshApp:', err);
+        } finally {
+            window.location.reload();
+        }
+    }
+
+    const btnPwaUpdate = document.getElementById('btn-pwa-update');
+    const mobileBtnPwaUpdate = document.getElementById('mobile-btn-pwa-update');
+
+    if (btnPwaUpdate) btnPwaUpdate.addEventListener('click', hardRefreshApp);
+    if (mobileBtnPwaUpdate) mobileBtnPwaUpdate.addEventListener('click', hardRefreshApp);
+
+    // Automatic ServiceWorker Update Detection on App Load
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.update();
+            registration.addEventListener('updatefound', () => {
+                const installingWorker = registration.installing;
+                if (installingWorker) {
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            if (btnPwaUpdate) {
+                                btnPwaUpdate.innerHTML = '⚡ Update Available!';
+                                btnPwaUpdate.style.background = 'rgba(245, 158, 11, 0.25)';
+                                btnPwaUpdate.style.color = '#f59e0b';
+                            }
+                        }
+                    };
+                }
+            });
+        }).catch(err => {
+            console.log('SW registration ready check bypass:', err);
+        });
+    }
+
     // Keyboard Accessibility & Kiosk UX Shortcuts
     document.addEventListener('keydown', (e) => {
         const activeTag = document.activeElement ? document.activeElement.tagName : '';

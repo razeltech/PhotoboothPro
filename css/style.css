@@ -548,6 +548,35 @@ h1, h2, h3, h4 {
     box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5);
 }
 
+.btn-pwa-update {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-pwa-update:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.mobile-pwa-update {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
 /* Step 3: Customize Studio View Styles */
 .customize-card {
     max-width: 900px;
