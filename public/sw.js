@@ -1,10 +1,10 @@
-const CACHE_NAME = 'aerobooth-cache-v1';
+const CACHE_NAME = 'digismile-cache-v3';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/src/main.tsx',
-  '/src/App.tsx',
-  '/src/index.css'
+  './',
+  'index.html',
+  'logo.png',
+  'favicon.png',
+  'manifest.json'
 ];
 
 self.addEventListener('install', (event) => {

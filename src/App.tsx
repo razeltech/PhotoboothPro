@@ -142,7 +142,7 @@ export default function App() {
   // Service Worker registration & PWA Install Prompt Handler
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('sw.js')
         .then((registration) => {
           setSwRegistration(registration);
 
