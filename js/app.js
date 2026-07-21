@@ -891,7 +891,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Blueprint Layout Refresh Engine
+    // Blueprint Layout Refresh Engine — Always canvas-rendered via StripEngine
     function refreshPreviewBlueprint() {
         const stripContainer = document.getElementById('render-strip-preview') || document.getElementById('render-strip-finish') || document.getElementById('render-strip');
         if (!stripContainer || !layoutSelect) return;
@@ -902,9 +902,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (layoutMode === 'polaroid' || layoutMode === '1') targetCount = 1;
 
         const borderTheme = borderSelect ? borderSelect.value : 'vintage-card';
-        const filterVal = filterSelect ? filterSelect.value : 'silver';
-        const fontVal = fontSelect ? fontSelect.value : 'mono';
-        const subfontVal = subfontSelect ? subfontSelect.value : 'mono';
         const leakVal = leakSelect ? leakSelect.value : 'none';
 
         // Sync Light Leak overlay on live camera video viewport
@@ -913,24 +910,25 @@ document.addEventListener('DOMContentLoaded', () => {
             leakOverlayElem.className = 'light-leak-overlay ' + (leakVal !== 'none' ? 'leak-' + leakVal : '');
         }
 
-        // If photos are captured, render exact pixel-perfect compiled canvas in Live Preview!
-        if (capturedFrames.length > 0 && window.StripEngine) {
+        // Always render the full canvas strip (placeholder slots if no photos yet)
+        if (window.StripEngine) {
             const liveCanvas = StripEngine.buildHighResCanvas(DigiSmileSession);
             if (liveCanvas) {
                 stripContainer.innerHTML = '';
                 stripContainer.className = `strip-wrapper border-${borderTheme} layout-${layoutMode}`;
-                stripContainer.style.backgroundImage = 'none';
-                stripContainer.style.opacity = '1';
+                stripContainer.style.cssText = 'background:none; opacity:1;';
 
                 const liveImg = document.createElement('img');
-                liveImg.src = liveCanvas.toDataURL('image/png');
-                liveImg.style.maxWidth = '100%';
-                liveImg.style.borderRadius = '8px';
-                liveImg.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+                liveImg.src = liveCanvas.toDataURL('image/jpeg', 0.92);
+                liveImg.style.cssText = 'max-width:100%; height:auto; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.6); display:block;';
                 stripContainer.appendChild(liveImg);
 
+                // Status badge update
                 if (statusBadge) {
-                    if (capturedFrames.length < targetCount) {
+                    if (capturedFrames.length === 0) {
+                        statusBadge.textContent = '📸 Ready to Shoot';
+                        statusBadge.className = 'status-badge ready';
+                    } else if (capturedFrames.length < targetCount) {
                         statusBadge.textContent = `⚡ Shot ${capturedFrames.length}/${targetCount} Taken`;
                         statusBadge.className = 'status-badge shooting';
                     } else {
@@ -938,140 +936,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         statusBadge.className = 'status-badge complete';
                     }
                 }
+
+                // Show/hide export buttons based on completion
+                const isComplete = capturedFrames.length >= targetCount;
+                if (exportBtn) exportBtn.style.display = isComplete ? 'block' : 'none';
+                if (shareBtn) shareBtn.style.display = isComplete ? 'block' : 'none';
+                if (gifBtn) gifBtn.style.display = isComplete ? 'block' : 'none';
+                if (printBtn) printBtn.style.display = isComplete ? 'block' : 'none';
+                if (retakeAllBtn) retakeAllBtn.style.display = isComplete ? 'inline-flex' : 'none';
+
                 return;
             }
         }
 
-        stripContainer.className = `strip-wrapper border-${borderTheme} layout-${layoutMode}`;
-
-        if (borderTheme === 'custom-color' && customPaperColorInput && customBorderColorInput) {
-            stripContainer.style.backgroundColor = customPaperColorInput.value;
-            stripContainer.style.borderColor = customBorderColorInput.value;
-            stripContainer.style.color = '#ffffff';
-            stripContainer.style.backgroundImage = 'none';
-        } else if (borderTheme === 'custom' && customBgImageObj) {
-            const scale = parseFloat(bgScaleInput ? bgScaleInput.value : 1) || 1;
-            const opacity = parseFloat(bgOpacityInput ? bgOpacityInput.value : 1) || 1;
-            const blend = bgBlendInput ? bgBlendInput.value : 'normal';
-
-            stripContainer.style.backgroundImage = `url("${customBgImageObj.src}")`;
-            stripContainer.style.backgroundSize = `${100 * scale}%`;
-            stripContainer.style.backgroundRepeat = 'repeat';
-            stripContainer.style.opacity = opacity;
-            stripContainer.style.backgroundBlendMode = blend;
-            stripContainer.style.backgroundColor = '';
-            stripContainer.style.borderColor = '';
-        } else {
-            stripContainer.style.backgroundImage = '';
-            stripContainer.style.opacity = '1';
-            stripContainer.style.backgroundBlendMode = 'normal';
-            stripContainer.style.backgroundColor = '';
-            stripContainer.style.borderColor = '';
-        }
-
-        stripContainer.innerHTML = '';
-
-        for (let i = 0; i < targetCount; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'frame-slot';
-            slot.id = `slot-${i}`;
-
-            const img = document.createElement('img');
-            img.className = `filter-${filterVal}`;
-            slot.appendChild(img);
-
-            const retakeBtn = document.createElement('button');
-            retakeBtn.className = 'slot-retake-btn';
-            retakeBtn.innerHTML = '🔄 Retake';
-            retakeBtn.title = `Retake Photo #${i + 1}`;
-            retakeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                runSingleFrameRetake(i);
-            });
-            slot.appendChild(retakeBtn);
-
-            stripContainer.appendChild(slot);
-        }
-
-        const stickerLayer = document.createElement('div');
-        stickerLayer.className = 'sticker-overlay-layer';
-        stickerLayer.id = 'sticker-overlay-layer';
-
-        activeStickers.forEach((stk, idx) => {
-            const el = document.createElement('span');
-            el.className = `placed-sticker ${selectedStickerIndex === idx ? 'selected' : ''}`;
-            el.textContent = stk.emoji;
-            el.style.left = `${stk.x * 100}%`;
-            el.style.top = `${stk.y * 100}%`;
-            el.style.fontSize = `${(stk.size || 48) * 0.5}px`;
-            el.style.transform = `translate(-50%, -50%) rotate(${stk.rotation || 0}deg)`;
-
-            el.addEventListener('mousedown', (e) => startDragSticker(e, idx));
-            el.addEventListener('touchstart', (e) => startDragSticker(e, idx), { passive: false });
-
-            stickerLayer.appendChild(el);
-        });
-        stripContainer.appendChild(stickerLayer);
-
-        const footerNode = document.createElement('div');
-        footerNode.className = `strip-caption font-${fontVal}`;
-        footerNode.id = 'footer-caption-node';
-
-        const captionVal = (captionInput && captionInput.value.trim()) ? captionInput.value.toUpperCase() : "";
-        const taglineVal = (taglineInput && taglineInput.value.trim()) ? taglineInput.value.toUpperCase() : "";
-
-        const mode = timestampSelect ? timestampSelect.value : 'date';
-        let dateStr = "";
-        if (mode === 'date') dateStr = new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-        else if (mode === 'datetime') dateStr = new Date().toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        else if (mode === 'custom' && customTimestampInput) dateStr = customTimestampInput.value;
-
-        let subLine = "";
-        if (dateStr && taglineVal) subLine = `${dateStr} // ${taglineVal}`;
-        else if (dateStr) subLine = dateStr;
-        else if (taglineVal) subLine = taglineVal;
-
-        const subFontStack = window.StripEngine ? window.StripEngine.getFontStack(subfontVal) : 'monospace';
-        footerNode.innerHTML = `${captionVal ? captionVal : ''}<br><span class="brand-subtext" style="font-family:${subFontStack}">${subLine}</span>`;
-        stripContainer.appendChild(footerNode);
-
-        if (statusBadge) {
-            if (capturedFrames.length === 0) {
-                statusBadge.textContent = '📸 Ready to Shoot';
-                statusBadge.className = 'status-badge ready';
-            } else if (capturedFrames.length < targetCount) {
-                statusBadge.textContent = `⚡ Shot ${capturedFrames.length}/${targetCount} Taken`;
-                statusBadge.className = 'status-badge shooting';
-            } else {
-                statusBadge.textContent = '🎉 Strip Complete!';
-                statusBadge.className = 'status-badge complete';
-            }
-        }
-
-        capturedFrames.forEach((frameCanvas, idx) => {
-            if (idx < targetCount) {
-                const slot = document.getElementById(`slot-${idx}`);
-                if (slot) {
-                    const img = slot.querySelector('img');
-                    img.src = frameCanvas.toDataURL('image/jpeg');
-                    slot.classList.add('filled');
-                }
-            }
-        });
-
-        if (capturedFrames.length === targetCount) {
-            if (exportBtn) exportBtn.style.display = 'block';
-            if (shareBtn) shareBtn.style.display = 'block';
-            if (gifBtn) gifBtn.style.display = 'block';
-            if (printBtn) printBtn.style.display = 'block';
-            if (retakeAllBtn) retakeAllBtn.style.display = 'inline-flex';
-        } else {
-            if (exportBtn) exportBtn.style.display = 'none';
-            if (shareBtn) shareBtn.style.display = 'none';
-            if (gifBtn) gifBtn.style.display = 'none';
-            if (printBtn) printBtn.style.display = 'none';
-            if (retakeAllBtn) retakeAllBtn.style.display = 'none';
-        }
+        // Fallback: StripEngine not loaded — render minimal placeholder text
+        stripContainer.innerHTML = '<p style="color:rgba(255,255,255,0.4); text-align:center; padding:40px 20px;">📸 Loading preview engine...</p>';
     }
 
     function startDragSticker(e, index) {
