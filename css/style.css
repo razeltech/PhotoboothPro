@@ -2435,3 +2435,27 @@ input[type="text"], input[type="file"], input[type="range"] {
 .instructions-content strong {
     color: var(--text-primary);
 }
+
+/* ========= Layout Card Micro-Thumbnails for 1 and 3 photos ========= */
+.thumb-strip-1 {
+    width: 32px;
+    height: 52px;
+    background: #ffffff;
+    border-radius: 3px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+}
+.thumb-strip-1 span { background: #444; flex: 1; border-radius: 1px; }
+
+.thumb-strip-3 {
+    width: 26px;
+    height: 70px;
+    background: #ffffff;
+    border-radius: 3px;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.thumb-strip-3 span { background: #444; flex: 1; border-radius: 1px; }
