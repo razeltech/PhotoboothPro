@@ -893,6 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Blueprint Layout Refresh Engine
     function refreshPreviewBlueprint() {
+        const stripContainer = document.getElementById('render-strip-preview') || document.getElementById('render-strip-finish') || document.getElementById('render-strip');
         if (!stripContainer || !layoutSelect) return;
 
         const layoutMode = layoutSelect.value;
@@ -912,19 +913,9 @@ document.addEventListener('DOMContentLoaded', () => {
             leakOverlayElem.className = 'light-leak-overlay ' + (leakVal !== 'none' ? 'leak-' + leakVal : '');
         }
 
-        if (capturedFrames.length === 0) {
-            if (triggerBtn) triggerBtn.style.display = 'inline-flex';
-            if (newStripBtn) newStripBtn.style.display = 'none';
-            if (newStripPaneBtn) newStripPaneBtn.style.display = 'none';
-        }
-
-        if (mobileJumpBtn) {
-            mobileJumpBtn.classList.toggle('visible', capturedFrames.length === targetCount && targetCount > 0);
-        }
-
         // If photos are captured, render exact pixel-perfect compiled canvas in Live Preview!
         if (capturedFrames.length > 0 && window.StripEngine) {
-            const liveCanvas = StripEngine.buildHighResCanvas(capturedFrames, getStripSettings());
+            const liveCanvas = StripEngine.buildHighResCanvas(DigiSmileSession);
             if (liveCanvas) {
                 stripContainer.innerHTML = '';
                 stripContainer.className = `strip-wrapper border-${borderTheme} layout-${layoutMode}`;
@@ -933,8 +924,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const liveImg = document.createElement('img');
                 liveImg.src = liveCanvas.toDataURL('image/png');
-                liveImg.style.width = '100%';
-                liveImg.style.borderRadius = '6px';
+                liveImg.style.maxWidth = '100%';
+                liveImg.style.borderRadius = '8px';
                 liveImg.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
                 stripContainer.appendChild(liveImg);
 
@@ -1238,6 +1229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Pill Selectors for Aspect Ratio (4:3, 16:9, 1:1)
     const pillAspectBtns = document.querySelectorAll('#pill-aspect-group .pill-btn');
     const formatBadgeText = document.querySelector('#viewfinder-format-badge span');
+    const captureViewportElem = document.querySelector('.capture-viewport');
     pillAspectBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             pillAspectBtns.forEach(b => b.classList.remove('active'));
@@ -1245,6 +1237,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = btn.getAttribute('data-val');
             if (formatBadgeText) {
                 formatBadgeText.textContent = `FORMAT: STANDARD ${val}`;
+            }
+            if (captureViewportElem) {
+                if (val === '16:9') {
+                    captureViewportElem.style.aspectRatio = '16/9';
+                    captureViewportElem.style.maxHeight = '420px';
+                } else if (val === '1:1') {
+                    captureViewportElem.style.aspectRatio = '1/1';
+                    captureViewportElem.style.maxHeight = '420px';
+                } else {
+                    captureViewportElem.style.aspectRatio = '4/3';
+                    captureViewportElem.style.maxHeight = '480px';
+                }
             }
         });
     });

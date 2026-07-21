@@ -42,7 +42,35 @@ class StripEngine {
     /**
      * Build High-DPI Canvas Bitmap for Download & Print
      */
-    static buildHighResCanvas(framesArray, settings) {
+    static buildHighResCanvas(framesArrayOrSession, settingsParam) {
+        let framesArray = [];
+        let settings = {};
+
+        if (Array.isArray(framesArrayOrSession)) {
+            framesArray = framesArrayOrSession;
+            settings = settingsParam || {};
+        } else if (framesArrayOrSession && typeof framesArrayOrSession === 'object') {
+            const session = framesArrayOrSession;
+            framesArray = session.capturedFrames || [];
+            settings = {
+                layout: session.layout || '4',
+                filterMode: session.selectedPreset || 'silver',
+                grainLevel: session.adjustments ? session.adjustments.grain : 'medium',
+                leakMode: session.adjustments ? session.adjustments.leak : 'none',
+                borderTheme: session.borderTheme || 'vintage-card',
+                customFilterParams: session.adjustments || {},
+                captionText: session.captionTop || 'DIGISMILE STUDIO',
+                taglineText: session.captionBottom || '',
+                timestampMode: session.timestampMode || 'date',
+                customTimestamp: session.customTimestamp || '',
+                stickers: session.stickers || [],
+                footerFont: session.captionFont || 'mono',
+                subtextFont: session.subtextFont || 'mono',
+                customPaperColor: session.paperColor || '#e2d9cc',
+                customBorderColor: session.borderColor || '#b8ac9c'
+            };
+        }
+
         const {
             layout = '4',
             filterMode = 'silver',
@@ -54,7 +82,7 @@ class StripEngine {
             customBgOpacity = 1.0,
             customBgBlendMode = 'normal',
             customFilterParams = {},
-            captionText = 'PHOTO STUDIO',
+            captionText = 'DIGISMILE STUDIO',
             taglineText = '',
             timestampMode = 'date',
             customTimestamp = '',
