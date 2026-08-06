@@ -8,6 +8,9 @@ import { Camera, RefreshCw, Film, Volume2, VolumeX, AlertCircle, ArrowLeft, Zap,
 import { synth } from '../utils/audio';
 import { TemplateType } from '../types';
 
+const logoImg = new Image();
+logoImg.src = './logo.png';
+
 interface CameraViewProps {
   onPhotosCaptured: (photos: string[], videoBlobUrl: string | null) => void;
   requiredPhotosCount: number;
@@ -58,10 +61,15 @@ export default function CameraView({
   const isFlashingRef = useRef<boolean>(false);
   const btsLoopIdRef = useRef<number | null>(null);
   const latestCapturedPhotoRef = useRef<HTMLImageElement | null>(null);
+  const countdownRef = useRef<number | null>(null);
 
   useEffect(() => {
     isFlashingRef.current = isFlashing;
   }, [isFlashing]);
+
+  useEffect(() => {
+    countdownRef.current = countdown;
+  }, [countdown]);
 
   // Synchronize flash toggle to device torch (flashlight) if available
   useEffect(() => {
@@ -303,6 +311,7 @@ export default function CameraView({
 
             // Draw Watermark (if toggled)
             if (btsWatermark) {
+              const padding = 20;
               btsCtx.save();
               btsCtx.shadowColor = 'rgba(0, 0, 0, 0.4)';
               btsCtx.shadowBlur = 6;
@@ -311,7 +320,37 @@ export default function CameraView({
               btsCtx.font = 'bold 16px "Inter", sans-serif';
               btsCtx.textAlign = 'right';
               btsCtx.textBaseline = 'bottom';
-              btsCtx.fillText('DigiSmile', btsCanvas.width - 20, btsCanvas.height - 20);
+              btsCtx.fillText('DigiSmile', btsCanvas.width - padding, btsCanvas.height - padding);
+              
+              if (logoImg.complete && logoImg.naturalHeight > 0) {
+                const textWidth = btsCtx.measureText('DigiSmile').width;
+                const logoRadius = 10;
+                const logoX = btsCanvas.width - padding - textWidth - 8 - logoRadius;
+                const logoY = btsCanvas.height - padding - 8;
+                
+                btsCtx.beginPath();
+                btsCtx.arc(logoX, logoY, logoRadius, 0, Math.PI * 2, true);
+                btsCtx.closePath();
+                btsCtx.clip();
+                btsCtx.drawImage(logoImg, logoX - logoRadius, logoY - logoRadius, logoRadius * 2, logoRadius * 2);
+              }
+              btsCtx.restore();
+            }
+
+            // Draw Countdown Timer Overlay
+            if (countdownRef.current !== null && countdownRef.current > 0) {
+              btsCtx.save();
+              btsCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+              btsCtx.fillRect(0, 0, btsCanvas.width, btsCanvas.height);
+              
+              btsCtx.fillStyle = '#FFFFFF';
+              btsCtx.font = '900 120px "Inter", sans-serif';
+              btsCtx.textAlign = 'center';
+              btsCtx.textBaseline = 'middle';
+              btsCtx.shadowColor = 'rgba(0,0,0,0.6)';
+              btsCtx.shadowBlur = 24;
+              btsCtx.shadowOffsetY = 4;
+              btsCtx.fillText(countdownRef.current.toString(), btsCanvas.width / 2, btsCanvas.height / 2);
               btsCtx.restore();
             }
 
