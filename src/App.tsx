@@ -21,6 +21,10 @@ export default function App() {
   const [step, setStep] = useState<number>(0);
   const [isNavigationLocked, setIsNavigationLocked] = useState<boolean>(false);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
+
   // Photo Sessions State
   const [photos, setPhotos] = useState<string[]>([]);
   const [btsVideoBlobUrl, setBtsVideoBlobUrl] = useState<string | null>(null);
@@ -327,7 +331,7 @@ export default function App() {
     <div className="min-h-screen bg-razel-dark text-white font-sans flex flex-col justify-between">
       
       {/* Header element */}
-      {step > 0 && (
+      {step > 0 && step !== 2 && (
         <Header 
           currentStep={step} 
           onReset={handleFullReset} 

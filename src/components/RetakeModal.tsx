@@ -57,11 +57,15 @@ export default function RetakeModal({
       }
     }
     setupDevices();
-
-    return () => {
-      stopCamera();
-    };
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stream]);
 
   // Handle stream initialization when device ID changes or cameraRatio changes
   useEffect(() => {

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, RefreshCw, Film, Volume2, VolumeX, AlertCircle, ArrowLeft, Zap, ZapOff } from 'lucide-react';
+import { Camera, RefreshCw, Film, Volume2, VolumeX, AlertCircle, ArrowLeft, Zap, ZapOff, Settings, X } from 'lucide-react';
 import { synth } from '../utils/audio';
 import { TemplateType } from '../types';
 
@@ -34,9 +34,11 @@ export default function CameraView({
   const [countdownStart, setCountdownStart] = useState<number>(3);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [recordBtsVideo, setRecordBtsVideo] = useState<boolean>(true);
+  const [btsWatermark, setBtsWatermark] = useState<boolean>(false);
   const [isMirrored, setIsMirrored] = useState<boolean>(true);
-  const [flashEnabled, setFlashEnabled] = useState<boolean>(true);
-  const [cameraRatio, setCameraRatio] = useState<'4:3' | '16:9' | '1:1'>('4:3');
+  const [flashEnabled, setFlashEnabled] = useState<boolean>(false);
+  const [cameraRatio, setCameraRatio] = useState<'4:3' | '16:9' | '1:1' | '9:16'>('4:3');
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
   // Flow State
@@ -136,11 +138,16 @@ export default function CameraView({
       }
     }
     setupDevices();
-
-    return () => {
-      stopCamera();
-    };
   }, []);
+
+  // Ensure stream tracks are properly stopped when stream changes or unmounts
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stream]);
 
   // Handle stream initialization when device ID changes or cameraRatio changes
   useEffect(() => {
@@ -161,6 +168,9 @@ export default function CameraView({
       } else if (activeRatio === '1:1') {
         width = 720;
         height = 720;
+      } else if (activeRatio === '9:16') {
+        width = 720;
+        height = 1280;
       }
 
       const fMode = currentFacing || facingMode;
@@ -246,6 +256,8 @@ export default function CameraView({
           targetAspect = 16/9;
         } else if (cameraRatio === '1:1') {
           targetAspect = 1;
+        } else if (cameraRatio === '9:16') {
+          targetAspect = 9/16;
         }
 
         let btsW = videoW;
@@ -289,17 +301,19 @@ export default function CameraView({
             btsCtx.drawImage(video, sx, sy, btsW, btsH, 0, 0, btsW, btsH);
             btsCtx.restore();
 
-            // Draw "Razel Tech" Watermark (styled elegantly with opacity and drop shadow)
-            btsCtx.save();
-            btsCtx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-            btsCtx.shadowBlur = 6;
-            btsCtx.shadowOffsetY = 2;
-            btsCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-            btsCtx.font = 'bold 16px "Inter", sans-serif';
-            btsCtx.textAlign = 'right';
-            btsCtx.textBaseline = 'bottom';
-            btsCtx.fillText('Razel Tech', btsCanvas.width - 20, btsCanvas.height - 20);
-            btsCtx.restore();
+            // Draw Watermark (if toggled)
+            if (btsWatermark) {
+              btsCtx.save();
+              btsCtx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+              btsCtx.shadowBlur = 6;
+              btsCtx.shadowOffsetY = 2;
+              btsCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+              btsCtx.font = 'bold 16px "Inter", sans-serif';
+              btsCtx.textAlign = 'right';
+              btsCtx.textBaseline = 'bottom';
+              btsCtx.fillText('DigiSmile', btsCanvas.width - 20, btsCanvas.height - 20);
+              btsCtx.restore();
+            }
 
             // Draw real-time ticking timecode timer
             const elapsedMs = Date.now() - btsStartTime;
@@ -540,6 +554,9 @@ export default function CameraView({
     } else if (cameraRatio === '1:1') {
       width = 720;
       height = 720;
+    } else if (cameraRatio === '9:16') {
+      width = 720;
+      height = 1280;
     }
     canvas.width = width;
     canvas.height = height;
@@ -649,6 +666,8 @@ export default function CameraView({
         targetAspect = 16/9;
       } else if (cameraRatio === '1:1') {
         targetAspect = 1;
+      } else if (cameraRatio === '9:16') {
+        targetAspect = 9/16;
       }
 
       let drawW = videoW;
@@ -753,57 +772,63 @@ export default function CameraView({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 flex flex-col items-center">
-      <div className="w-full flex items-center justify-between mb-4">
-        <button
-          onClick={onBack}
-          disabled={isCapturingFlow}
-          className="flex items-center gap-2 text-white/60 hover:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none text-sm font-medium"
+    <div className="fixed inset-0 z-50 w-full h-[100dvh] bg-black flex flex-col overflow-hidden">
+      
+      {/* Top Bar (Overlay) */}
+      <div className="absolute top-0 left-0 right-0 z-40 p-5 flex justify-between items-start bg-gradient-to-b from-black/60 via-black/20 to-transparent pointer-events-none">
+        <button 
+          onClick={onBack} 
+          disabled={isCapturingFlow} 
+          className="pointer-events-auto text-white drop-shadow-lg disabled:opacity-30 p-2 -ml-2 transition-transform hover:scale-110"
         >
-          <ArrowLeft className="w-4 h-4" /> Change Layout
+          <ArrowLeft className="w-6 h-6" />
         </button>
-
-        {devices.length > 1 && !isCapturingFlow && (
-          <div className="flex items-center gap-2">
-            <RefreshCw className="w-4 h-4 text-white/40" />
-            <select
-              value={selectedDeviceId}
-              onChange={(e) => setSelectedDeviceId(e.target.value)}
-              className="bg-razel-panel border border-white/10 text-xs text-white/80 rounded-lg px-3 py-1.5 focus:outline-none focus:border-razel-neon"
+        
+        <div className="flex gap-2 pointer-events-auto">
+          {!isCapturingFlow && (
+            <button 
+              onClick={() => setFlashEnabled(!flashEnabled)} 
+              className="p-2 text-white drop-shadow-lg transition-transform hover:scale-110"
             >
-              {devices.map((device) => (
-                <option key={device.deviceId} value={device.deviceId}>
-                  {device.label || `Camera ${device.deviceId.slice(0, 5)}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+              {flashEnabled ? <Zap className="w-6 h-6 text-amber-400 fill-amber-400" /> : <ZapOff className="w-6 h-6" />}
+            </button>
+          )}
+          {!isCapturingFlow && (
+            <button 
+              onClick={() => setIsSettingsOpen(true)} 
+              className="p-2 text-white drop-shadow-lg transition-transform hover:scale-110"
+            >
+              <Settings className="w-6 h-6" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Viewport Container */}
-      <div className={`w-full relative max-w-2xl rounded-2xl border-2 border-white/10 overflow-hidden bg-black shadow-2xl transition-all duration-300 ${
-        cameraRatio === '16:9' ? 'aspect-video' : cameraRatio === '1:1' ? 'aspect-square' : 'aspect-[4/3]'
-      }`}>
+      <div className="relative flex-1 w-full bg-black flex items-center justify-center overflow-hidden">
+        <div className={`relative w-full max-h-full ${
+          cameraRatio === '16:9' ? 'aspect-video' : cameraRatio === '9:16' ? 'aspect-[9/16]' : cameraRatio === '1:1' ? 'aspect-square' : 'aspect-[4/3]'
+        } flex items-center justify-center overflow-hidden bg-black`}>
+        
         {isSimulating ? (
-          <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-950 flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden">
-            <div className="absolute w-72 h-72 rounded-full border border-emerald-500/10 animate-pulse flex items-center justify-center">
-              <div className="w-56 h-56 rounded-full border-2 border-emerald-500/20 border-dashed animate-spin-slow" />
+          <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-950 flex flex-col items-center justify-center p-6 text-center select-none">
+            <div className="absolute w-64 h-64 rounded-full border border-emerald-500/10 animate-pulse flex items-center justify-center">
+              <div className="w-48 h-48 rounded-full border-2 border-emerald-500/20 border-dashed animate-spin-slow" />
             </div>
             
             <div className="z-10 flex flex-col items-center">
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
                 <Camera className="w-6 h-6 animate-pulse" />
               </div>
-              <p className="text-emerald-400 font-mono text-xs tracking-wider uppercase font-semibold mb-1">
+              <p className="text-emerald-400 font-mono text-[10px] tracking-wider uppercase font-semibold mb-1">
                 LENS SIMULATOR ACTIVE
               </p>
-              <p className="text-white/50 text-[11px] max-w-sm mb-4 leading-relaxed">
-                Virtual capture is active. We will synthesize gorgeous high-resolution retro prints for you!
+              <p className="text-white/50 text-[10px] max-w-[200px] mb-4 leading-relaxed">
+                Virtual capture is active. We will synthesize gorgeous prints!
               </p>
               <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10 text-[9px] font-mono text-white/60">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                BYPASS MODE: READY
+                READY
               </div>
             </div>
           </div>
@@ -812,18 +837,18 @@ export default function CameraView({
             <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 mb-3 animate-pulse">
               <AlertCircle className="w-6 h-6" />
             </div>
-            <p className="text-sm font-semibold text-white mb-1">Camera Feed Inactive</p>
-            <p className="text-xs text-white/40 max-w-sm mb-4">
-              Waiting for camera hardware initialization...
+            <p className="text-sm font-semibold text-white mb-1">Camera Inactive</p>
+            <p className="text-xs text-white/40 max-w-xs mb-4">
+              Waiting for camera hardware...
             </p>
             <button
               onClick={() => {
                 setIsSimulating(true);
                 setHasPermission(true);
               }}
-              className="px-4 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-xs font-semibold border border-emerald-500/20 transition-all shadow-md animate-bounce"
+              className="px-4 py-2 rounded-xl bg-emerald-500/15 text-emerald-400 text-xs font-semibold border border-emerald-500/20 transition-all shadow-md animate-bounce"
             >
-              Use Virtual Simulator 📸
+              Use Virtual Simulator
             </button>
           </div>
         ) : (
@@ -841,33 +866,13 @@ export default function CameraView({
         {/* Shutter snapshot freeze frame with Custom retro Polaroid Frame overlay */}
         {recentSnapshot && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-fade-in select-none">
-            <div className="bg-[#FFFDF9] p-4 pb-12 rounded-sm shadow-[0_20px_40px_rgba(0,0,0,0.85)] border border-amber-900/10 max-w-[270px] w-full transform rotate-[-2deg] transition-all duration-300 animate-scale-up relative">
-              {/* Image box */}
+            <div className="bg-[#FFFDF9] p-4 pb-12 rounded-sm shadow-[0_20px_40px_rgba(0,0,0,0.85)] border border-amber-900/10 max-w-[240px] w-full transform rotate-[-2deg] transition-all duration-300 animate-scale-up relative">
               <div className="aspect-square w-full bg-zinc-950 border border-zinc-200/10 overflow-hidden rounded-[1px] relative shadow-inner">
-                <img
-                  src={recentSnapshot}
-                  alt="Snapshot"
-                  className="w-full h-full object-cover"
-                />
-                
-                {/* Captured flash light sweep effect */}
+                <img src={recentSnapshot} alt="Snapshot" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent translate-x-[-100%] animate-shimmer" />
               </div>
-              
-              {/* Bottom polaroid signature label */}
               <div className="absolute bottom-3 left-0 right-0 text-center flex flex-col items-center">
-                <span className="font-handwriting text-zinc-800 text-xl font-bold tracking-tight">
-                  DigiSmile Moment #{currentCaptureIndex + 1}
-                </span>
-                <span className="font-mono text-[7px] text-zinc-400 mt-1 uppercase tracking-widest">
-                  {new Date().toLocaleTimeString()} • REALTIME SHUTTER
-                </span>
-              </div>
-
-              {/* Little red tape header or green captured badge */}
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-rose-500 text-white font-mono text-[9px] font-bold px-3 py-1 rounded shadow-md tracking-wider uppercase flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                POSED #{currentCaptureIndex + 1}
+                <span className="font-handwriting text-zinc-800 text-xl font-bold tracking-tight">Pose #{currentCaptureIndex + 1}</span>
               </div>
             </div>
           </div>
@@ -881,21 +886,16 @@ export default function CameraView({
         {/* Real-time countdown overlay */}
         {countdown !== null && countdown > 0 && (
           <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-10 select-none">
-            <div className="flex flex-col items-center">
-              <span className="text-8xl md:text-[140px] font-display font-extrabold text-white tracking-tighter animate-ping">
-                {countdown}
-              </span>
-              <span className="text-white/60 tracking-widest font-mono text-xs md:text-sm uppercase mt-4">
-                Pose for Snapshot #{currentCaptureIndex + 1}
-              </span>
-            </div>
+            <span className="text-[120px] font-display font-extrabold text-white tracking-tighter animate-ping drop-shadow-2xl">
+              {countdown}
+            </span>
           </div>
         )}
 
         {/* Countdown Smile instruction */}
         {countdown === 0 && (
           <div className="absolute inset-0 bg-razel-neon/20 flex items-center justify-center z-10 select-none">
-            <span className="text-4xl md:text-6xl font-display font-extrabold text-white animate-bounce uppercase">
+            <span className="text-5xl font-display font-extrabold text-white animate-bounce uppercase drop-shadow-lg">
               SMILE! 📸
             </span>
           </div>
@@ -904,24 +904,14 @@ export default function CameraView({
         {/* Template-aware Crop Viewport Shutters */}
         {getCropMaskType() === 'square' && (
           <>
-            {/* Left and Right overlay bars */}
-            <div className="absolute inset-y-0 left-0 w-[12%] md:w-[15%] bg-black/75 border-r border-white/10 pointer-events-none z-10 flex items-center justify-center">
-              <span className="text-[8px] text-white/20 tracking-wider font-mono uppercase hidden md:inline [writing-mode:vertical-lr]">CROP ZONE</span>
-            </div>
-            <div className="absolute inset-y-0 right-0 w-[12%] md:w-[15%] bg-black/75 border-l border-white/10 pointer-events-none z-10 flex items-center justify-center">
-              <span className="text-[8px] text-white/20 tracking-wider font-mono uppercase hidden md:inline [writing-mode:vertical-lr]">CROP ZONE</span>
-            </div>
+            <div className="absolute inset-y-0 left-0 w-[12%] bg-black/75 border-r border-white/10 pointer-events-none z-10" />
+            <div className="absolute inset-y-0 right-0 w-[12%] bg-black/75 border-l border-white/10 pointer-events-none z-10" />
           </>
         )}
         {getCropMaskType() === 'vertical' && (
           <>
-            {/* Vertical crop in 16:9 or 4:3 view - left and right thicker bars */}
-            <div className="absolute inset-y-0 left-0 w-[16%] md:w-[20%] bg-black/75 border-r border-white/10 pointer-events-none z-10 flex items-center justify-center">
-              <span className="text-[8px] text-white/20 tracking-wider font-mono uppercase hidden md:inline [writing-mode:vertical-lr]">CROP ZONE</span>
-            </div>
-            <div className="absolute inset-y-0 right-0 w-[16%] md:w-[20%] bg-black/75 border-l border-white/10 pointer-events-none z-10 flex items-center justify-center">
-              <span className="text-[8px] text-white/20 tracking-wider font-mono uppercase hidden md:inline [writing-mode:vertical-lr]">CROP ZONE</span>
-            </div>
+            <div className="absolute inset-y-0 left-0 w-[18%] bg-black/75 border-r border-white/10 pointer-events-none z-10" />
+            <div className="absolute inset-y-0 right-0 w-[18%] bg-black/75 border-l border-white/10 pointer-events-none z-10" />
           </>
         )}
 
@@ -936,168 +926,135 @@ export default function CameraView({
           <div className="border-r border-white/5" />
           <div className="border-r border-white/5" />
           <div className="border-white/0" />
-          
-          {/* Guide circle in center */}
-          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border rounded-full flex items-end justify-center pb-2 transition-all duration-300 ${
-            countdown === 0 
-              ? 'border-emerald-400 bg-emerald-500/10 scale-105 shadow-[0_0_15px_rgba(52,211,153,0.3)]' 
-              : countdown !== null 
-              ? 'border-razel-neon animate-pulse scale-100 shadow-[0_0_12px_rgba(255,46,84,0.35)]'
-              : 'border-white/10'
-          }`}>
-            <span className={`text-[9px] font-mono uppercase tracking-widest transition-colors ${
-              countdown === 0 ? 'text-emerald-400 font-bold' : countdown !== null ? 'text-razel-neon font-bold' : 'text-white/30'
-            }`}>
-              {countdown === 0 ? 'SMILE! 📸' : countdown !== null ? `POSE #${currentCaptureIndex + 1}` : 'Alignment Guide'}
-            </span>
-          </div>
         </div>
 
         {/* Active layout format tag */}
-        <div className="absolute bottom-4 left-4 z-10 bg-black/75 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10 flex items-center gap-1.5 font-mono text-[9px] text-white/60 tracking-wider uppercase">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1.5 font-mono text-[9px] text-white tracking-wider uppercase shadow-lg">
           <Film className="w-3 h-3 text-razel-neon animate-pulse" />
-          Format: {cameraRatio === '1:1' ? 'Square 1:1' : cameraRatio === '16:9' ? 'Landscape 16:9' : 'Standard 4:3'}
+          {cameraRatio}
         </div>
-
-        {/* Floating Quick Action Overlay Buttons (Camera Switch and Flash Toggles) */}
-        {!isCapturingFlow && (
-          <div className="absolute bottom-4 right-4 flex gap-2.5 z-10">
-            {!isSimulating && (
-              <button
-                onClick={toggleCamera}
-                className="w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-                title="Switch Front/Back Camera"
-              >
-                <RefreshCw className="w-5 h-5 text-white" />
-              </button>
-            )}
-            
-            <button
-              onClick={() => setFlashEnabled(!flashEnabled)}
-              className={`w-10 h-10 rounded-full backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 ${
-                flashEnabled ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-black/60 text-white/50'
-              }`}
-              title={flashEnabled ? "Camera Flash Enabled" : "Camera Flash Disabled"}
-            >
-              {flashEnabled ? <Zap className="w-5 h-5 fill-amber-400" /> : <ZapOff className="w-5 h-5" />}
-            </button>
-          </div>
-        )}
-
+        
         {/* Capturing Indicators */}
         {isCapturingFlow && (
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-            <div className="bg-razel-neon text-white font-mono text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg shadow-razel-neon/20">
-              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              RECORDING LIVE SESSION
-            </div>
+          <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+            {Array.from({ length: requiredPhotosCount }).map((_, idx) => {
+              const isCaptured = idx < capturedPreviews.length;
+              const isCurrent = idx === currentCaptureIndex;
 
-            <div className="bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-lg flex gap-1.5 text-white font-mono text-xs border border-white/10">
-              {Array.from({ length: requiredPhotosCount }).map((_, idx) => {
-                const isCaptured = idx < capturedPreviews.length;
-                const isCurrent = idx === currentCaptureIndex;
-
-                return (
-                  <div
-                    key={idx}
-                    className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${
-                      isCaptured
-                        ? 'bg-emerald-500 text-white'
-                        : isCurrent
-                        ? 'bg-razel-neon text-white animate-pulse shadow-[0_0_8px_var(--color-razel-neon-glow)]'
-                        : 'bg-white/15 text-white/40'
-                    }`}
-                  >
-                    {idx + 1}
-                  </div>
-                );
-              })}
-            </div>
+              return (
+                <div
+                  key={idx}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold shadow-lg transition-all ${
+                    isCaptured
+                      ? 'bg-emerald-500 text-white'
+                      : isCurrent
+                      ? 'bg-razel-neon text-white animate-pulse'
+                      : 'bg-black/50 text-white/40 border border-white/20'
+                  }`}
+                >
+                  {idx + 1}
+                </div>
+              );
+            })}
           </div>
         )}
+        </div>
       </div>
 
-      {/* Control Panel Settings */}
-      <div className="w-full max-w-2xl bg-razel-card border border-white/10 rounded-2xl p-6 mt-6 shadow-xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Left: Toggles */}
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-white">Record Behind-The-Scenes Video</span>
-                <span className="text-xs text-white/50">Generates a live MP4 timelapse of your poses</span>
-              </div>
-              <button
-                disabled={isCapturingFlow}
-                onClick={() => setRecordBtsVideo(!recordBtsVideo)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  recordBtsVideo ? 'bg-razel-neon' : 'bg-white/10'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    recordBtsVideo ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
+      {/* Bottom Controls Area (Overlay style) */}
+      <div className="absolute bottom-0 left-0 right-0 p-8 pt-16 flex items-center justify-center z-40 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        
+        {/* Camera Switch (Left) */}
+        <div className="flex-1 flex justify-start">
+          {!isCapturingFlow && !isSimulating && devices.length > 1 && (
+            <button
+              onClick={toggleCamera}
+              className="w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
+            >
+              <RefreshCw className="w-5 h-5 text-white" />
+            </button>
+          )}
+        </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-white">Mirror Camera Feed</span>
-                <span className="text-xs text-white/50">Flips viewfinder for natural look</span>
-              </div>
-              <button
-                disabled={isCapturingFlow}
-                onClick={() => setIsMirrored(!isMirrored)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  isMirrored ? 'bg-razel-neon' : 'bg-white/10'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    isMirrored ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
+        {/* Capture Button (Center) */}
+        {!isCapturingFlow ? (
+          <button
+            onClick={startCaptureSession}
+            className="relative w-20 h-20 rounded-full bg-white/20 border-4 border-white flex items-center justify-center group hover:scale-105 active:scale-95 transition-all shadow-2xl"
+          >
+            <div className="w-16 h-16 rounded-full bg-white group-hover:bg-razel-neon transition-colors duration-300" />
+          </button>
+        ) : (
+          <div className="w-20 h-20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full border-4 border-razel-neon border-t-transparent animate-spin" />
+          </div>
+        )}
+
+        {/* Spacer (Right) */}
+        <div className="flex-1 flex justify-end">
+          {isSimulating && !isCapturingFlow && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSimulating(false);
+                window.location.reload();
+              }}
+              className="text-[10px] text-white/60 hover:text-white underline font-mono text-center leading-tight"
+            >
+              Exit Sim
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Full Screen Settings Modal Overlay */}
+      {isSettingsOpen && (
+        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex flex-col p-6 animate-fade-in overflow-y-auto">
+          <div className="flex justify-between items-center mb-8 pt-4">
+            <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
+              <Settings className="w-6 h-6 text-razel-neon" /> Camera Settings
+            </h2>
+            <button 
+              onClick={() => setIsSettingsOpen(false)}
+              className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Right: Settings and Audio */}
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-white">Audio Shutter Sound</span>
-                <span className="text-xs text-white/50">Play vintage shutter beeps & clicks</span>
+          <div className="flex flex-col gap-6">
+            {/* Aspect Ratio */}
+            <div className="flex flex-col gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+              <span className="text-sm font-semibold text-white">Camera Aspect Ratio</span>
+              <div className="grid grid-cols-4 gap-2">
+                {(['4:3', '16:9', '9:16', '1:1'] as const).map((ratio) => (
+                  <button
+                    key={ratio}
+                    onClick={() => setCameraRatio(ratio)}
+                    className={`py-2 rounded-lg text-xs font-mono font-bold transition-all ${
+                      cameraRatio === ratio
+                        ? 'bg-razel-neon text-white shadow-md'
+                        : 'bg-black/40 text-white/60 border border-white/10 hover:bg-white/10'
+                    }`}
+                  >
+                    {ratio}
+                  </button>
+                ))}
               </div>
-              <button
-                disabled={isCapturingFlow}
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white flex items-center justify-center transition-colors"
-              >
-                {soundEnabled ? (
-                  <Volume2 className="w-5 h-5 text-razel-neon" />
-                ) : (
-                  <VolumeX className="w-5 h-5 text-white/40" />
-                )}
-              </button>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-white">Timer Delay</span>
-                <span className="text-xs text-white/50">Seconds between pose captures</span>
-              </div>
-              <div className="flex gap-1">
+            {/* Timer Delay */}
+            <div className="flex flex-col gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+              <span className="text-sm font-semibold text-white">Timer Delay</span>
+              <div className="flex gap-2">
                 {[3, 5, 10].map((sec) => (
                   <button
                     key={sec}
-                    disabled={isCapturingFlow}
                     onClick={() => setCountdownStart(sec)}
-                    className={`w-10 h-8 rounded-lg text-xs font-mono font-bold transition-all ${
+                    className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold transition-all ${
                       countdownStart === sec
                         ? 'bg-razel-neon text-white shadow-md'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10'
+                        : 'bg-black/40 text-white/60 border border-white/10 hover:bg-white/10'
                     }`}
                   >
                     {sec}s
@@ -1106,67 +1063,74 @@ export default function CameraView({
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-2">
+            {/* Record BTS */}
+            <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-white">Camera Aspect Ratio</span>
-                <span className="text-xs text-white/50">Capture resolution format</span>
+                <span className="text-sm font-semibold text-white">Record BTS Video</span>
+                <span className="text-[10px] text-white/50 mt-1">Generates a live MP4 timelapse</span>
               </div>
-              <div className="flex gap-1">
-                {(['4:3', '16:9', '1:1'] as const).map((ratio) => (
-                  <button
-                    key={ratio}
-                    disabled={isCapturingFlow}
-                    onClick={() => setCameraRatio(ratio)}
-                    className={`w-12 h-8 rounded-lg text-xs font-mono font-bold transition-all ${
-                      cameraRatio === ratio
-                        ? 'bg-razel-neon text-white shadow-md'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10'
-                    }`}
-                  >
-                    {ratio}
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={() => setRecordBtsVideo(!recordBtsVideo)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                  recordBtsVideo ? 'bg-razel-neon' : 'bg-white/20'
+                }`}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${recordBtsVideo ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
             </div>
-          </div>
-        </div>
 
-        {/* Start Button */}
-        {!isCapturingFlow ? (
-          <div className="flex flex-col gap-2.5 w-full">
-            <button
-              onClick={startCaptureSession}
-              className={`w-full py-4 rounded-xl font-display font-bold text-lg tracking-wide shadow-lg transition-all flex items-center justify-center gap-2 ${
-                isSimulating 
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20'
-                  : 'bg-razel-neon hover:bg-razel-neon/90 text-white shadow-[0_4px_20px_rgba(255,46,84,0.3)]'
-              }`}
-            >
-              <Camera className="w-5 h-5 animate-pulse" /> {isSimulating ? 'START SIMULATED CAPTURE' : 'START CAPTURE SESSION'}
-            </button>
-            {isSimulating && (
-              <div className="text-center">
+            {/* BTS Watermark */}
+            {recordBtsVideo && (
+              <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-white">Video Watermark</span>
+                  <span className="text-[10px] text-white/50 mt-1">Add DigiSmile branding</span>
+                </div>
                 <button
-                  type="button"
-                  onClick={() => {
-                    setIsSimulating(false);
-                    window.location.reload();
-                  }}
-                  className="text-[11px] text-white/40 hover:text-white/60 underline font-mono transition-colors"
+                  onClick={() => setBtsWatermark(!btsWatermark)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                    btsWatermark ? 'bg-razel-neon' : 'bg-white/20'
+                  }`}
                 >
-                  Turn off Simulator & Try Hardware Camera
+                  <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${btsWatermark ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
               </div>
             )}
+
+            {/* Mirror Camera */}
+            <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-white">Mirror Viewfinder</span>
+                <span className="text-[10px] text-white/50 mt-1">Flips view for a natural look</span>
+              </div>
+              <button
+                onClick={() => setIsMirrored(!isMirrored)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                  isMirrored ? 'bg-razel-neon' : 'bg-white/20'
+                }`}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${isMirrored ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            </div>
+
+            {/* Audio Sound */}
+            <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-white">Shutter Sound</span>
+                <span className="text-[10px] text-white/50 mt-1">Play vintage clicks</span>
+              </div>
+              <button
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
+              >
+                {soundEnabled ? <Volume2 className="w-5 h-5 text-razel-neon" /> : <VolumeX className="w-5 h-5 text-white/40" />}
+              </button>
+            </div>
+
           </div>
-        ) : (
-          <div className="w-full bg-white/5 border border-white/10 rounded-xl py-4 flex flex-col items-center justify-center text-white/70 animate-pulse">
-            <Film className="w-5 h-5 text-razel-neon mb-2 animate-spin" />
-            <span className="text-sm font-semibold">Capturing Photo {capturedPreviews.length + 1} of {requiredPhotosCount}...</span>
-            <span className="text-xs text-white/40 mt-1 font-mono">Do not close window or block camera</span>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+
     </div>
   );
 }

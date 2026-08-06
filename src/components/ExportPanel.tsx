@@ -1011,11 +1011,11 @@ export default function ExportPanel({
       // Draw vintage dashed separator cut line down the exact center
       ctx.save();
       ctx.strokeStyle = borderId === 'black' || borderId === 'sprocket' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-      ctx.lineWidth = 4;
-      ctx.setLineDash([12, 12]);
+      ctx.lineWidth = 4 * multiplier;
+      ctx.setLineDash([12 * multiplier, 12 * multiplier]);
       ctx.beginPath();
-      ctx.moveTo(halfW, 20);
-      ctx.lineTo(halfW, canvasH - 20);
+      ctx.moveTo(halfW, 20 * multiplier);
+      ctx.lineTo(halfW, canvasH - 20 * multiplier);
       ctx.stroke();
       ctx.restore();
     } else if (template === 'grid' || template === 'purikura') {
@@ -1044,14 +1044,14 @@ export default function ExportPanel({
       }
     } else if (template === 'polaroid-wide') {
       const imgW = canvasW - padding * 2;
-      const imgH = canvasH - padding * 2 - 120;
+      const imgH = canvasH - padding * 2 - 120 * multiplier;
       const img = getImg(0);
       if (img) {
         drawPhotoWithEffects(img, padding, padding, imgW, imgH);
       }
     } else if (template === 'duo') {
       const imgW = (canvasW - padding * 2 - gap) / 2;
-      const imgH = canvasH - padding * 2 - 120;
+      const imgH = canvasH - padding * 2 - 120 * multiplier;
 
       for (let i = 0; i < 2; i++) {
         const img = getImg(i);
@@ -1086,7 +1086,7 @@ export default function ExportPanel({
     } else if (template === 'neo-noir' || template === 'magazine') {
       // 1 single premium dramatic focus image
       const imgW = canvasW - padding * 2;
-      const imgH = canvasH - padding * 2 - 120;
+      const imgH = canvasH - padding * 2 - 120 * multiplier;
       const img = getImg(0);
       if (img) {
         drawPhotoWithEffects(img, padding, padding, imgW, imgH);
@@ -1135,7 +1135,7 @@ export default function ExportPanel({
         { x: canvasW * 0.32, y: canvasH * 0.7, rot: 0.05 },
         { x: canvasW * 0.68, y: canvasH * 0.72, rot: -0.06 },
       ];
-      const size = 360;
+      const size = 360 * multiplier;
 
       for (let i = 0; i < 4; i++) {
         const img = getImg(i);
@@ -1145,11 +1145,11 @@ export default function ExportPanel({
           ctx.rotate(positions[i].rot);
           // Draw subtle drop shadow for scrapbook layer feel
           ctx.shadowColor = 'rgba(0,0,0,0.4)';
-          ctx.shadowBlur = 15;
-          ctx.shadowOffsetY = 6;
+          ctx.shadowBlur = 15 * multiplier;
+          ctx.shadowOffsetY = 6 * multiplier;
           ctx.fillStyle = '#FFFFFF';
           // Draw mini Polaroid paper background under each photo
-          ctx.fillRect(-size / 2 - 10, -size / 2 - 10, size + 20, size + 50);
+          ctx.fillRect(-size / 2 - 10 * multiplier, -size / 2 - 10 * multiplier, size + 20 * multiplier, size + 50 * multiplier);
           drawPhotoWithEffects(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
@@ -1157,7 +1157,7 @@ export default function ExportPanel({
     } else if (template === 'gallery') {
       // 2 side-by-side arched portraits
       const imgW = (canvasW - padding * 2 - gap) / 2;
-      const imgH = canvasH - padding * 2 - 100;
+      const imgH = canvasH - padding * 2 - 100 * multiplier;
 
       for (let i = 0; i < 2; i++) {
         const img = getImg(i);
