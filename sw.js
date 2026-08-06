@@ -1,4 +1,4 @@
-const CACHE_NAME = 'digismile-cache-v3';
+const CACHE_NAME = 'digismile-cache-v4';
 const ASSETS_TO_CACHE = [
   './',
   'index.html',
@@ -35,19 +35,21 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Offline support fallback
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
-      });
-    })
-  );
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          return cachedResponse || caches.match('./');
+        });
+      })
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || fetch(event.request);
+      })
+    );
+  }
 });
 
 self.addEventListener('message', (event) => {
