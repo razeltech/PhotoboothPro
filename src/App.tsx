@@ -459,6 +459,7 @@ export default function App() {
             onChangePictureFrameStroke={setPictureFrameStroke}
             onProceed={() => setStep(4)}
             onBack={() => setStep(2)}
+            onReset={handleFullReset}
           />
         )}
 
