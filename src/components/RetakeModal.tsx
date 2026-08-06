@@ -41,15 +41,29 @@ export default function RetakeModal({
   useEffect(() => {
     async function setupDevices() {
       try {
-        const initialStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        setHasPermission(true);
-        initialStream.getTracks().forEach((track) => track.stop());
-
         const allDevices = await navigator.mediaDevices.enumerateDevices();
         const videoInputs = allDevices.filter((d) => d.kind === 'videoinput');
-        setDevices(videoInputs);
-        if (videoInputs.length > 0) {
-          setSelectedDeviceId(videoInputs[0].deviceId);
+        
+        // If devices have no labels, it means we don't have permission yet (which shouldn't happen here)
+        if (videoInputs.length > 0 && videoInputs[0].label === '') {
+          const initialStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          initialStream.getTracks().forEach((track) => track.stop());
+          // Wait a tiny bit for hardware to free up
+          await new Promise(r => setTimeout(r, 300));
+          
+          const refreshedDevices = await navigator.mediaDevices.enumerateDevices();
+          const refreshedInputs = refreshedDevices.filter((d) => d.kind === 'videoinput');
+          setDevices(refreshedInputs);
+          if (refreshedInputs.length > 0) {
+            setSelectedDeviceId(refreshedInputs[0].deviceId);
+            setHasPermission(true);
+          }
+        } else {
+          setDevices(videoInputs);
+          if (videoInputs.length > 0) {
+            setSelectedDeviceId(videoInputs[0].deviceId);
+            setHasPermission(true);
+          }
         }
       } catch (err: any) {
         setHasPermission(false);
@@ -100,10 +114,35 @@ export default function RetakeModal({
       setStream(activeStream);
       if (videoRef.current) {
         videoRef.current.srcObject = activeStream;
+        await videoRef.current.play().catch(e => console.warn('Autoplay prevented:', e));
       }
     } catch (err: any) {
-      console.error('Error starting camera stream in RetakeModal:', err);
-      setErrorMsg('Failed to bind selected camera.');
+      console.warn('Error starting camera stream with strict constraints in RetakeModal:', err);
+      try {
+        // Enumerate devices to force hardware refresh on mobile
+        await navigator.mediaDevices.enumerateDevices();
+        // Fallback for mobile devices if exact constraint fails
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        setStream(fallbackStream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = fallbackStream;
+          await videoRef.current.play().catch(e => console.warn('Autoplay prevented:', e));
+        }
+      } catch (fallbackErr) {
+        console.warn('Fallback facingMode camera also failed, trying generic constraints:', fallbackErr);
+        try {
+          // Tertiary ultimate fallback
+          const genericStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          setStream(genericStream);
+          if (videoRef.current) {
+            videoRef.current.srcObject = genericStream;
+            await videoRef.current.play().catch(e => console.warn('Autoplay prevented:', e));
+          }
+        } catch (genericErr) {
+          console.error('All camera fallbacks failed:', genericErr);
+          setErrorMsg('Failed to access any camera hardware.');
+        }
+      }
     }
   };
 

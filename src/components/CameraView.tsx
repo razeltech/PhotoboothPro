@@ -148,9 +148,12 @@ export default function CameraView({
     setupDevices();
   }, []);
 
-  // Ensure stream tracks are properly stopped when stream changes or unmounts
+  // Track mount status to prevent stream leaks if unmounted during async getUserMedia
+  const isMountedRef = useRef<boolean>(true);
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
@@ -223,6 +226,12 @@ export default function CameraView({
         }
       }
 
+      if (!isMountedRef.current) {
+        // Component unmounted while waiting for camera, stop the stream immediately
+        activeStream.getTracks().forEach(t => t.stop());
+        return;
+      }
+
       setStream(activeStream);
       if (videoRef.current) {
         videoRef.current.srcObject = activeStream;
@@ -259,14 +268,8 @@ export default function CameraView({
         const videoW = video.videoWidth || 640;
         const videoH = video.videoHeight || 480;
         
-        let targetAspect = 4/3;
-        if (cameraRatio === '16:9') {
-          targetAspect = 16/9;
-        } else if (cameraRatio === '1:1') {
-          targetAspect = 1;
-        } else if (cameraRatio === '9:16') {
-          targetAspect = 9/16;
-        }
+        // Force BTS video to ALWAYS be 9:16 vertical for stories/reels, matching the Export preview!
+        let targetAspect = 9/16;
 
         let btsW = videoW;
         let btsH = videoH;
@@ -354,32 +357,64 @@ export default function CameraView({
               btsCtx.restore();
             }
 
-            // Draw real-time ticking timecode timer
+            // --- EXACT REPLICATION OF EXPORTPANEL 9:16 HUD ---
             const elapsedMs = Date.now() - btsStartTime;
-            const minutes = Math.floor(elapsedMs / 60000);
-            const seconds = Math.floor((elapsedMs % 60000) / 1000);
-            const ms = Math.floor((elapsedMs % 1000) / 10);
-            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${ms.toString().padStart(2, '0')}`;
 
             btsCtx.save();
-            btsCtx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-            btsCtx.shadowBlur = 6;
-            btsCtx.shadowOffsetY = 2;
+            // Semi-transparent scanline gradient
+            const grad = btsCtx.createLinearGradient(0, 0, 0, btsCanvas.height);
+            grad.addColorStop(0, 'rgba(255,255,255,0.03)');
+            grad.addColorStop(1, 'transparent');
+            btsCtx.fillStyle = grad;
+            btsCtx.fillRect(0, 0, btsCanvas.width, btsCanvas.height);
+            
+            // HUD Base Styling
+            btsCtx.font = 'bold 22px monospace';
+            const padX = 24;
+            const padY = 32;
 
             // Red REC dot blinking
             const isBlinking = Math.floor(elapsedMs / 500) % 2 === 0;
+            
+            // Top Left: REC + 1080p
+            btsCtx.textAlign = 'left';
+            btsCtx.textBaseline = 'top';
             if (isBlinking) {
               btsCtx.fillStyle = '#EF4444'; // Red-500
               btsCtx.beginPath();
-              btsCtx.arc(25, 25, 6, 0, Math.PI * 2);
+              btsCtx.arc(padX + 8, padY + 12, 6, 0, Math.PI * 2);
               btsCtx.fill();
             }
+            btsCtx.fillStyle = '#34d399'; // Emerald-400
+            btsCtx.fillText(`REC`, padX + 22, padY + 2);
+            btsCtx.fillText(`1080p 30fps`, padX, padY + 32);
 
-            btsCtx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            btsCtx.font = 'bold 15px monospace';
+            // Top Right: AERO-REC + STBY
+            btsCtx.textAlign = 'right';
+            btsCtx.fillText(`AERO-REC`, btsCanvas.width - padX, padY + 2);
+            btsCtx.fillStyle = '#fbbf24'; // Amber-400
+            // Draw STBY box
+            const stbyW = 60;
+            const stbyH = 26;
+            btsCtx.strokeStyle = 'rgba(52, 211, 153, 0.3)';
+            btsCtx.lineWidth = 1;
+            btsCtx.strokeRect(btsCanvas.width - padX - stbyW, padY + 28, stbyW, stbyH);
+            btsCtx.font = 'bold 16px monospace';
+            btsCtx.fillText(`STBY`, btsCanvas.width - padX - 8, padY + 34);
+
+            // Bottom Left: Date/Time
+            btsCtx.font = 'bold 22px monospace';
+            btsCtx.fillStyle = '#34d399'; // Emerald-400
             btsCtx.textAlign = 'left';
-            btsCtx.textBaseline = 'middle';
-            btsCtx.fillText(`REC ${timeString}`, 38, 25);
+            btsCtx.textBaseline = 'bottom';
+            btsCtx.fillText(`DATE: ${new Date().toLocaleDateString()}`, padX, btsCanvas.height - padY - 28);
+            btsCtx.fillText(`TIME: ${new Date().toLocaleTimeString()}`, padX, btsCanvas.height - padY);
+
+            // Bottom Right: Battery / Channels
+            btsCtx.textAlign = 'right';
+            btsCtx.fillText(`BATT [||||] 92%`, btsCanvas.width - padX, btsCanvas.height - padY - 28);
+            btsCtx.fillText(`CH 1 / L+R`, btsCanvas.width - padX, btsCanvas.height - padY);
+            
             btsCtx.restore();
 
             // Draw active CAPTURED shutter flash overlay!

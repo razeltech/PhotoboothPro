@@ -62,6 +62,7 @@ interface CustomizePanelProps {
   onChangePictureFrameStroke: (stroke: string) => void;
   onProceed: () => void;
   onBack: () => void;
+  onReset: () => void;
 }
 
 export default function CustomizePanel({
@@ -96,6 +97,7 @@ export default function CustomizePanel({
   onChangePictureFrameStroke,
   onProceed,
   onBack,
+  onReset
 }: CustomizePanelProps) {
   // Tabs: 'filter' | 'frame' | 'stickers'
   const [activeTab, setActiveTab] = useState<'filter' | 'frame' | 'stickers'>('filter');
@@ -397,8 +399,33 @@ export default function CustomizePanel({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 flex flex-col lg:flex-row gap-8 items-start">
+    <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto min-h-[100dvh] pt-14 lg:pt-0">
       
+      {/* Mobile Top App-Like Controls */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-razel-dark/95 backdrop-blur-md border-b border-white/5 z-[60] flex items-center px-4 justify-between">
+        <button
+          onClick={onReset}
+          className="p-2 -ml-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          title="New Session"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        <span className="font-display font-bold text-sm tracking-widest text-white/90">
+          CUSTOMIZE
+        </span>
+        <div className="w-9" /> {/* Spacer for centering */}
+      </div>
+
+      {/* Desktop Reset Button */}
+      <div className="hidden lg:block absolute top-6 left-6 z-50">
+        <button
+          onClick={onReset}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-xs font-bold border border-white/5"
+        >
+          <ArrowLeft className="w-4 h-4" /> New Session
+        </button>
+      </div>
+
       {/* LEFT COLUMN: Real-Time Strip Visual Preview with Drag Overlay (Sticky on desktop to prevent scrolling) */}
       <div className="w-full lg:w-5/12 flex flex-col items-center select-none shrink-0 lg:sticky lg:top-6 lg:self-start">
         <h3 className="text-xs font-mono font-bold text-white/50 uppercase tracking-widest mb-3">
@@ -714,8 +741,8 @@ export default function CustomizePanel({
                     {/* Real-time Light Leaks & Lens Flares Overlay per photo */}
                     {leakOverlay}
 
-                    {/* Interactive Frame Retake Overlay Button on Hover */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center pointer-events-none z-20">
+                    {/* Desktop Hover Retake Overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 lg:group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 hidden lg:flex items-center justify-center">
                       <button
                         type="button"
                         onClick={(e) => {
@@ -725,10 +752,24 @@ export default function CustomizePanel({
                         }}
                         className="pointer-events-auto px-3 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-mono text-[10px] font-bold tracking-wider transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center gap-1.5"
                       >
-                        <RotateCw className="w-3.5 h-3.5 animate-spin-slow text-white" />
-                        RETAKE PHOTO
+                        <RotateCw className="w-3.5 h-3.5 text-white" />
+                        RETAKE
                       </button>
                     </div>
+
+                    {/* Always-visible Mobile Retake Icon */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setRetakeIndex(index);
+                      }}
+                      className="absolute bottom-1.5 right-1.5 z-30 p-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white/90 hover:text-white hover:bg-emerald-500 transition-all lg:hidden shadow-sm"
+                      title="Retake this pose"
+                    >
+                      <RotateCw className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 );
               };
@@ -1076,26 +1117,26 @@ export default function CustomizePanel({
       </div>
 
       {/* RIGHT COLUMN: Professional Customization Control Panel */}
-      <div className="w-full lg:flex-1 bg-razel-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+      <div id="customize-tabs" className="w-full lg:flex-1 bg-razel-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col scroll-mt-20">
         
         {/* Editor Tabs Navigation */}
-        <div className="flex border-b border-white/10 bg-black/30">
+        <div className="flex overflow-x-auto whitespace-nowrap hide-scrollbar border-b border-white/10 bg-black/30 sticky top-0 z-20">
           {[
-            { id: 'filter', label: 'Filters & Adjust', icon: <Sliders className="w-4 h-4" /> },
-            { id: 'frame', label: 'Frame & Text', icon: <Type className="w-4 h-4" /> },
-            { id: 'stickers', label: 'Stickers Stamp', icon: <Smile className="w-4 h-4" /> },
+            { id: 'filter', title: 'Filters & Adjust', icon: <Sliders className="w-5 h-5" /> },
+            { id: 'frame', title: 'Frame & Text', icon: <Type className="w-5 h-5" /> },
+            { id: 'stickers', title: 'Stickers Stamp', icon: <Smile className="w-5 h-5" /> },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 py-4 flex items-center justify-center gap-2 font-display font-semibold text-xs md:text-sm border-b-2 transition-all ${
+              className={`flex-1 py-4 flex items-center justify-center transition-all border-b-2 ${
                 activeTab === tab.id
-                  ? 'border-razel-neon text-white bg-white/5'
+                  ? 'border-razel-neon text-razel-neon bg-white/5'
                   : 'border-transparent text-white/45 hover:text-white/80 hover:bg-white/[0.01]'
               }`}
+              title={tab.title}
             >
               {tab.icon}
-              {tab.label}
             </button>
           ))}
         </div>
@@ -1756,20 +1797,20 @@ export default function CustomizePanel({
         </div>
 
         {/* Action Button Strip */}
-        <div className="p-6 border-t border-white/10 bg-black/40 flex items-center justify-between gap-4">
+        <div className="p-4 lg:p-6 border-t border-white/10 bg-black/95 lg:bg-black/40 backdrop-blur-md flex items-center justify-between gap-4 fixed bottom-0 left-0 right-0 z-[100] lg:static lg:z-auto shadow-[0_-10px_40px_rgba(0,0,0,0.5)] lg:shadow-none">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm font-semibold"
+            className="flex items-center gap-1.5 text-white/70 hover:text-white transition-colors text-xs font-semibold uppercase tracking-wider"
           >
-            <ArrowLeft className="w-4 h-4" /> RETAKE POSES
+            <ArrowLeft className="w-4 h-4" /> RETAKE
           </button>
 
           <button
             onClick={onProceed}
-            className="px-8 py-3.5 rounded-xl bg-razel-neon hover:bg-razel-neon/90 text-white font-display font-extrabold text-sm tracking-wide shadow-md hover:-translate-y-0.5 transition-all flex items-center gap-1.5"
+            className="px-6 py-3 rounded-xl bg-razel-neon hover:bg-razel-neon/90 text-white font-display font-extrabold text-xs tracking-wide shadow-md hover:-translate-y-0.5 transition-all flex items-center gap-1.5 flex-1 justify-center max-w-[280px]"
             id="btn-customize-generate"
           >
-            GENERATE PHOTO STRIP <ChevronRight className="w-4 h-4" />
+            GENERATE STRIP <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -1789,6 +1830,19 @@ export default function CustomizePanel({
           }}
         />
       )}
+
+      {/* Floating Action Button (FAB) for Mobile - Scroll to tools */}
+      <div className="lg:hidden fixed bottom-24 right-4 z-[55]">
+        <button
+          onClick={() => {
+            document.getElementById('customize-tabs')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="flex items-center justify-center p-4 rounded-full bg-razel-neon text-white shadow-[0_4px_20px_rgba(255,46,84,0.5)] active:scale-95 transition-transform"
+          title="Open Customization Tools"
+        >
+          <Sliders className="w-6 h-6" />
+        </button>
+      </div>
     </div>
   );
 }

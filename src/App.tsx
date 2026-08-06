@@ -331,7 +331,7 @@ export default function App() {
     <div className="min-h-screen bg-razel-dark text-white font-sans flex flex-col justify-between">
       
       {/* Header element */}
-      {step > 0 && step !== 2 && (
+      {step > 0 && step !== 2 && step !== 3 && (
         <Header 
           currentStep={step} 
           onReset={handleFullReset} 

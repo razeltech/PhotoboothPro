@@ -76,6 +76,8 @@ export default function ExportPanel({
   
   // Tab control: 'strip' | 'print' | 'gif' | 'video'
   const [activeTab, setActiveTab] = useState<'strip' | 'print' | 'gif' | 'video'>('strip');
+  // Mobile Export Control Tab
+  const [exportControlTab, setExportControlTab] = useState<'downloads' | 'settings' | 'qr'>('downloads');
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [gifFps, setGifFps] = useState<number>(3); // 2fps to 15fps, default 3fps (333ms delay)
   const [exportQuality, setExportQuality] = useState<'standard' | 'print300' | 'ultra400'>('print300');
@@ -1937,7 +1939,32 @@ export default function ExportPanel({
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-5xl mx-auto px-4 flex flex-col lg:flex-row gap-8 items-start">
+        <div className="w-full max-w-5xl mx-auto px-4 flex flex-col lg:flex-row gap-8 items-start min-h-[100dvh] pt-14 lg:pt-0 relative">
+          
+          {/* Mobile Top App-Like Controls */}
+          <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-razel-dark/95 backdrop-blur-md border-b border-white/5 z-[60] flex items-center px-4 justify-between">
+            <button
+              onClick={onReset}
+              className="p-2 -ml-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              title="New Session"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </button>
+            <span className="font-display font-bold text-sm tracking-widest text-white/90">
+              FINALIZE
+            </span>
+            <div className="w-9" /> {/* Spacer for centering */}
+          </div>
+
+          {/* Desktop Reset Button */}
+          <div className="hidden lg:block absolute -top-8 left-0 lg:left-4 z-50">
+            <button
+              onClick={onReset}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all text-xs font-bold border border-white/5"
+            >
+              <RotateCcw className="w-4 h-4" /> New Session
+            </button>
+          </div>
 
       {/* LEFT COLUMN: Rendered Composite View Tabbed Panel (Sticky on desktop to prevent scrolling) */}
       <div className="w-full lg:w-5/12 flex flex-col items-center lg:sticky lg:top-6 lg:self-start">
@@ -1946,51 +1973,55 @@ export default function ExportPanel({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-white/5 border border-white/10 rounded-xl mb-4 w-full">
           <button
             onClick={() => setActiveTab('strip')}
-            className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+            className={`py-3 rounded-lg flex items-center justify-center gap-1 transition-all ${
               activeTab === 'strip'
                 ? 'bg-emerald-500 text-white shadow-md'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
+            title="High-Res Photo"
           >
-            <ImageIcon className="w-3.5 h-3.5" /> High-Res Photo
+            <ImageIcon className="w-5 h-5" />
           </button>
 
           <button
             onClick={() => setActiveTab('print')}
-            className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+            className={`py-3 rounded-lg flex items-center justify-center gap-1 transition-all ${
               activeTab === 'print'
                 ? 'bg-amber-400 text-black font-extrabold shadow-md'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
+            title="Print Sheet"
           >
-            <Printer className="w-3.5 h-3.5" /> Print Sheet
+            <Printer className="w-5 h-5" />
           </button>
           
           <button
             onClick={() => setActiveTab('gif')}
-            className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+            className={`py-3 rounded-lg flex items-center justify-center gap-1 transition-all ${
               activeTab === 'gif'
                 ? 'bg-emerald-500 text-white shadow-md'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
+            title="AeroLoop GIF"
           >
-            <Flame className="w-3.5 h-3.5" /> AeroLoop GIF
+            <Flame className="w-5 h-5" />
           </button>
 
           {videoBlobUrl ? (
             <button
               onClick={() => setActiveTab('video')}
-              className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+              className={`py-3 rounded-lg flex items-center justify-center gap-1 transition-all ${
                 activeTab === 'video'
                   ? 'bg-emerald-500 text-white shadow-md'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
+              title="Timelapse Video"
             >
-              <Film className="w-3.5 h-3.5" /> Timelapse
+              <Film className="w-5 h-5" />
             </button>
           ) : (
-            <div className="py-2 text-center text-[10px] text-white/20 flex items-center justify-center font-mono">
-              No Video
+            <div className="py-3 text-center text-[10px] text-white/20 flex items-center justify-center font-mono">
+              <Film className="w-5 h-5 opacity-30" />
             </div>
           )}
         </div>
@@ -2120,7 +2151,18 @@ export default function ExportPanel({
           )}
 
           {activeTab === 'video' && videoBlobUrl && (
-            <div className="w-full rounded-xl overflow-hidden shadow-lg animate-fade-in bg-zinc-900 flex flex-col relative aspect-[9/16] max-w-[280px] border border-white/20">
+            <div className="w-full rounded-xl overflow-hidden shadow-lg animate-fade-in bg-zinc-900 flex flex-col relative aspect-[9/16] max-w-[280px] border border-emerald-400/30">
+              
+              {/* Direct Download Overlay Button */}
+              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none">
+                <button
+                  onClick={() => triggerDownload(videoBlobUrl, `digismile-bts-${Date.now()}.mp4`)}
+                  className="pointer-events-auto flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-500/90 backdrop-blur-md text-white shadow-2xl hover:scale-105 active:scale-95 transition-all mt-auto mb-16 border border-emerald-400 font-bold text-sm"
+                  title="Download MP4 Video"
+                >
+                  <Download className="w-5 h-5 animate-bounce" /> Save Video
+                </button>
+              </div>
               
               {/* Vintage Camcorder HUD Overlay Layer */}
               <div className="absolute inset-0 z-10 p-3 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-emerald-400 select-none">
@@ -2194,624 +2236,660 @@ export default function ExportPanel({
         <div className="h-[1px] bg-white/10 mb-6" />
 
         <div className="flex flex-col gap-4 flex-1">
-          {/* Resolution Profile Selector */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Sliders className="w-3.5 h-3.5 text-emerald-400" /> Print DPI Resolution Profile
-              </span>
-              <span className="text-[11px] font-mono font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-400/10 border border-emerald-400/20">
-                {getQualityDimensions()}
-              </span>
-            </div>
-            
-            <p className="text-[11px] text-white/50 leading-relaxed">
-              Adjust resolution settings before downloading or printing. Higher multipliers offer crisp layout details and sharp prints.
-            </p>
-
-            <div className="grid grid-cols-3 gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
+          {/* Mobile Control Navigation Tabs */}
+          <div className="flex overflow-x-auto whitespace-nowrap hide-scrollbar border-b border-white/10 bg-black/30 sticky top-0 z-20">
+            {[
+              { id: 'downloads', title: 'Save & Download', icon: <Download className="w-5 h-5" /> },
+              { id: 'settings', title: 'Print & Layout', icon: <Printer className="w-5 h-5" /> },
+              { id: 'qr', title: 'Mobile QR', icon: <QrCode className="w-5 h-5" /> },
+            ].map((tab) => (
               <button
-                onClick={() => setExportQuality('standard')}
-                className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all ${
-                  exportQuality === 'standard'
-                    ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                key={tab.id}
+                onClick={() => setExportControlTab(tab.id as any)}
+                className={`flex-1 py-4 flex items-center justify-center transition-all border-b-2 ${
+                  exportControlTab === tab.id
+                    ? 'border-emerald-400 text-emerald-400 bg-white/5'
+                    : 'border-transparent text-white/45 hover:text-white/80 hover:bg-white/[0.01]'
                 }`}
+                title={tab.title}
               >
-                Standard (1x)
+                {tab.icon}
               </button>
-              <button
-                onClick={() => setExportQuality('print300')}
-                className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all ${
-                  exportQuality === 'print300'
-                    ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                300 DPI Print (2x)
-              </button>
-              <button
-                onClick={() => setExportQuality('ultra400')}
-                className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all ${
-                  exportQuality === 'ultra400'
-                    ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                400 DPI Ultra (3x)
-              </button>
-            </div>
+            ))}
           </div>
 
-          {/* Premium Paper Simulation */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Sliders className="w-3.5 h-3.5 text-emerald-400" /> Premium Paper Texture Finish
-              </span>
-              <span className="text-[10px] font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-400/10 border border-amber-400/20 uppercase tracking-wider">
-                Ultra Print Simulation
-              </span>
-            </div>
-            
-            <p className="text-[11px] text-white/50 leading-relaxed">
-              Apply realistic physical paper grain and light reflections over your final photo strip.
-            </p>
-
-            <div className="grid grid-cols-4 gap-1.5 bg-black/40 p-1 rounded-lg border border-white/5">
-              {[
-                { id: 'none', name: 'Digital (None)', desc: 'Smooth' },
-                { id: 'matte', name: 'Matte Finish', desc: 'Flat Grain' },
-                { id: 'satin', name: 'Satin Luster', desc: 'Pebbled' },
-                { id: 'glossy', name: 'Glossy Print', desc: 'Shiny Sheen' },
-              ].map((paper) => (
-                <button
-                  key={paper.id}
-                  onClick={() => setPaperTexture(paper.id as any)}
-                  className={`py-2 px-1 rounded-md text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
-                    paperTexture === paper.id
-                      ? 'bg-emerald-500 text-white shadow-lg'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span className="text-[10px] font-bold leading-tight">{paper.name}</span>
-                  <span className="text-[8px] opacity-60 leading-none mt-0.5">{paper.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Dynamic QR Code Share Hub */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <QrCode className="w-3.5 h-3.5 text-razel-neon" /> Instant Mobile Transfer
-              </span>
-              <span className="text-[10px] font-mono font-bold text-razel-neon px-2 py-0.5 rounded bg-razel-neon/10 border border-razel-neon/20 uppercase tracking-wider">
-                Dynamic QR
-              </span>
-            </div>
-
-            <p className="text-[11px] text-white/50 leading-relaxed">
-              Scan with your phone's camera to instantly save your high-res photo strip or launch this photobooth session on mobile.
-            </p>
-
-            <div className="grid grid-cols-2 gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
-              <button
-                type="button"
-                onClick={() => setQrTab('direct-photo')}
-                className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all cursor-pointer ${
-                  qrTab === 'direct-photo'
-                    ? 'bg-razel-neon text-white shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                📸 Mobile Save Image
-              </button>
-              <button
-                type="button"
-                onClick={() => setQrTab('app-link')}
-                className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all cursor-pointer ${
-                  qrTab === 'app-link'
-                    ? 'bg-razel-neon text-white shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                🔗 Share App Link
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center justify-center p-4 bg-zinc-950/80 border border-white/5 rounded-xl min-h-[210px]">
-              {qrLoading ? (
-                <div className="flex flex-col items-center gap-3 py-6">
-                  <Loader2 className="w-8 h-8 text-razel-neon animate-spin" />
-                  <span className="text-xs font-mono text-white/50">
-                    {qrTab === 'direct-photo' ? 'Uploading & Generating...' : 'Creating App Link QR...'}
-                  </span>
-                </div>
-              ) : qrUrl ? (
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <div className="p-2 bg-white rounded-xl shadow-lg border border-white/10">
-                    <img src={qrUrl} alt="Scan QR Code" className="w-36 h-36 object-contain rounded" />
-                  </div>
-                  <span className="text-[10px] text-zinc-400 font-mono text-center flex items-center justify-center gap-1.5 mt-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400 animate-pulse" /> 
-                    {qrTab === 'direct-photo' ? 'High-Res Direct Link ready' : 'Workspace Launch Link ready'}
-                  </span>
-                  {qrError && (
-                    <span className="text-[9px] text-amber-400/80 text-center max-w-[220px] leading-tight">
-                      {qrError}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="text-xs text-zinc-500">Failed to load QR code.</div>
-              )}
-            </div>
-          </div>
-
-          {/* Static Image Box */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
-                <ImageIcon className="w-4 h-4 text-emerald-400" /> High-Res Photo Composite
-              </h4>
-              <p className="text-xs text-white/40 leading-normal mt-0.5">
-                Perfect for 300 DPI high-quality photo prints or wallpaper backgrounds.
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={downloadJpg}
-                className="px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors flex items-center gap-1"
-                title="Download standard high-res JPG print"
-              >
-                <Download className="w-3.5 h-3.5" /> JPG
-              </button>
-
-              <button
-                onClick={() => triggerDownload(staticImageUrl, `digismile-strip-${Date.now()}.png`)}
-                className="px-4 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white/95 border border-white/10 font-semibold text-xs transition-colors flex items-center gap-1"
-                title="Download lossless high-res PNG"
-              >
-                <Download className="w-3.5 h-3.5" /> PNG
-              </button>
-              
-              <button
-                onClick={() => handleShare(staticImageBlob, `digismile-photo.png`, 'image/png')}
-                className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
-                title="Share image to external applications"
-              >
-                <Share2 className="w-4 h-4 text-emerald-400" />
-              </button>
-            </div>
-          </div>
-
-          {/* Looping GIF Box */}
-          {gifUrl && (
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
-                    <Flame className="w-4 h-4 text-razel-neon" /> DigiSmile Loop Animated GIF
-                  </h4>
-                  <p className="text-xs text-white/40 leading-normal mt-0.5">
-                    A looping digital animated flipbook of all your captured poses.
-                  </p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => triggerDownload(gifUrl, `digismile-loop-${Date.now()}.gif`)}
-                    className="px-4 py-2.5 rounded-lg bg-razel-neon hover:bg-razel-neon/95 text-white font-semibold text-xs transition-colors flex items-center gap-1"
-                  >
-                    <Download className="w-3.5 h-3.5" /> GIF
-                  </button>
-
-                  <button
-                    onClick={() => handleShare(gifBlob, `digismile-loop.gif`, 'image/gif')}
-                    className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
-                  >
-                    <Share2 className="w-4 h-4 text-razel-neon" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Animated Loop Velocity Control Slider */}
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3.5 flex flex-col gap-2.5">
+          {/* TAB 1: SETTINGS (Resolution & Paper & Print) */}
+          {exportControlTab === 'settings' && (
+            <div className="flex flex-col gap-4 animate-fade-in">
+              {/* Resolution Profile Selector */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Sliders className="w-3.5 h-3.5 text-razel-neon" /> Loop Playback Velocity
+                    <Sliders className="w-3.5 h-3.5 text-emerald-400" /> Print DPI Resolution Profile
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-razel-neon px-2 py-0.5 rounded bg-razel-neon/10 border border-razel-neon/20">
-                    {gifFps} frames/sec
+                  <span className="text-[11px] font-mono font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-400/10 border border-emerald-400/20">
+                    {getQualityDimensions()}
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="2"
-                  max="15"
-                  step="1"
-                  value={gifFps}
-                  onChange={(e) => setGifFps(Number(e.target.value))}
-                  className="w-full accent-razel-neon cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] font-mono text-white/40">
-                  <span>Slow (2 fps)</span>
-                  <span>Fast (15 fps)</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* BTS Video Box */}
-          {videoBlobUrl && (
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
-                  <Film className="w-4 h-4 text-sky-400" /> Behind-The-Scenes Video Export
-                </h4>
-                <p className="text-xs text-white/40 leading-normal mt-0.5">
-                  Live timelapse capturing all your organic smiles and pose prep moments.
+                
+                <p className="text-[11px] text-white/50 leading-relaxed">
+                  Adjust resolution settings before downloading or printing. Higher multipliers offer crisp layout details and sharp prints.
                 </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => triggerDownload(videoBlobUrl, `digismile-bts-${Date.now()}.mp4`)}
-                  className="px-4 py-2.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-colors flex items-center gap-1"
-                  title="Download MP4 Video"
-                >
-                  <Download className="w-3.5 h-3.5" /> MP4
-                </button>
 
+                <div className="grid grid-cols-3 gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
+                  <button
+                    onClick={() => setExportQuality('standard')}
+                    className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all ${
+                      exportQuality === 'standard'
+                        ? 'bg-emerald-500 text-white shadow-lg'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    Standard (1x)
+                  </button>
+                  <button
+                    onClick={() => setExportQuality('print300')}
+                    className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all ${
+                      exportQuality === 'print300'
+                        ? 'bg-emerald-500 text-white shadow-lg'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    300 DPI Print (2x)
+                  </button>
+                  <button
+                    onClick={() => setExportQuality('ultra400')}
+                    className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all ${
+                      exportQuality === 'ultra400'
+                        ? 'bg-emerald-500 text-white shadow-lg'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    400 DPI Ultra (3x)
+                  </button>
+                </div>
+              </div>
+
+              {/* Premium Paper Simulation */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Sliders className="w-3.5 h-3.5 text-emerald-400" /> Premium Paper Texture Finish
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-400/10 border border-amber-400/20 uppercase tracking-wider">
+                    Ultra Print Simulation
+                  </span>
+                </div>
+                
+                <p className="text-[11px] text-white/50 leading-relaxed">
+                  Apply realistic physical paper grain and light reflections over your final photo strip.
+                </p>
+
+                <div className="grid grid-cols-4 gap-1.5 bg-black/40 p-1 rounded-lg border border-white/5">
+                  {[
+                    { id: 'none', name: 'Digital (None)', desc: 'Smooth' },
+                    { id: 'matte', name: 'Matte Finish', desc: 'Flat Grain' },
+                    { id: 'satin', name: 'Satin Luster', desc: 'Pebbled' },
+                    { id: 'glossy', name: 'Glossy Print', desc: 'Shiny Sheen' },
+                  ].map((paper) => (
+                    <button
+                      key={paper.id}
+                      onClick={() => setPaperTexture(paper.id as any)}
+                      className={`py-2 px-1 rounded-md text-center flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        paperTexture === paper.id
+                          ? 'bg-emerald-500 text-white shadow-lg'
+                          : 'text-white/60 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <span className="text-[10px] font-bold leading-tight">{paper.name}</span>
+                      <span className="text-[8px] opacity-60 leading-none mt-0.5">{paper.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Print settings container */}
+              <div className="mt-4 bg-white/[0.02] border border-white/5 rounded-xl p-4">
                 <button
-                  onClick={async () => {
-                    if (!videoBlobUrl) return;
-                    try {
-                      const res = await fetch(videoBlobUrl);
-                      const blob = await res.blob();
-                      await handleShare(blob, `digismile-bts-${Date.now()}.mp4`, 'video/mp4');
-                    } catch (e) {
-                      console.warn('Error sharing BTS video:', e);
+                  onClick={() => {
+                    const nextState = !showPrintSettings;
+                    setShowPrintSettings(nextState);
+                    if (nextState) {
+                      setActiveTab('print');
+                    } else {
+                      setActiveTab('strip');
                     }
                   }}
-                  className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
-                  title="Share Behind-The-Scenes video to stories/apps"
+                  className="w-full flex items-center justify-between text-xs font-bold text-white/80 hover:text-white uppercase tracking-wider transition-colors"
                 >
-                  <Share2 className="w-4 h-4 text-sky-400" />
+                  <span className="flex items-center gap-2">
+                    <Printer className="w-3.5 h-3.5 text-amber-400" />
+                    Customize Print Options
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-mono font-bold bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                    {showPrintSettings ? 'Close Config' : 'Configure'}
+                  </span>
+                </button>
+
+                {showPrintSettings && (
+                  <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-4 animate-fade-in text-left">
+                    {/* Print Copies */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-400 font-medium">Print Copies</span>
+                      <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg p-1">
+                        <button
+                          type="button"
+                          onClick={() => setPrintCopies(Math.max(1, printCopies - 1))}
+                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold hover:bg-white/10 transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="text-xs font-mono font-bold text-white min-w-8 text-center">{printCopies}</span>
+                        <button
+                          type="button"
+                          onClick={() => setPrintCopies(Math.min(10, printCopies + 1))}
+                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold hover:bg-white/10 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Paper Size */}
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-xs text-zinc-400 font-medium">Paper Size</span>
+                      <div className="grid grid-cols-4 gap-1.5 bg-black/40 border border-white/10 rounded-lg p-1">
+                        {(['letter', 'a4', '4x6', 'wallet'] as const).map((size) => (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => setPrintPaperSize(size)}
+                            className={`py-1 px-1 text-[10px] font-bold rounded capitalize tracking-wide transition-all ${
+                              printPaperSize === size
+                                ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
+                                : 'text-zinc-400 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            {size === 'letter' ? 'Letter' : size === 'a4' ? 'A4' : size === '4x6' ? '4"x6"' : 'Wallet'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Color mode & Layout style */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-xs text-zinc-400 font-medium">Color Mode</span>
+                        <div className="grid grid-cols-2 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
+                          <button
+                            type="button"
+                            onClick={() => setPrintColorMode('color')}
+                            className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                              printColorMode === 'color'
+                                ? 'bg-amber-400/20 text-amber-300'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            Color
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPrintColorMode('mono')}
+                            className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                              printColorMode === 'mono'
+                                ? 'bg-zinc-800 text-zinc-200'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            Retro B&W
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-xs text-zinc-400 font-medium">Layout Style</span>
+                        <div className="grid grid-cols-2 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
+                          <button
+                            type="button"
+                            onClick={() => setPrintGridLayout('single')}
+                            className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                              printGridLayout === 'single'
+                                ? 'bg-amber-400/20 text-amber-300'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            Single
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPrintGridLayout('double')}
+                            className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                              printGridLayout === 'double'
+                                ? 'bg-amber-400/20 text-amber-300'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                            title="Prints 2 copies side-by-side on one sheet"
+                          >
+                            Duo Strip
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Paper Sizing Mode */}
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-zinc-400 font-medium">Paper Sizing Boundary</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
+                        <button
+                          type="button"
+                          onClick={() => setPaperSizingMode('fit')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            paperSizingMode === 'fit'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Saves a standard print-safe blank margin around photo strips"
+                        >
+                          Fit to Page (Safe)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaperSizingMode('fill')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            paperSizingMode === 'fill'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Fills the entire sheet of photo paper borderlessly"
+                        >
+                          Fill Page (Borderless)
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Ink Density Brightness Compensation */}
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-zinc-400 font-medium flex items-center gap-1">
+                          <Sun className="w-3.5 h-3.5 text-amber-400" /> Ink Density Compensator
+                        </span>
+                        <span className="text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">Absorption Boost</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
+                        <button
+                          type="button"
+                          onClick={() => setBrightnessAdjustment('neutral')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            brightnessAdjustment === 'neutral'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Standard digital exposure profile"
+                        >
+                          Standard (0%)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBrightnessAdjustment('bright')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            brightnessAdjustment === 'bright'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Compensate standard ink absorption with mild brightness boost (+12%)"
+                        >
+                          Medium (+12%)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBrightnessAdjustment('bright-plus')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            brightnessAdjustment === 'bright-plus'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Strong brightness boost for heavy matte photo paper to prevent dark prints (+24%)"
+                        >
+                          Heavy (+24%)
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Print Temperature Warmth */}
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-zinc-400 font-medium flex items-center gap-1">
+                          <Thermometer className="w-3.5 h-3.5 text-amber-400" /> Print Temperature Warmth
+                        </span>
+                        <span className="text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">White Balance</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
+                        <button
+                          type="button"
+                          onClick={() => setPrintWarmth('neutral')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            printWarmth === 'neutral'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="True color profile matching"
+                        >
+                          Neutral Studio
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPrintWarmth('warm')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            printWarmth === 'warm'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Apply vintage sepia undertones for dynamic physical warmth"
+                        >
+                          Warm Vintage
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPrintWarmth('cool')}
+                          className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
+                            printWarmth === 'cool'
+                              ? 'bg-amber-400/20 text-amber-300'
+                              : 'text-zinc-400 hover:text-white'
+                          }`}
+                          title="Apply rich cyan studio highlights for clean monochrome prints"
+                        >
+                          Cool Studio
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Toggle Crop Guidelines & Cut Marks */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-400 font-medium flex items-center gap-1.5">
+                        <Scissors className="w-3.5 h-3.5 text-amber-400" />
+                        Crop marks &amp; Cut guides
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowCutMarks(!showCutMarks)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                          showCutMarks ? 'bg-amber-400' : 'bg-zinc-700'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-3 w-3 transform rounded-full bg-black transition-transform ${
+                            showCutMarks ? 'translate-x-5' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Toggle border outline */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-400 font-medium">Print Frame Border</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowPrintBorder(!showPrintBorder)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                          showPrintBorder ? 'bg-amber-400' : 'bg-zinc-700'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-3 w-3 transform rounded-full bg-black transition-transform ${
+                            showPrintBorder ? 'translate-x-5' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Print action button inside settings tab */}
+              <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={printImage}
+                  className="flex-1 py-3.5 px-4 rounded-xl border border-amber-400/30 hover:border-amber-400 bg-amber-400/10 hover:bg-amber-400/20 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:scale-[1.01] transition-all shadow-md shadow-amber-500/5"
+                >
+                  <Printer className="w-4 h-4 text-amber-400 animate-pulse" /> Print Photo Strip
                 </button>
               </div>
             </div>
           )}
 
-          {/* Print settings container */}
-          <div className="mt-4 bg-white/[0.02] border border-white/5 rounded-xl p-4">
-            <button
-              onClick={() => {
-                const nextState = !showPrintSettings;
-                setShowPrintSettings(nextState);
-                if (nextState) {
-                  setActiveTab('print');
-                } else {
-                  setActiveTab('strip');
-                }
-              }}
-              className="w-full flex items-center justify-between text-xs font-bold text-white/80 hover:text-white uppercase tracking-wider transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <Printer className="w-3.5 h-3.5 text-amber-400" />
-                Customize Print Options
-              </span>
-              <span className="text-[10px] text-amber-400 font-mono font-bold bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
-                {showPrintSettings ? 'Close Config' : 'Configure'}
-              </span>
-            </button>
-
-            {showPrintSettings && (
-              <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-4 animate-fade-in text-left">
-                {/* Print Copies */}
+          {/* TAB 2: QR Transfer */}
+          {exportControlTab === 'qr' && (
+            <div className="flex flex-col gap-4 animate-fade-in">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-zinc-400 font-medium">Print Copies</span>
-                  <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg p-1">
-                    <button
-                      type="button"
-                      onClick={() => setPrintCopies(Math.max(1, printCopies - 1))}
-                      className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold hover:bg-white/10 transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="text-xs font-mono font-bold text-white min-w-8 text-center">{printCopies}</span>
-                    <button
-                      type="button"
-                      onClick={() => setPrintCopies(Math.min(10, printCopies + 1))}
-                      className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold hover:bg-white/10 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                {/* Paper Size */}
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs text-zinc-400 font-medium">Paper Size</span>
-                  <div className="grid grid-cols-4 gap-1.5 bg-black/40 border border-white/10 rounded-lg p-1">
-                    {(['letter', 'a4', '4x6', 'wallet'] as const).map((size) => (
-                      <button
-                        key={size}
-                        type="button"
-                        onClick={() => setPrintPaperSize(size)}
-                        className={`py-1 px-1 text-[10px] font-bold rounded capitalize tracking-wide transition-all ${
-                          printPaperSize === size
-                            ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
-                            : 'text-zinc-400 hover:text-white border border-transparent'
-                        }`}
-                      >
-                        {size === 'letter' ? 'Letter' : size === 'a4' ? 'A4' : size === '4x6' ? '4"x6"' : 'Wallet'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Color mode & Layout style */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-xs text-zinc-400 font-medium">Color Mode</span>
-                    <div className="grid grid-cols-2 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
-                      <button
-                        type="button"
-                        onClick={() => setPrintColorMode('color')}
-                        className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                          printColorMode === 'color'
-                            ? 'bg-amber-400/20 text-amber-300'
-                            : 'text-zinc-400 hover:text-white'
-                        }`}
-                      >
-                        Color
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPrintColorMode('mono')}
-                        className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                          printColorMode === 'mono'
-                            ? 'bg-zinc-800 text-zinc-200'
-                            : 'text-zinc-400 hover:text-white'
-                        }`}
-                      >
-                        Retro B&W
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-xs text-zinc-400 font-medium">Layout Style</span>
-                    <div className="grid grid-cols-2 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
-                      <button
-                        type="button"
-                        onClick={() => setPrintGridLayout('single')}
-                        className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                          printGridLayout === 'single'
-                            ? 'bg-amber-400/20 text-amber-300'
-                            : 'text-zinc-400 hover:text-white'
-                        }`}
-                      >
-                        Single
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPrintGridLayout('double')}
-                        className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                          printGridLayout === 'double'
-                            ? 'bg-amber-400/20 text-amber-300'
-                            : 'text-zinc-400 hover:text-white'
-                        }`}
-                        title="Prints 2 copies side-by-side on one sheet"
-                      >
-                        Duo Strip
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Paper Sizing Mode */}
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-zinc-400 font-medium">Paper Sizing Boundary</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
-                    <button
-                      type="button"
-                      onClick={() => setPaperSizingMode('fit')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        paperSizingMode === 'fit'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Saves a standard print-safe blank margin around photo strips"
-                    >
-                      Fit to Page (Safe)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaperSizingMode('fill')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        paperSizingMode === 'fill'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Fills the entire sheet of photo paper borderlessly"
-                    >
-                      Fill Page (Borderless)
-                    </button>
-                  </div>
-                </div>
-
-                {/* Ink Density Brightness Compensation */}
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-zinc-400 font-medium flex items-center gap-1">
-                      <Sun className="w-3.5 h-3.5 text-amber-400" /> Ink Density Compensator
-                    </span>
-                    <span className="text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">Absorption Boost</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
-                    <button
-                      type="button"
-                      onClick={() => setBrightnessAdjustment('neutral')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        brightnessAdjustment === 'neutral'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Standard digital exposure profile"
-                    >
-                      Standard (0%)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBrightnessAdjustment('bright')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        brightnessAdjustment === 'bright'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Compensate standard ink absorption with mild brightness boost (+12%)"
-                    >
-                      Medium (+12%)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBrightnessAdjustment('bright-plus')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        brightnessAdjustment === 'bright-plus'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Strong brightness boost for heavy matte photo paper to prevent dark prints (+24%)"
-                    >
-                      Heavy (+24%)
-                    </button>
-                  </div>
-                </div>
-
-                {/* Print Temperature Warmth */}
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-zinc-400 font-medium flex items-center gap-1">
-                      <Thermometer className="w-3.5 h-3.5 text-amber-400" /> Print Temperature Warmth
-                    </span>
-                    <span className="text-[9px] font-mono text-amber-400 font-bold uppercase tracking-wider">White Balance</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 bg-black/40 border border-white/10 rounded-lg p-1">
-                    <button
-                      type="button"
-                      onClick={() => setPrintWarmth('neutral')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        printWarmth === 'neutral'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="True color profile matching"
-                    >
-                      Neutral Studio
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPrintWarmth('warm')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        printWarmth === 'warm'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Apply vintage sepia undertones for dynamic physical warmth"
-                    >
-                      Warm Vintage
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPrintWarmth('cool')}
-                      className={`py-1 text-[10px] font-bold rounded tracking-wide transition-all ${
-                        printWarmth === 'cool'
-                          ? 'bg-amber-400/20 text-amber-300'
-                          : 'text-zinc-400 hover:text-white'
-                      }`}
-                      title="Apply rich cyan studio highlights for clean monochrome prints"
-                    >
-                      Cool Studio
-                    </button>
-                  </div>
-                </div>
-
-                {/* Toggle Crop Guidelines & Cut Marks */}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-zinc-400 font-medium flex items-center gap-1.5">
-                    <Scissors className="w-3.5 h-3.5 text-amber-400" />
-                    Crop marks &amp; Cut guides
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <QrCode className="w-3.5 h-3.5 text-razel-neon" /> Instant Mobile Transfer
                   </span>
+                  <span className="text-[10px] font-mono font-bold text-razel-neon px-2 py-0.5 rounded bg-razel-neon/10 border border-razel-neon/20 uppercase tracking-wider">
+                    Dynamic QR
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-white/50 leading-relaxed">
+                  Scan with your phone's camera to instantly save your high-res photo strip or launch this photobooth session on mobile.
+                </p>
+
+                <div className="grid grid-cols-2 gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
                   <button
                     type="button"
-                    onClick={() => setShowCutMarks(!showCutMarks)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showCutMarks ? 'bg-amber-400' : 'bg-zinc-700'
+                    onClick={() => setQrTab('direct-photo')}
+                    className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all cursor-pointer ${
+                      qrTab === 'direct-photo'
+                        ? 'bg-razel-neon text-white shadow-lg'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <span
-                      className={`inline-block h-3 w-3 transform rounded-full bg-black transition-transform ${
-                        showCutMarks ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
+                    📸 Mobile Save Image
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQrTab('app-link')}
+                    className={`py-1.5 px-2 rounded-md text-center text-xs font-bold transition-all cursor-pointer ${
+                      qrTab === 'app-link'
+                        ? 'bg-razel-neon text-white shadow-lg'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    🔗 Share App Link
                   </button>
                 </div>
 
-                {/* Toggle border outline */}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-zinc-400 font-medium">Print Frame Border</span>
+                <div className="flex flex-col items-center justify-center p-4 bg-zinc-950/80 border border-white/5 rounded-xl min-h-[210px]">
+                  {qrLoading ? (
+                    <div className="flex flex-col items-center gap-3 py-6">
+                      <Loader2 className="w-8 h-8 text-razel-neon animate-spin" />
+                      <span className="text-xs font-mono text-white/50">
+                        {qrTab === 'direct-photo' ? 'Uploading & Generating...' : 'Creating App Link QR...'}
+                      </span>
+                    </div>
+                  ) : qrUrl ? (
+                    <div className="flex flex-col items-center gap-3 text-center">
+                      <div className="p-2 bg-white rounded-xl shadow-lg border border-white/10">
+                        <img src={qrUrl} alt="Scan QR Code" className="w-36 h-36 object-contain rounded" />
+                      </div>
+                      <span className="text-[10px] text-zinc-400 font-mono text-center flex items-center justify-center gap-1.5 mt-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400 animate-pulse" /> 
+                        {qrTab === 'direct-photo' ? 'High-Res Direct Link ready' : 'Workspace Launch Link ready'}
+                      </span>
+                      {qrError && (
+                        <span className="text-[9px] text-amber-400/80 text-center max-w-[220px] leading-tight">
+                          {qrError}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-zinc-500">Failed to load QR code.</div>
+                  )}
+                </div>
+              </div>
+              
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(window.location.href);
+                    setCopiedLink(true);
+                    setTimeout(() => setCopiedLink(false), 2000);
+                  } catch (e) {}
+                }}
+                className="w-full py-3.5 px-4 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
+              >
+                {copiedLink ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-400" /> Copied Link!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-emerald-400" /> Copy Share Link
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* TAB 3: DOWNLOADS (Static, GIF, Video) */}
+          {exportControlTab === 'downloads' && (
+            <div className="flex flex-col gap-4 animate-fade-in">
+              {/* Static Image Box */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-emerald-400" /> High-Res Photo Composite
+                  </h4>
+                  <p className="text-xs text-white/40 leading-normal mt-0.5">
+                    Perfect for 300 DPI high-quality photo prints or wallpaper backgrounds.
+                  </p>
+                </div>
+                <div className="flex gap-2">
                   <button
-                    type="button"
-                    onClick={() => setShowPrintBorder(!showPrintBorder)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                      showPrintBorder ? 'bg-amber-400' : 'bg-zinc-700'
-                    }`}
+                    onClick={downloadJpg}
+                    className="px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors flex items-center gap-1"
+                    title="Download standard high-res JPG print"
                   >
-                    <span
-                      className={`inline-block h-3 w-3 transform rounded-full bg-black transition-transform ${
-                        showPrintBorder ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
+                    <Download className="w-3.5 h-3.5" /> JPG
+                  </button>
+
+                  <button
+                    onClick={() => triggerDownload(staticImageUrl, `digismile-strip-${Date.now()}.png`)}
+                    className="px-4 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white/95 border border-white/10 font-semibold text-xs transition-colors flex items-center gap-1"
+                    title="Download lossless high-res PNG"
+                  >
+                    <Download className="w-3.5 h-3.5" /> PNG
+                  </button>
+                  
+                  <button
+                    onClick={() => handleShare(staticImageBlob, `digismile-photo.png`, 'image/png')}
+                    className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
+                    title="Share image to external applications"
+                  >
+                    <Share2 className="w-4 h-4 text-emerald-400" />
                   </button>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Print options action buttons */}
-          <div className="mt-4 flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={printImage}
-              className="flex-1 py-3.5 px-4 rounded-xl border border-amber-400/30 hover:border-amber-400 bg-amber-400/10 hover:bg-amber-400/20 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:scale-[1.01] transition-all shadow-md shadow-amber-500/5"
-            >
-              <Printer className="w-4 h-4 text-amber-400 animate-pulse" /> Print Photo Strip
-            </button>
- 
-             <button
-               onClick={async () => {
-                 try {
-                   await navigator.clipboard.writeText(window.location.href);
-                   setCopiedLink(true);
-                   setTimeout(() => setCopiedLink(false), 2000);
-                 } catch (e) {}
-               }}
-               className="flex-1 py-3.5 px-4 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
-             >
-               {copiedLink ? (
-                 <>
-                   <Check className="w-4 h-4 text-emerald-400" /> Copied Link!
-                 </>
-               ) : (
-                 <>
-                   <Copy className="w-4 h-4 text-emerald-400" /> Copy Share Link
-                 </>
-               )}
-             </button>
-           </div>
+              {/* Looping GIF Box */}
+              {gifUrl && (
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                        <Flame className="w-4 h-4 text-razel-neon" /> DigiSmile Loop Animated GIF
+                      </h4>
+                      <p className="text-xs text-white/40 leading-normal mt-0.5">
+                        A looping digital animated flipbook of all your captured poses.
+                      </p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => triggerDownload(gifUrl, `digismile-loop-${Date.now()}.gif`)}
+                        className="px-4 py-2.5 rounded-lg bg-razel-neon hover:bg-razel-neon/95 text-white font-semibold text-xs transition-colors flex items-center gap-1"
+                      >
+                        <Download className="w-3.5 h-3.5" /> GIF
+                      </button>
+
+                      <button
+                        onClick={() => handleShare(gifBlob, `digismile-loop.gif`, 'image/gif')}
+                        className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
+                      >
+                        <Share2 className="w-4 h-4 text-razel-neon" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Animated Loop Velocity Control Slider */}
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3.5 flex flex-col gap-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <Sliders className="w-3.5 h-3.5 text-razel-neon" /> Loop Playback Velocity
+                      </span>
+                      <span className="text-[11px] font-mono font-bold text-razel-neon px-2 py-0.5 rounded bg-razel-neon/10 border border-razel-neon/20">
+                        {gifFps} frames/sec
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="2"
+                      max="15"
+                      step="1"
+                      value={gifFps}
+                      onChange={(e) => setGifFps(Number(e.target.value))}
+                      className="w-full accent-razel-neon cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-white/40">
+                      <span>Slow (2 fps)</span>
+                      <span>Fast (15 fps)</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* BTS Video Box */}
+              {videoBlobUrl && (
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                      <Film className="w-4 h-4 text-sky-400" /> Behind-The-Scenes Video Export
+                    </h4>
+                    <p className="text-xs text-white/40 leading-normal mt-0.5">
+                      Live timelapse capturing all your organic smiles and pose prep moments.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => triggerDownload(videoBlobUrl, `digismile-bts-${Date.now()}.mp4`)}
+                      className="px-4 py-2.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-colors flex items-center gap-1 shadow-lg shadow-sky-500/20"
+                      title="Download MP4 Video"
+                    >
+                      <Download className="w-3.5 h-3.5" /> MP4
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        if (!videoBlobUrl) return;
+                        try {
+                          const res = await fetch(videoBlobUrl);
+                          const blob = await res.blob();
+                          await handleShare(blob, `digismile-bts-${Date.now()}.mp4`, 'video/mp4');
+                        } catch (e) {
+                          console.warn('Error sharing BTS video:', e);
+                        }
+                      }}
+                      className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
+                      title="Share Behind-The-Scenes video to stories/apps"
+                    >
+                      <Share2 className="w-4 h-4 text-sky-400" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="h-[1px] bg-white/10 my-6" />
