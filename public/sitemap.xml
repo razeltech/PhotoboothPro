@@ -1,27 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://razeltech.github.io/PhotoboothPro/</loc>
-    <lastmod>2026-07-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://razeltech.github.io/PhotoboothPro/logo.png</image:loc>
+      <image:title>PhotoboothPro — Digital Photo Booth Studio | Razel Tech</image:title>
+      <image:caption>Professional digital photobooth with instant strip generation, vintage filters, and custom branding</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://razeltech.github.io/PhotoboothPro/booth.html</loc>
-    <lastmod>2026-07-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://razeltech.github.io/PhotoboothPro/booth_v1.html</loc>
-    <lastmod>2026-07-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://razeltech.github.io/PhotoboothPro/index_v2.html</loc>
-    <lastmod>2026-07-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
   </url>
 </urlset>
